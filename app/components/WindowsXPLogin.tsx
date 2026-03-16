@@ -3,7 +3,7 @@ import Image from "next/image";
 
 import "./WindowsXPLogin.css";
 
-export default function WindowsXPLogin() {
+export default function WindowsXPLogin({ onLogin }: { onLogin: () => void }) {
   return (
     <div id="main-content">
       {/* Header */}
@@ -24,7 +24,7 @@ export default function WindowsXPLogin() {
               priority
             />
             <span id="text-under-logo">
-              To begin, click your user name
+              To checkout my portfolio, click my user name
             </span>
           </div>
         </div>
@@ -46,7 +46,9 @@ export default function WindowsXPLogin() {
                   />
                 </div>
 
-                <span className="user-name">Samriddha</span>
+                <span className="user-name" onClick={onLogin}>
+      Samriddha
+    </span>
 
                 <div className="password-box">
                   <span className="password-msg">
@@ -114,9 +116,9 @@ export default function WindowsXPLogin() {
         </div>
 
         <div id="account-message">
-          After you log on, you can add or change accounts.
+          After you log in, you can view my portfolio.
           <br />
-          Just go to Control Panel and click User Accounts.
+          Explore my creation :V.
         </div>
       </div>
 
@@ -185,3 +187,4 @@ export default function WindowsXPLogin() {
     </div>
   );
 }
+

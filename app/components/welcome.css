@@ -1,0 +1,8 @@
+.welcome-text {
+  font-family: Tahoma, sans-serif;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 48px;
+  color: #e6e6e6;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+}
