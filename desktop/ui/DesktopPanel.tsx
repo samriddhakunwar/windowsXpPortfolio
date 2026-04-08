@@ -5,7 +5,7 @@ import { AppRegistry } from "@/desktop/core/AppRegistry";
 import { Window as WindowType } from "@/types";
 import { useSoundSystem } from "@/hooks/useSoundSystem";
 import { AnimatePresence } from "framer-motion";
-import { Suspense, useCallback, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { ContextMenu } from "./components/ContextMenu";
 import { DesktopIcon } from "./components/DesktopIcon";
 import { StartMenu } from "./components/StartMenu";
@@ -34,6 +34,26 @@ export default function DesktopPanel() {
   const { playSound } = useSoundSystem();
   const [startMenuOpen, setStartMenuOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+
+  // Keyboard shortcuts: Meta/Win key = Start menu, Escape = close
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      const isInput = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+      if (isInput) return;
+
+      if (e.key === "Meta" || e.key === "OS") {
+        e.preventDefault();
+        setStartMenuOpen((prev) => !prev);
+      }
+      if (e.key === "Escape") {
+        setStartMenuOpen(false);
+        setContextMenu(null);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const desktopIcons = useMemo(() => {
     const apps = AppRegistry.getAllLaunchableApps();

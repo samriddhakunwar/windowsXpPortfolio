@@ -1,8 +1,9 @@
 "use client";
 
+import { AppRegistry } from "@/desktop/core/AppRegistry";
 import { Window } from "@/types";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface TaskbarProps {
   windows: Window[];
@@ -100,32 +101,49 @@ export const TaskBar: React.FC<TaskbarProps> = ({
 
       {/* Window Buttons */}
       <div className="flex-1 flex gap-[3px] overflow-x-auto items-center px-1">
-        {windows.map((win) => (
-          <button
-            key={win.id}
-            onClick={() => handleTaskbarButtonClick(win)}
-            className="text-white text-xs font-normal truncate select-none flex items-center gap-1"
-            style={{
-              background: win.isFocused
-                ? "linear-gradient(180deg, #1C5FC0 0%, #306FCA 20%, #2462C0 40%, #1C58B8 60%, #1C58B8 80%, #1550B0 100%)"
-                : "linear-gradient(180deg, #3E87E0 0%, #4E98EC 20%, #4890E5 40%, #428ADF 60%, #3C82D8 80%, #3479D0 100%)",
-              border: win.isFocused
-                ? "1px solid #0B3E8F"
-                : "1px solid #1B60BB",
-              borderRadius: "3px",
-              height: "26px",
-              padding: "0 8px",
-              minWidth: "120px",
-              maxWidth: "200px",
-              textShadow: "1px 1px 0px rgba(0,0,0,0.3)",
-              boxShadow: win.isFocused
-                ? "inset 0 1px 1px rgba(0,0,0,0.2)"
-                : "none",
-            }}
-          >
-            <span className="truncate">{win.title}</span>
-          </button>
-        ))}
+        {windows.map((win) => {
+          const app = AppRegistry.getApp(win.type);
+          return (
+            <button
+              key={win.id}
+              onClick={() => handleTaskbarButtonClick(win)}
+              className="text-white text-xs font-normal truncate select-none flex items-center gap-[5px]"
+              style={{
+                background: win.isFocused
+                  ? "linear-gradient(180deg, #1C5FC0 0%, #306FCA 20%, #2462C0 40%, #1C58B8 60%, #1C58B8 80%, #1550B0 100%)"
+                  : "linear-gradient(180deg, #3E87E0 0%, #4E98EC 20%, #4890E5 40%, #428ADF 60%, #3C82D8 80%, #3479D0 100%)",
+                border: win.isFocused
+                  ? "1px solid #0B3E8F"
+                  : "1px solid #1B60BB",
+                borderRadius: "3px",
+                height: "26px",
+                padding: "0 8px",
+                minWidth: "120px",
+                maxWidth: "200px",
+                textShadow: "1px 1px 0px rgba(0,0,0,0.3)",
+                boxShadow: win.isFocused
+                  ? "inset 0 1px 1px rgba(0,0,0,0.2)"
+                  : "none",
+              }}
+            >
+              {app && (
+                <span
+                  style={{
+                    width: 16,
+                    height: 16,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  {app.icon}
+                </span>
+              )}
+              <span className="truncate">{win.title}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* System Tray */}

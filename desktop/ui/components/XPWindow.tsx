@@ -71,7 +71,7 @@ export const XPWindow: React.FC<XPWindowProps> = ({
         if (!dragRef.current) return;
         const dx = ev.clientX - dragRef.current.startX;
         const dy = ev.clientY - dragRef.current.startY;
-        const newX = Math.max(0, dragRef.current.origX + dx);
+        const newX = Math.max(-width / 2, dragRef.current.origX + dx);
         const newY = Math.max(0, dragRef.current.origY + dy);
         onDragEnd?.(newX, newY);
       };
@@ -85,7 +85,15 @@ export const XPWindow: React.FC<XPWindowProps> = ({
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
     },
-    [isMaximized, onFocus, onDragEnd],
+    [isMaximized, onFocus, onDragEnd, width],
+  );
+
+  const handleTitleBarDoubleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if ((e.target as HTMLElement).closest("button")) return;
+      onMaximize();
+    },
+    [onMaximize],
   );
 
   const focused = isFocused;
@@ -178,6 +186,7 @@ export const XPWindow: React.FC<XPWindowProps> = ({
             {/* Title Bar */}
             <div
               onMouseDown={handleTitleBarMouseDown}
+              onDoubleClick={handleTitleBarDoubleClick}
               style={{
                 background: focused
                   ? "linear-gradient(180deg, #0997FF 0%, #0053E0 8%, #0050DE 20%, #1466E5 40%, #0F5CDE 70%, #004BD5 85%, #0048CE 100%)"
