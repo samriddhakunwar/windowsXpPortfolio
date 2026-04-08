@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import DesktopPanel from "@/desktop/ui/DesktopPanel";
+import { useEffect, useState } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import WindowsXPLogin from "./components/WindowsXPLogin";
 import WelcomePage from "./components/page";
-import Desktop from "./components/Desktop";
 
 export default function Home() {
-  const [stage, setStage] = useState<
-    "boot" | "login" | "welcome" | "desktop"
-  >("boot");
+  const [stage, setStage] = useState<"boot" | "login" | "welcome" | "desktop">(
+    "boot",
+  );
 
   // Boot delay (3s)
   useEffect(() => {
@@ -47,5 +47,5 @@ export default function Home() {
 
   if (stage === "welcome") return <WelcomePage />;
 
-  return <Desktop />;
+  return <DesktopPanel />;
 }
