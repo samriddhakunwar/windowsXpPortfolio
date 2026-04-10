@@ -24,9 +24,7 @@ export function DesktopProvider({ children }: { children: React.ReactNode }) {
       return null;
     }
 
-    // Check if app is already open (regardless of minimized state)
     const existingWindow = windowManager.windows.find((w) => w.type === type);
-
     if (existingWindow) {
       if (existingWindow.isMinimized) {
         windowManager.restoreWindow(existingWindow.id);
@@ -53,6 +51,8 @@ export function DesktopProvider({ children }: { children: React.ReactNode }) {
     restoreWindow: windowManager.restoreWindow,
     maximizeWindow: windowManager.maximizeWindow,
     updateWindowPosition: windowManager.updateWindowPosition,
+    resizeWindow: windowManager.resizeWindow,
+    minimizeAll: windowManager.minimizeAll,
   };
 
   return (

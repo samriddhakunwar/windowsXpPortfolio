@@ -19,6 +19,17 @@ interface ContextMenuState {
   windowId?: string;
 }
 
+function getWallpaper(): string {
+  try {
+    const s = localStorage.getItem("xp-settings");
+    if (s) {
+      const parsed = JSON.parse(s);
+      if (parsed.wallpaper) return parsed.wallpaper;
+    }
+  } catch {}
+  return "/assets/bg.jpg";
+}
+
 export default function DesktopPanel() {
   const {
     windows,
@@ -29,31 +40,69 @@ export default function DesktopPanel() {
     restoreWindow,
     maximizeWindow,
     updateWindowPosition,
+    resizeWindow,
+    minimizeAll,
   } = useDesktop();
 
   const { playSound } = useSoundSystem();
   const [startMenuOpen, setStartMenuOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+  const [wallpaper, setWallpaper] = useState("/assets/bg.jpg");
 
-  // Keyboard shortcuts: Meta/Win key = Start menu, Escape = close
+  // Load wallpaper from localStorage on mount
+  useEffect(() => {
+    setWallpaper(getWallpaper());
+    const onStorage = () => setWallpaper(getWallpaper());
+    window.addEventListener("storage", onStorage);
+    // Also poll for changes (settings window writes to localStorage in same tab)
+    const interval = setInterval(() => setWallpaper(getWallpaper()), 1000);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
       const isInput = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
       if (isInput) return;
 
+      // Win/Meta key → toggle Start Menu
       if (e.key === "Meta" || e.key === "OS") {
         e.preventDefault();
         setStartMenuOpen((prev) => !prev);
       }
+
+      // Escape → close menus
       if (e.key === "Escape") {
         setStartMenuOpen(false);
         setContextMenu(null);
       }
+
+      // Alt + F4 → close focused window
+      if (e.altKey && e.key === "F4") {
+        e.preventDefault();
+        const focused = windows.find((w) => w.isFocused);
+        if (focused) {
+          closeWindow(focused.id);
+          playSound("close");
+        }
+      }
+
+      // Win + D or Win + M → minimize all
+      if ((e.metaKey || e.key === "d" || e.key === "m") && e.ctrlKey) {
+        // fallback for Windows — many browsers intercept Meta+D
+      }
+      if (e.key === "d" && e.metaKey) {
+        e.preventDefault();
+        minimizeAll();
+      }
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [windows, closeWindow, minimizeAll, playSound]);
 
   const desktopIcons = useMemo(() => {
     const apps = AppRegistry.getAllLaunchableApps();
@@ -62,7 +111,6 @@ export default function DesktopPanel() {
       label: app.title,
       icon: app.icon,
     }));
-    // Add recycle bin manually (it's not launchable so not in getAllLaunchableApps)
     const recycleApp = AppRegistry.getApp("recycle");
     if (recycleApp) {
       icons.push({ type: "recycle", label: "Recycle Bin", icon: recycleApp.icon });
@@ -106,7 +154,6 @@ export default function DesktopPanel() {
   const renderWindowContent = (window: WindowType) => {
     const app = AppRegistry.getApp(window.type);
     if (!app) return null;
-
     return (
       <Suspense fallback={<div style={{ padding: "16px", fontFamily: "Tahoma, Arial, sans-serif", fontSize: "11px" }}>Loading...</div>}>
         <app.component />
@@ -115,85 +162,26 @@ export default function DesktopPanel() {
   };
 
   const desktopContextItems = [
-    {
-      label: "Arrange Icons By",
-      icon: "🗂",
-      onClick: () => {},
-      disabled: true,
-    },
+    { label: "Arrange Icons By", icon: "🗂", onClick: () => {}, disabled: true },
     { separator: true as const },
-    {
-      label: "Refresh",
-      icon: "🔄",
-      onClick: () => window.location.reload(),
-    },
+    { label: "Refresh", icon: "🔄", onClick: () => window.location.reload() },
     { separator: true as const },
-    {
-      label: "New Folder",
-      icon: "📁",
-      onClick: () => {},
-      disabled: true,
-    },
+    { label: "New Folder", icon: "📁", onClick: () => {}, disabled: true },
     { separator: true as const },
-    {
-      label: "About Me",
-      icon: "👤",
-      onClick: () => {
-        launchApp("about");
-        playSound("open");
-      },
-    },
-    {
-      label: "Contact",
-      icon: "✉",
-      onClick: () => {
-        launchApp("contact");
-        playSound("open");
-      },
-    },
-    {
-      label: "Settings",
-      icon: "⚙",
-      onClick: () => {
-        launchApp("settings");
-        playSound("open");
-      },
-    },
+    { label: "About Me", icon: "👤", onClick: () => { launchApp("about"); playSound("open"); } },
+    { label: "Contact", icon: "✉", onClick: () => { launchApp("contact"); playSound("open"); } },
+    { label: "Settings", icon: "⚙", onClick: () => { launchApp("settings"); playSound("open"); } },
   ];
 
   const getWindowContextItems = (windowId: string) => {
     const win = windows.find((w) => w.id === windowId);
     if (!win) return [];
     return [
-      {
-        label: "Restore",
-        icon: "🔲",
-        onClick: () => restoreWindow(windowId),
-        disabled: !win.isMinimized && !win.isMaximized,
-      },
-      {
-        label: "Minimize",
-        icon: "➖",
-        onClick: () => {
-          minimizeWindow(windowId);
-          playSound("minimize");
-        },
-      },
-      {
-        label: "Maximize",
-        icon: "⬜",
-        onClick: () => maximizeWindow(windowId),
-        disabled: win.isMaximized,
-      },
+      { label: "Restore", icon: "🔲", onClick: () => restoreWindow(windowId), disabled: !win.isMinimized && !win.isMaximized },
+      { label: "Minimize", icon: "➖", onClick: () => { minimizeWindow(windowId); playSound("minimize"); } },
+      { label: "Maximize", icon: "⬜", onClick: () => maximizeWindow(windowId), disabled: win.isMaximized },
       { separator: true as const },
-      {
-        label: "Close",
-        icon: "✕",
-        onClick: () => {
-          closeWindow(windowId);
-          playSound("close");
-        },
-      },
+      { label: "Close", icon: "✕", onClick: () => { closeWindow(windowId); playSound("close"); } },
     ];
   };
 
@@ -206,10 +194,11 @@ export default function DesktopPanel() {
         height: "100vh",
         overflow: "hidden",
         position: "relative",
-        backgroundImage: "url(/assets/bg.jpg)",
+        backgroundImage: `url(${wallpaper})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         cursor: "default",
+        transition: "background-image 0.4s ease",
       }}
     >
       {/* Desktop Icons */}
@@ -240,38 +229,37 @@ export default function DesktopPanel() {
 
       {/* Windows */}
       <AnimatePresence>
-        {windows.map((window) => (
-          <div
-            key={window.id}
-            onContextMenu={(e) => handleWindowContextMenu(e, window.id)}
-          >
-            <XPWindow
-              id={window.id}
-              title={window.title}
-              x={window.x}
-              y={window.y}
-              width={window.width}
-              height={window.height}
-              isMaximized={window.isMaximized}
-              isMinimized={window.isMinimized}
-              isFocused={window.isFocused}
-              zIndex={window.zIndex}
-              onClose={() => {
-                closeWindow(window.id);
-                playSound("close");
-              }}
-              onMinimize={() => {
-                minimizeWindow(window.id);
-                playSound("minimize");
-              }}
-              onMaximize={() => maximizeWindow(window.id)}
-              onFocus={() => focusWindow(window.id)}
-              onDragEnd={(x, y) => updateWindowPosition(window.id, x, y)}
+        {windows.map((window) => {
+          const app = AppRegistry.getApp(window.type);
+          return (
+            <div
+              key={window.id}
+              onContextMenu={(e) => handleWindowContextMenu(e, window.id)}
             >
-              {renderWindowContent(window)}
-            </XPWindow>
-          </div>
-        ))}
+              <XPWindow
+                id={window.id}
+                title={window.title}
+                icon={app?.icon}
+                x={window.x}
+                y={window.y}
+                width={window.width}
+                height={window.height}
+                isMaximized={window.isMaximized}
+                isMinimized={window.isMinimized}
+                isFocused={window.isFocused}
+                zIndex={window.zIndex}
+                onClose={() => { closeWindow(window.id); playSound("close"); }}
+                onMinimize={() => { minimizeWindow(window.id); playSound("minimize"); }}
+                onMaximize={() => maximizeWindow(window.id)}
+                onFocus={() => focusWindow(window.id)}
+                onDragEnd={(x, y) => updateWindowPosition(window.id, x, y)}
+                onResize={(w, h, x, y) => resizeWindow(window.id, w, h, x, y)}
+              >
+                {renderWindowContent(window)}
+              </XPWindow>
+            </div>
+          );
+        })}
       </AnimatePresence>
 
       {/* Context Menu */}
@@ -297,18 +285,9 @@ export default function DesktopPanel() {
       {/* Taskbar */}
       <TaskBar
         windows={windows}
-        onWindowClick={(id) => {
-          focusWindow(id);
-          playSound("click");
-        }}
-        onMinimize={(id) => {
-          minimizeWindow(id);
-          playSound("minimize");
-        }}
-        onRestore={(id) => {
-          restoreWindow(id);
-          playSound("open");
-        }}
+        onWindowClick={(id) => { focusWindow(id); playSound("click"); }}
+        onMinimize={(id) => { minimizeWindow(id); playSound("minimize"); }}
+        onRestore={(id) => { restoreWindow(id); playSound("open"); }}
         onStartClick={() => setStartMenuOpen((prev) => !prev)}
         startMenuOpen={startMenuOpen}
       />

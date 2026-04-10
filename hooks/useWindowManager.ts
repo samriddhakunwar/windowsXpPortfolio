@@ -65,7 +65,6 @@ export const useWindowManager = () => {
       prev.map((w) => {
         if (w.id !== id) return w;
         if (w.isMaximized) {
-          // Restore from maximized
           return {
             ...w,
             isMaximized: false,
@@ -75,7 +74,6 @@ export const useWindowManager = () => {
             height: w._restoreH ?? 400,
           };
         }
-        // Maximize — save current position for restore
         return {
           ...w,
           isMaximized: true,
@@ -112,6 +110,21 @@ export const useWindowManager = () => {
     [],
   );
 
+  const resizeWindow = useCallback(
+    (id: string, width: number, height: number, x: number, y: number) => {
+      setWindows((prev) =>
+        prev.map((w) => (w.id === id ? { ...w, width, height, x, y } : w)),
+      );
+    },
+    [],
+  );
+
+  const minimizeAll = useCallback(() => {
+    setWindows((prev) =>
+      prev.map((w) => ({ ...w, isMinimized: true, isFocused: false })),
+    );
+  }, []);
+
   return {
     windows,
     openWindow,
@@ -121,5 +134,7 @@ export const useWindowManager = () => {
     maximizeWindow,
     focusWindow,
     updateWindowPosition,
+    resizeWindow,
+    minimizeAll,
   };
 };

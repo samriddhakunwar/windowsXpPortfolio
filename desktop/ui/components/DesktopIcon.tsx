@@ -4,6 +4,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import { WindowType } from "@/types";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
+const APP_DESCRIPTIONS: Partial<Record<WindowType, string>> = {
+  about:      "Learn more about Samriddha",
+  projects:   "Browse my portfolio projects",
+  skills:     "View my technical skill set",
+  contact:    "Send me a message",
+  resume:     "View & download my CV",
+  mycomputer: "Browse files & folders",
+  github:     "My GitHub repositories",
+  settings:   "Customize the desktop",
+  help:       "Help & system info",
+  recycle:    "Recycle Bin",
+};
+
 interface DesktopIconProps {
   type: WindowType;
   label: string;
@@ -17,11 +30,12 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
   label,
   icon,
   onDoubleClick,
-  position = { x: 0, y: 0 },
 }) => {
   const [selected, setSelected] = useState(false);
   const [clicked, setClicked] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const tooltipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Deselect when clicking outside
   useEffect(() => {
@@ -30,27 +44,35 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
         setSelected(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleDoubleClick = useCallback(() => {
     setClicked(true);
+    setShowTooltip(false);
     setTimeout(() => setClicked(false), 300);
     onDoubleClick();
   }, [onDoubleClick]);
+
+  const handleMouseEnter = useCallback(() => {
+    tooltipTimer.current = setTimeout(() => setShowTooltip(true), 600);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
+    setShowTooltip(false);
+  }, []);
+
+  const description = APP_DESCRIPTIONS[type] ?? label;
 
   return (
     <div
       ref={ref}
       className="select-none"
-      style={{
-        width: "76px",
-        padding: "6px 4px",
-        textAlign: "center",
-        cursor: "default",
-      }}
+      style={{ width: "76px", padding: "6px 4px", textAlign: "center", cursor: "default", position: "relative" }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <motion.div
         onClick={() => setSelected(true)}
@@ -98,6 +120,37 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
           {label}
         </span>
       </motion.div>
+
+      {/* XP-style tooltip */}
+      <AnimatePresence>
+        {showTooltip && (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}
+            style={{
+              position: "absolute",
+              bottom: "calc(100% + 4px)",
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "#FFFFE1",
+              border: "1px solid #767676",
+              borderRadius: "2px",
+              padding: "3px 6px",
+              fontSize: "11px",
+              fontFamily: "Tahoma, Arial, sans-serif",
+              color: "#000",
+              whiteSpace: "nowrap",
+              boxShadow: "1px 1px 3px rgba(0,0,0,0.25)",
+              zIndex: 99999,
+              pointerEvents: "none",
+            }}
+          >
+            {description}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
