@@ -217,7 +217,9 @@ body {
 
 #logo {
   width: var(--logo-size);
-  margin-left: 600;
+  display: block;
+  margin: 20px auto;
+  transform: translateX(300px); /* adjust this value */
 }
 
 .user-name a,
