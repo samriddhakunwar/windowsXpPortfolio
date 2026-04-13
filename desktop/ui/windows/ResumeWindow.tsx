@@ -1,8 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 export const ResumeWindow: React.FC = () => {
+  const [zoom, setZoom] = useState(100);
+
+  const adjustZoom = (delta: number) => {
+    setZoom((prev) => Math.min(200, Math.max(50, prev + delta)));
+  };
+
+  const resetZoom = () => setZoom(100);
+
   return (
     <div
       style={{
@@ -11,7 +19,8 @@ export const ResumeWindow: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        gap: "6px",
+        gap: "0",
+        background: "#F0F0F0",
       }}
     >
       {/* Header toolbar */}
@@ -21,16 +30,66 @@ export const ResumeWindow: React.FC = () => {
           display: "flex",
           alignItems: "center",
           gap: "8px",
-          padding: "6px 8px",
+          padding: "5px 8px",
           flexShrink: 0,
+          borderBottom: "1px solid #ACA899",
         }}
       >
-        <span style={{ fontSize: "20px" }}>📄</span>
+        <span style={{ fontSize: "18px" }}>📄</span>
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: "bold", fontSize: "12px" }}>Resume.pdf</div>
           <div style={{ color: "#666" }}>Samriddha Kunwar — Full-Stack Developer</div>
         </div>
-        <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+
+        {/* Zoom controls */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+            flexShrink: 0,
+            marginRight: "6px",
+          }}
+        >
+          <button
+            className="xp-button"
+            onClick={() => adjustZoom(-10)}
+            title="Zoom Out"
+            style={{ padding: "2px 7px", fontSize: "13px", lineHeight: 1 }}
+          >
+            −
+          </button>
+          <span
+            onClick={resetZoom}
+            title="Reset zoom"
+            style={{
+              minWidth: "38px",
+              textAlign: "center",
+              cursor: "pointer",
+              fontSize: "11px",
+              fontWeight: "bold",
+              color: "#333",
+              padding: "2px 4px",
+              border: "1px solid #ACA899",
+              borderRadius: "2px",
+              background: "#ECE9D8",
+              userSelect: "none",
+            }}
+          >
+            {zoom}%
+          </span>
+          <button
+            className="xp-button"
+            onClick={() => adjustZoom(10)}
+            title="Zoom In"
+            style={{ padding: "2px 7px", fontSize: "13px", lineHeight: 1 }}
+          >
+            +
+          </button>
+        </div>
+
+        {/* Action buttons */}
+        <div style={{ display: "flex", gap: "5px", flexShrink: 0 }}>
           <a
             href="/resume.pdf"
             download="Samriddha_Kunwar_Resume.pdf"
@@ -44,7 +103,7 @@ export const ResumeWindow: React.FC = () => {
               padding: "3px 10px",
             }}
           >
-            ⬇ Download PDF
+            ⬇ Download
           </a>
           <a
             href="/resume.pdf"
@@ -60,67 +119,46 @@ export const ResumeWindow: React.FC = () => {
               padding: "3px 10px",
             }}
           >
-            ↗ Open in Tab
+            ↗ Open Tab
           </a>
         </div>
       </div>
 
-      {/* PDF Preview */}
+      {/* PDF viewer — iframe for crisp, native rendering */}
       <div
-        className="xp-inset"
         style={{
           flex: 1,
-          minHeight: "320px",
-          overflow: "hidden",
-          position: "relative",
+          overflow: "auto",
+          background: "#525659",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          padding: "12px",
         }}
       >
-        {/* Try to embed the PDF; show fallback if not available */}
-        <object
-          data="/resume.pdf"
-          type="application/pdf"
-          style={{ width: "100%", height: "100%", border: "none" }}
+        <div
+          style={{
+            width: `${zoom}%`,
+            minWidth: "480px",
+            maxWidth: "1200px",
+            height: "auto",
+            boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
+            background: "#fff",
+          }}
         >
-          {/* Fallback when PDF not found */}
-          <div
+          <iframe
+            src={`/resume.pdf#toolbar=1&navpanes=0&scrolling=no&view=FitH`}
+            title="Samriddha Kunwar Resume"
             style={{
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "12px",
-              color: "#666",
-              padding: "24px",
-              textAlign: "center",
+              width: "100%",
+              height: "calc(100vh - 120px)",
+              minHeight: "480px",
+              border: "none",
+              display: "block",
+              imageRendering: "auto",
             }}
-          >
-            <span style={{ fontSize: "40px" }}>📋</span>
-            <div>
-              <div style={{ fontWeight: "bold", fontSize: "12px", marginBottom: "4px", color: "#333" }}>
-                Resume Preview
-              </div>
-              <div style={{ lineHeight: "1.6", marginBottom: "10px" }}>
-                <strong>Samriddha Kunwar</strong>
-                <br />
-                Full-Stack Developer | Web Developer | Open Source Contributor
-                <br />
-                <br />
-                <span style={{ fontSize: "10px" }}>
-                  📌 Add your <code>resume.pdf</code> to <code>/public/resume.pdf</code> to enable inline preview.
-                </span>
-              </div>
-              <a
-                href="/resume.pdf"
-                download="Samriddha_Kunwar_Resume.pdf"
-                className="xp-button"
-                style={{ textDecoration: "none", color: "#000" }}
-              >
-                ⬇ Download Resume PDF
-              </a>
-            </div>
-          </div>
-        </object>
+          />
+        </div>
       </div>
     </div>
   );

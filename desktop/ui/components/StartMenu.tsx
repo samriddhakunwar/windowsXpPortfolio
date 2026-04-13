@@ -10,9 +10,10 @@ import { motion, AnimatePresence } from "framer-motion";
 interface StartMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  onShutdown?: () => void;
 }
 
-export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose }) => {
+export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdown }) => {
   const { launchApp } = useDesktop();
   const menuRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -346,30 +347,54 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose }) => {
                 borderTop: "1px solid #1548A0",
               }}
             >
-              {[
-                { label: "Log Off", icon: "/assets/logoff.png" },
-                { label: "Turn Off Computer", icon: "/assets/shutdown.png" },
-              ].map((item) => (
-                <button
-                  key={item.label}
-                  className="flex items-center gap-2 text-white"
-                  style={{
-                    fontSize: "11px",
-                    border: "none",
-                    background: "transparent",
-                    cursor: "pointer",
-                    padding: "2px 6px",
-                    borderRadius: "3px",
-                    textShadow: "1px 1px 0 rgba(0,0,0,0.3)",
-                    transition: "background 120ms ease",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.2)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-                >
-                  <Image src={item.icon} alt={item.label} width={20} height={20} draggable={false} />
-                  <span>{item.label}</span>
-                </button>
-              ))}
+              {/* Log Off */}
+              <button
+                className="flex items-center gap-2 text-white"
+                style={{
+                  fontSize: "11px",
+                  border: "none",
+                  background: "transparent",
+                  cursor: "pointer",
+                  padding: "2px 6px",
+                  borderRadius: "3px",
+                  textShadow: "1px 1px 0 rgba(0,0,0,0.3)",
+                  transition: "background 120ms ease",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.2)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                onClick={() => {
+                  onClose();
+                  // Log off = restart to login (same as shutdown for now)
+                  onShutdown?.();
+                }}
+              >
+                <Image src="/assets/logoff.png" alt="Log Off" width={20} height={20} draggable={false} />
+                <span>Log Off</span>
+              </button>
+
+              {/* Turn Off Computer */}
+              <button
+                className="flex items-center gap-2 text-white"
+                style={{
+                  fontSize: "11px",
+                  border: "none",
+                  background: "transparent",
+                  cursor: "pointer",
+                  padding: "2px 6px",
+                  borderRadius: "3px",
+                  textShadow: "1px 1px 0 rgba(0,0,0,0.3)",
+                  transition: "background 120ms ease",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.2)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                onClick={() => {
+                  onClose();
+                  onShutdown?.();
+                }}
+              >
+                <Image src="/assets/shutdown.png" alt="Turn Off Computer" width={20} height={20} draggable={false} />
+                <span>Turn Off Computer</span>
+              </button>
             </div>
           </div>
         </motion.div>

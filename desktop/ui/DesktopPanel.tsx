@@ -30,7 +30,11 @@ function getWallpaper(): string {
   return "/assets/bg.jpg";
 }
 
-export default function DesktopPanel() {
+interface DesktopPanelProps {
+  onShutdown?: () => void;
+}
+
+export default function DesktopPanel({ onShutdown }: DesktopPanelProps) {
   const {
     windows,
     launchApp,
@@ -280,6 +284,7 @@ export default function DesktopPanel() {
       <StartMenu
         isOpen={startMenuOpen}
         onClose={() => setStartMenuOpen(false)}
+        onShutdown={onShutdown}
       />
 
       {/* Taskbar */}
