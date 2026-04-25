@@ -168,6 +168,20 @@ export class AppRegistry {
       launchable: false,
     });
 
+    this.registerApp({
+      id: "minesweeper",
+      title: "Minesweeper",
+      defaultWidth: 170,
+      defaultHeight: 261,
+      component: lazy(() =>
+        import("@/desktop/ui/windows/MinesweeperWindow").then((m) => ({
+          default: m.MinesweeperWindow,
+        }))
+      ),
+      icon: icon("/assets/solitaire.png", "Minesweeper"),
+      launchable: true,
+    });
+
     this.initialized = true;
   }
 

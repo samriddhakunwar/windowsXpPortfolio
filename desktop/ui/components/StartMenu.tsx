@@ -307,11 +307,12 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                 <div style={{ height: "1px", background: "rgba(255,255,255,0.3)", margin: "4px 6px" }} />
 
                 {[
-                  { label: "Resume",   type: "resume"   as WindowType, icon: "/assets/doc.png" },
-                  { label: "Skills",   type: "skills"   as WindowType, icon: "/assets/help.png" },
-                  { label: "GitHub",   type: "github"   as WindowType, icon: "/assets/github.png" },
-                  { label: "Settings", type: "settings" as WindowType, icon: "/assets/defaultprog.png" },
-                  { label: "Contact",  type: "contact"  as WindowType, icon: "/assets/outlook.png" },
+                  { label: "Resume",      type: "resume"      as WindowType, icon: "/assets/doc.png" },
+                  { label: "Skills",      type: "skills"      as WindowType, icon: "/assets/help.png" },
+                  { label: "GitHub",      type: "github"      as WindowType, icon: "/assets/github.png" },
+                  { label: "Settings",    type: "settings"    as WindowType, icon: "/assets/defaultprog.png" },
+                  { label: "Contact",     type: "contact"     as WindowType, icon: "/assets/outlook.png" },
+                  { label: "Minesweeper", type: "minesweeper" as WindowType, icon: "/assets/solitaire.png" },
                 ].map((item) => (
                   <button
                     key={item.label}

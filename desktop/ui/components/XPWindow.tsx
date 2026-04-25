@@ -25,8 +25,8 @@ interface XPWindowProps {
   zIndex?: number;
 }
 
-const MIN_W = 300;
-const MIN_H = 200;
+const MIN_W = 160;
+const MIN_H = 180;
 
 type ResizeDir = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw";
 
@@ -164,10 +164,7 @@ export const XPWindow: React.FC<XPWindowProps> = ({
 
   const windowVariants = {
     hidden: { opacity: 0, scale: 0.88, y: 20 },
-    visible: {
-      opacity: 1, scale: 1, y: 0,
-      transition: { type: "spring" as const, stiffness: 380, damping: 28, mass: 0.8 },
-    },
+    visible: { opacity: 1, scale: 1, y: 0 },
     exit: {
       opacity: 0, scale: 0.88, y: 12,
       transition: { duration: 0.18, ease: [0.4, 0, 1, 1] as const },
@@ -184,14 +181,23 @@ export const XPWindow: React.FC<XPWindowProps> = ({
           key={id}
           variants={windowVariants}
           initial="hidden"
-          animate="visible"
+          animate={{
+            opacity: 1, scale: 1, y: 0,
+            width:  isMaximized ? "100vw" : width,
+            height: isMaximized ? "calc(100vh - 40px)" : height,
+          }}
           exit="exit"
+          transition={{
+            opacity:    { duration: 0.15 },
+            scale:      { type: "spring", stiffness: 380, damping: 28, mass: 0.8 },
+            y:          { type: "spring", stiffness: 380, damping: 28, mass: 0.8 },
+            width:      { type: "spring", stiffness: 260, damping: 28, mass: 0.6 },
+            height:     { type: "spring", stiffness: 260, damping: 28, mass: 0.6 },
+          }}
           style={{
             position: "fixed",
             left: isMaximized ? 0 : x,
-            top: isMaximized ? 0 : y,
-            width: isMaximized ? "100vw" : width,
-            height: isMaximized ? "calc(100vh - 40px)" : height,
+            top:  isMaximized ? 0 : y,
             zIndex,
           }}
           className="flex flex-col"

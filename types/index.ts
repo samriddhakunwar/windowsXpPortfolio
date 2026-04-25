@@ -8,7 +8,8 @@ export type WindowType =
   | "github"
   | "settings"
   | "help"
-  | "recycle";
+  | "recycle"
+  | "minesweeper";
 
 export interface Window {
   id: string;
