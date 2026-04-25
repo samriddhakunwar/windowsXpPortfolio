@@ -178,7 +178,7 @@ export class AppRegistry {
           default: m.MinesweeperWindow,
         }))
       ),
-      icon: icon("/assets/solitaire.png", "Minesweeper"),
+      icon: icon("/assets/minesweeper.png", "Minesweeper"),
       launchable: true,
     });
 
