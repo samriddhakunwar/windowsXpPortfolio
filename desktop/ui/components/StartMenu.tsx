@@ -299,6 +299,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                       width={20}
                       height={20}
                       draggable={false}
+                      unoptimized
                     />
                     <span>{item.label}</span>
                   </button>
@@ -312,7 +313,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                   { label: "GitHub",      type: "github"      as WindowType, icon: "/assets/github.png" },
                   { label: "Settings",    type: "settings"    as WindowType, icon: "/assets/defaultprog.png" },
                   { label: "Contact",     type: "contact"     as WindowType, icon: "/assets/outlook.png" },
-                  { label: "Minesweeper", type: "minesweeper" as WindowType, icon: "/assets/solitaire.png" },
+                  { label: "Minesweeper", type: "minesweeper" as WindowType, icon: "/assets/minesweeper.png" },
                 ].map((item) => (
                   <button
                     key={item.label}
@@ -330,7 +331,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                     onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.18)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                   >
-                    <Image src={item.icon} alt="" width={20} height={20} draggable={false} />
+                    <Image src={item.icon} alt="" width={20} height={20} draggable={false} unoptimized />
                     <span>{item.label}</span>
                   </button>
                 ))}

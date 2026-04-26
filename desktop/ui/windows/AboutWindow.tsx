@@ -51,7 +51,7 @@ export const AboutWindow: React.FC = () => {
             fontSize: "24px",
             flexShrink: 0,
           }}>
-            👨‍💻
+            <Image src="/assets/userprofile.jpg" alt="" width={52} height={52} />
           </div>
           <div>
             <div style={{ color: "#FFF", fontWeight: "bold", fontSize: "15px", marginBottom: "2px", textShadow: "1px 1px 2px rgba(0,0,0,0.4)" }}>

@@ -26,6 +26,7 @@ export class AppRegistry {
         width: 32,
         height: 32,
         draggable: false,
+        unoptimized: true,
       });
 
     this.registerApp({
