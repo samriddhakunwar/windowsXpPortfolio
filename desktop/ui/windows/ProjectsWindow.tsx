@@ -1,6 +1,16 @@
 "use client";
 
-const projects = [
+type Project = {
+  id: string;
+  title: string;
+  description: string;
+  technologies: string[];
+  github?: string;
+  liveDemo?: string;
+  image?: string;
+};
+
+const projects: Project[] = [
   {
     id: "hospital-management",
     title: "Hospital Management System Backend",
