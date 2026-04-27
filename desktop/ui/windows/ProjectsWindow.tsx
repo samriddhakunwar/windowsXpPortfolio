@@ -1,6 +1,62 @@
 "use client";
 
-import { projects } from "@/data/projects";
+const projects = [
+  {
+    id: "hospital-management",
+    title: "Hospital Management System Backend",
+    description: "A backend system built with Django REST Framework for managing hospital operations including patients, doctors, appointments, and authentication.",
+    technologies: ["Django", "Python", "PostgreSQL"],
+    github: "https://github.com/samriddhakunwar/hospitalmanagementsystembackend",
+    image: "/assets/project_hospital.png",
+  },
+  {
+    id: "daraz-clone",
+    title: "Daraz Clone",
+    description: "A full-stack eCommerce web application inspired by Daraz with product listings, cart functionality, and modern UI.",
+    technologies: ["React", "JavaScript", "Node.js"],
+    github: "https://github.com/samriddhakunwar/daraz-clone",
+    image: "/assets/project_daraz.png",
+  },
+  {
+    id: "sales-insights",
+    title: "Sales Insights Data Analysis",
+    description: "Data analysis project using Python to extract insights from sales data, including visualization and business intelligence metrics.",
+    technologies: ["Python", "Pandas"],
+    github: "https://github.com/samriddhakunwar/sales-insights-data-analysis",
+    image: "/assets/project_sales.png",
+  },
+  {
+    id: "ecommerce-pipeline",
+    title: "E-commerce Data Pipeline",
+    description: "A data pipeline for processing and analyzing eCommerce data, handling ETL workflows and structured storage.",
+    technologies: ["Python", "Pandas", "MongoDB"],
+    github: "https://github.com/samriddhakunwar/ecommerce-data-pipeline",
+    image: "/assets/project_pipeline.png",
+  },
+  {
+    id: "valentines-special",
+    title: "Valentine's Special Project",
+    description: "A creative interactive web project designed for Valentine's Day with animations and engaging UI.",
+    technologies: ["HTML", "CSS", "JavaScript"],
+    github: "https://github.com/samriddhakunwar/valentinesSpecial",
+    image: "/assets/project_valentines.png",
+  },
+  {
+    id: "url-slice",
+    title: "URL Slice (Django + FastAPI)",
+    description: "A URL shortening service built using Django and FastAPI, focusing on performance and scalable API design.",
+    technologies: ["Django", "FastAPI", "Python"],
+    github: "https://github.com/samriddhakunwar/url-slice-django-fastapi",
+    image: "/assets/project_urlslice.png",
+  },
+  {
+    id: "monkey-pose",
+    title: "Monkey Pose Detection with OpenCV",
+    description: "A computer vision project using OpenCV to detect and analyze monkey poses in real-time video streams.",
+    technologies: ["Python", "OpenCV"],
+    github: "https://github.com/samriddhakunwar/MonkeyPoseWithOpenCV",
+  },
+];
 import React, { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
