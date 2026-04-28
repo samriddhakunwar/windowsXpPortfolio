@@ -32,8 +32,8 @@ export class AppRegistry {
     this.registerApp({
       id: "about",
       title: "About Me",
-      defaultWidth: 600,
-      defaultHeight: 420,
+      defaultWidth: 700,
+      defaultHeight: 520,
       component: lazy(() =>
         import("@/desktop/ui/windows/AboutWindow").then((m) => ({
           default: m.AboutWindow,
@@ -54,20 +54,6 @@ export class AppRegistry {
         }))
       ),
       icon: icon("/assets/folder_program.png", "Projects"),
-      launchable: true,
-    });
-
-    this.registerApp({
-      id: "skills",
-      title: "Skills",
-      defaultWidth: 650,
-      defaultHeight: 460,
-      component: lazy(() =>
-        import("@/desktop/ui/windows/SkillsWindow").then((m) => ({
-          default: m.SkillsWindow,
-        }))
-      ),
-      icon: icon("/assets/help.png", "Skills"),
       launchable: true,
     });
 

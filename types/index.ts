@@ -1,7 +1,6 @@
 export type WindowType =
   | "about"
   | "projects"
-  | "skills"
   | "contact"
   | "resume"
   | "mycomputer"

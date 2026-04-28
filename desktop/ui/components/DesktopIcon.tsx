@@ -7,7 +7,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 const APP_DESCRIPTIONS: Partial<Record<WindowType, string>> = {
   about:      "Learn more about Samriddha",
   projects:   "Browse my portfolio projects",
-  skills:     "View my technical skill set",
   contact:    "Send me a message",
   resume:     "View & download my CV",
   mycomputer: "Browse files & folders",
