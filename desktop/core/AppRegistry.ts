@@ -113,19 +113,6 @@ export class AppRegistry {
       launchable: true,
     });
 
-    this.registerApp({
-      id: "settings",
-      title: "Settings",
-      defaultWidth: 560,
-      defaultHeight: 420,
-      component: lazy(() =>
-        import("@/desktop/ui/windows/SettingsWindow").then((m) => ({
-          default: m.SettingsWindow,
-        }))
-      ),
-      icon: icon("/assets/defaultprog.png", "Settings"),
-      launchable: true,
-    });
 
     this.registerApp({
       id: "help",

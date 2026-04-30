@@ -5,7 +5,6 @@ export type WindowType =
   | "resume"
   | "mycomputer"
   | "github"
-  | "settings"
   | "help"
   | "recycle"
   | "minesweeper";

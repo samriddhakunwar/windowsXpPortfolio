@@ -58,11 +58,8 @@ export default function DesktopPanel({ onShutdown }: DesktopPanelProps) {
     setWallpaper(getWallpaper());
     const onStorage = () => setWallpaper(getWallpaper());
     window.addEventListener("storage", onStorage);
-    // Also poll for changes (settings window writes to localStorage in same tab)
-    const interval = setInterval(() => setWallpaper(getWallpaper()), 1000);
     return () => {
       window.removeEventListener("storage", onStorage);
-      clearInterval(interval);
     };
   }, []);
 
@@ -174,8 +171,8 @@ export default function DesktopPanel({ onShutdown }: DesktopPanelProps) {
     { separator: true as const },
     { label: "About Me", icon: "👤", onClick: () => { launchApp("about"); playSound("open"); } },
     { label: "Contact", icon: "✉", onClick: () => { launchApp("contact"); playSound("open"); } },
-    { label: "Settings", icon: "⚙", onClick: () => { launchApp("settings"); playSound("open"); } },
   ];
+
 
   const getWindowContextItems = (windowId: string) => {
     const win = windows.find((w) => w.id === windowId);

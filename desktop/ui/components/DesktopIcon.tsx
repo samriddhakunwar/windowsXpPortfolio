@@ -11,7 +11,6 @@ const APP_DESCRIPTIONS: Partial<Record<WindowType, string>> = {
   resume:     "View & download my CV",
   mycomputer: "Browse files & folders",
   github:     "My GitHub repositories",
-  settings:   "Customize the desktop",
   help:       "Help & system info",
   recycle:    "Recycle Bin",
 };
