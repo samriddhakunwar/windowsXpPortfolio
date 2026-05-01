@@ -4,6 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { WindowType } from "@/types";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
+// ─── Icon Scale ───────────────────────────────────────────────────────────────
+const ICON_SCALE       = 1.25;
+const BASE_ICON_SIZE   = 32;                                   // px
+const ICON_SIZE        = Math.round(BASE_ICON_SIZE * ICON_SCALE); // 40px
+const WRAPPER_WIDTH    = Math.round(76  * ICON_SCALE);         // 95px
+const LABEL_MAX_WIDTH  = Math.round(68  * ICON_SCALE);         // 85px
+const WRAPPER_PADDING  = `${Math.round(6 * ICON_SCALE)}px ${Math.round(4 * ICON_SCALE)}px`; // 8px 5px
+
 const APP_DESCRIPTIONS: Partial<Record<WindowType, string>> = {
   about:      "Learn more about Samriddha",
   projects:   "Browse my portfolio projects",
@@ -68,7 +76,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
     <div
       ref={ref}
       className="select-none"
-      style={{ width: "76px", padding: "6px 4px", textAlign: "center", cursor: "default", position: "relative" }}
+      style={{ width: `${WRAPPER_WIDTH}px`, padding: WRAPPER_PADDING, textAlign: "center", cursor: "default", position: "relative" }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -88,13 +96,14 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
         }}
       >
         <motion.div
-          className="w-[32px] h-[32px] flex items-center justify-center"
+          className="desktop-icon-img-wrapper flex items-center justify-center"
+          style={{ width: ICON_SIZE, height: ICON_SIZE }}
           animate={
             selected
-              ? { filter: "drop-shadow(0 0 5px rgba(80,160,255,0.9))" }
-              : { filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))" }
+              ? { filter: "drop-shadow(0 0 6px rgba(80,160,255,0.9))" }
+              : { filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.55))" }
           }
-          whileHover={{ filter: "drop-shadow(0 0 6px rgba(80,160,255,0.8))" }}
+          whileHover={{ filter: "drop-shadow(0 0 8px rgba(80,160,255,0.85))" }}
           transition={{ duration: 0.15 }}
         >
           {icon}
@@ -106,7 +115,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
             color: "#FFFFFF",
             textShadow: "1px 1px 2px rgba(0,0,0,0.9), 0 0 3px rgba(0,0,0,0.7)",
             lineHeight: "1.2",
-            maxWidth: "68px",
+            maxWidth: `${LABEL_MAX_WIDTH}px`,
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",

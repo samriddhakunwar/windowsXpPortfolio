@@ -123,6 +123,14 @@ select {
   transition: background var(--transition-fast), color var(--transition-fast);
 }
 
+/* Desktop icon image — force the Next.js <Image> to fill the scaled wrapper */
+.desktop-icon-img-wrapper img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
 /* Icon label selection highlight */
 .xp-icon-label {
   transition: background var(--transition-fast);

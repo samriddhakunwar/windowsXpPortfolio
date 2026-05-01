@@ -211,7 +211,7 @@ export default function DesktopPanel({ onShutdown }: DesktopPanelProps) {
           display: "flex",
           flexDirection: "column",
           flexWrap: "wrap",
-          gap: "4px",
+          gap: "6px",
           maxHeight: "calc(100vh - 56px)",
           alignContent: "flex-start",
           zIndex: 5,
