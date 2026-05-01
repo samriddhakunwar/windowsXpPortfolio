@@ -242,7 +242,7 @@ function DDRow({ children, onClick }: { children: React.ReactNode; onClick?: () 
       {React.Children.map(children, (child) =>
         React.isValidElement(child)
           ? React.cloneElement(child as React.ReactElement<any>, {
-              style: { ...(child as any).props.style, background: hov ? "#3399FF" : "transparent", color: hov ? "#fff" : "inherit" },
+              style: { ...(child as any).props.style, background: hov ? "#316AC5" : "transparent", color: hov ? "#fff" : "#000" },
             })
           : child
       )}
@@ -378,10 +378,12 @@ export const MinesweeperWindow: React.FC = () => {
   const boardH = gameState.rows    * CELL + 6;
 
   const ddMenuStyle: React.CSSProperties = {
-    backgroundColor: "white", position: "absolute", top: "20px", left: 0,
-    boxShadow: "2px 2px 1px rgb(100,100,100)", border: "1px solid gray", padding: "2px",
+    backgroundColor: "#ECE9D8", position: "absolute", top: "20px", left: 0,
+    boxShadow: "2px 2px 4px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.5)",
+    border: "1px solid #7a7a7a", padding: "2px",
     display: "grid", gridTemplateColumns: "18px auto auto 15px", lineHeight: "18px",
     fontSize: "11px", zIndex: 10, whiteSpace: "nowrap", fontFamily: "Tahoma, Arial, sans-serif",
+    color: "#000",
   };
   const cb: React.CSSProperties = { padding: "0 5px", whiteSpace: "nowrap" };
 
