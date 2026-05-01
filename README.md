@@ -343,3 +343,20 @@ The experience should feel like **using Windows XP in the browser**.
 # Repository
 
 https://github.com/samriddhakunwar/windowsXpPortfolio
+
+## Credits
+
+* Inspired by the classic Microsoft Windows XP UI by Microsoft
+* UI/UX inspiration from https://mitchivin.com/
+* Additional inspiration from https://github.com/firwer/winxpsite
+* Icons and visual references based on Windows XP design language
+* Built using Next.js, React, Tailwind CSS, and Framer Motion
+
+## Acknowledgements
+
+Special thanks to:
+
+* The open source community
+* Developers who share creative portfolio ideas
+
+
