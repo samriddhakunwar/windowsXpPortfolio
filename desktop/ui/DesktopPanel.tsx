@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { ContextMenu } from "./components/ContextMenu";
 import { DesktopIcon } from "./components/DesktopIcon";
+import { ShutdownModal, ShutdownAction } from "./components/ShutdownModal";
 import { StartMenu } from "./components/StartMenu";
 import { TaskBar } from "./components/TaskBar";
 import { XPWindow } from "./components/XPWindow";
@@ -31,10 +32,10 @@ function getWallpaper(): string {
 }
 
 interface DesktopPanelProps {
-  onShutdown?: () => void;
+  onShutdownAction?: (action: ShutdownAction) => void;
 }
 
-export default function DesktopPanel({ onShutdown }: DesktopPanelProps) {
+export default function DesktopPanel({ onShutdownAction }: DesktopPanelProps) {
   const {
     windows,
     launchApp,
@@ -50,6 +51,7 @@ export default function DesktopPanel({ onShutdown }: DesktopPanelProps) {
 
   const { playSound } = useSoundSystem();
   const [startMenuOpen, setStartMenuOpen] = useState(false);
+  const [shutdownModalOpen, setShutdownModalOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const [wallpaper, setWallpaper] = useState("/assets/bg.jpg");
 
@@ -277,11 +279,24 @@ export default function DesktopPanel({ onShutdown }: DesktopPanelProps) {
         />
       )}
 
+      {/* Shutdown Modal */}
+      <ShutdownModal
+        isOpen={shutdownModalOpen}
+        onClose={() => setShutdownModalOpen(false)}
+        onAction={(action) => {
+          setShutdownModalOpen(false);
+          onShutdownAction?.(action);
+        }}
+      />
+
       {/* Start Menu */}
       <StartMenu
         isOpen={startMenuOpen}
         onClose={() => setStartMenuOpen(false)}
-        onShutdown={onShutdown}
+        onShutdownRequest={() => {
+          setStartMenuOpen(false);
+          setShutdownModalOpen(true);
+        }}
       />
 
       {/* Taskbar */}

@@ -10,10 +10,10 @@ import { motion, AnimatePresence } from "framer-motion";
 interface StartMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  onShutdown?: () => void;
+  onShutdownRequest?: () => void;
 }
 
-export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdown }) => {
+export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdownRequest }) => {
   const { launchApp } = useDesktop();
   const menuRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -364,8 +364,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                 onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                 onClick={() => {
                   onClose();
-                  // Log off = restart to login (same as shutdown for now)
-                  onShutdown?.();
+                  onShutdownRequest?.();
                 }}
               >
                 <Image src="/assets/logoff.png" alt="Log Off" width={20} height={20} draggable={false} />
@@ -389,7 +388,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                 onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                 onClick={() => {
                   onClose();
-                  onShutdown?.();
+                  onShutdownRequest?.();
                 }}
               >
                 <Image src="/assets/shutdown.png" alt="Turn Off Computer" width={20} height={20} draggable={false} />
