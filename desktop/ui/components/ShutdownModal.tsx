@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 export type ShutdownAction = "turnoff" | "restart" | "standby";
 
@@ -11,16 +11,76 @@ interface ShutdownModalProps {
   onAction: (action: ShutdownAction) => void;
 }
 
-interface OptionButtonProps {
-  icon: React.ReactNode;
-  label: string;
-  color: string;
-  glowColor: string;
-  onClick: () => void;
+// ── Tooltip copy (mirroring XP AHK recreation bubble-tips) ────────────────
+const TIPS: Record<string, { title: string; desc: string }> = {
+  standby: {
+    title: "Stand By",
+    desc: "Places your computer in a low-power state so you can quickly resume working.",
+  },
+  hibernate: {
+    title: "Hibernate",
+    desc: "Saves your session to disk and powers off. Resumes from where you left off.",
+  },
+  turnoff: {
+    title: "Turn Off",
+    desc: "Shuts down Windows so that you can safely turn off the power.",
+  },
+  restart: {
+    title: "Restart",
+    desc: "Closes all programs, restarts Windows, and then starts Windows again.",
+  },
+};
+
+// ── Colour helpers (hex 6-char) ────────────────────────────────────────────
+function lighten(hex: string, t = 0.45): string {
+  const n = parseInt(hex.replace("#", ""), 16);
+  const r = Math.min(255, ((n >> 16) & 0xff) + Math.round(255 * t));
+  const g = Math.min(255, ((n >> 8) & 0xff) + Math.round(255 * t));
+  const b = Math.min(255, (n & 0xff) + Math.round(255 * t));
+  return `rgb(${r},${g},${b})`;
+}
+function darken(hex: string, t = 0.22): string {
+  const n = parseInt(hex.replace("#", ""), 16);
+  const r = Math.max(0, ((n >> 16) & 0xff) - Math.round(255 * t));
+  const g = Math.max(0, ((n >> 8) & 0xff) - Math.round(255 * t));
+  const b = Math.max(0, (n & 0xff) - Math.round(255 * t));
+  return `rgb(${r},${g},${b})`;
 }
 
-const OptionButton: React.FC<OptionButtonProps> = ({ icon, label, color, glowColor, onClick }) => {
-  const [hovered, setHovered] = useState(false);
+// ── OrbButton ──────────────────────────────────────────────────────────────
+interface OrbButtonProps {
+  id: string;
+  label: string;
+  shortcut: string;        // letter to underline
+  icon: React.ReactNode;
+  hex: string;             // base colour
+  glow: string;            // rgba glow
+  isHovered: boolean;
+  isPressed: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  onMouseDown: () => void;
+  onMouseUp: () => void;
+}
+
+const OrbButton: React.FC<OrbButtonProps> = ({
+  label, shortcut, icon, hex, glow,
+  isHovered, isPressed,
+  onMouseEnter, onMouseLeave, onMouseDown, onMouseUp,
+}) => {
+  const orbBg = isPressed
+    ? `radial-gradient(circle at 38% 32%, ${lighten(hex, 0.25)}, ${darken(hex, 0.1)} 55%, ${darken(hex, 0.35)})`
+    : isHovered
+    ? `radial-gradient(circle at 38% 32%, ${lighten(hex, 0.55)}, ${hex} 55%, ${darken(hex, 0.25)})`
+    : `radial-gradient(circle at 38% 32%, ${lighten(hex, 0.38)}, ${darken(hex, 0.05)} 55%, ${darken(hex, 0.28)})`;
+
+  const scale = isPressed ? 0.93 : 1;
+
+  // build label with underlined shortcut letter
+  const idx = label.toLowerCase().indexOf(shortcut.toLowerCase());
+  const labelEl = idx >= 0
+    ? <>{label.slice(0, idx)}<u style={{ textDecorationColor: "inherit" }}>{label[idx]}</u>{label.slice(idx + 1)}</>
+    : label;
 
   return (
     <div
@@ -31,231 +91,304 @@ const OptionButton: React.FC<OptionButtonProps> = ({ icon, label, color, glowCol
         gap: "8px",
         cursor: "pointer",
         userSelect: "none",
+        WebkitUserSelect: "none",
       }}
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
     >
-      {/* Icon circle */}
+      {/* Orb */}
       <div
         style={{
-          width: "64px",
-          height: "64px",
+          width: "68px",
+          height: "68px",
           borderRadius: "50%",
-          background: hovered
-            ? `radial-gradient(circle at 35% 35%, ${lighten(color)}, ${color})`
-            : `radial-gradient(circle at 35% 35%, ${lighten(color, 0.3)}, ${darken(color)})`,
+          background: orbBg,
+          border: `2px solid ${darken(hex, 0.35)}`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          border: `2px solid ${darken(color, 0.3)}`,
-          boxShadow: hovered
-            ? `0 0 18px 4px ${glowColor}, inset 0 1px 3px rgba(255,255,255,0.4)`
-            : `inset 0 1px 3px rgba(255,255,255,0.25), 0 2px 6px rgba(0,0,0,0.4)`,
-          transition: "box-shadow 180ms ease, background 180ms ease, filter 180ms ease",
-          filter: hovered ? "brightness(1.15)" : "brightness(1)",
+          boxShadow: isHovered
+            ? `0 0 22px 6px ${glow}, inset 0 2px 4px rgba(255,255,255,0.45), 0 4px 8px rgba(0,0,0,0.55)`
+            : `inset 0 2px 4px rgba(255,255,255,0.28), 0 3px 7px rgba(0,0,0,0.5)`,
+          transform: `scale(${scale})`,
+          transition: "transform 100ms ease, box-shadow 160ms ease, background 160ms ease",
+          filter: isHovered ? "brightness(1.12)" : "brightness(1)",
+          /* glossy top shine */
+          position: "relative",
+          overflow: "hidden",
         }}
       >
+        {/* shine arc */}
+        <div style={{
+          position: "absolute",
+          top: 0, left: 0, right: 0,
+          height: "50%",
+          borderRadius: "50% 50% 0 0 / 60% 60% 0 0",
+          background: "linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.06) 100%)",
+          pointerEvents: "none",
+        }} />
         {icon}
       </div>
+
       {/* Label */}
       <span
         style={{
           fontSize: "11px",
           fontFamily: "Tahoma, Arial, sans-serif",
-          color: hovered ? "#003087" : "#222",
-          fontWeight: hovered ? "bold" : "normal",
-          transition: "color 150ms ease, font-weight 150ms ease",
-          textDecoration: hovered ? "underline" : "none",
+          color: isHovered ? "#fff" : "rgba(255,255,255,0.88)",
+          fontWeight: isHovered ? "bold" : "normal",
+          textShadow: "0 1px 3px rgba(0,0,0,0.9)",
+          transition: "color 140ms ease",
+          letterSpacing: "0.1px",
         }}
       >
-        {label}
+        {labelEl}
       </span>
     </div>
   );
 };
 
-// Tiny colour helpers (hex only, 6-char)
-function lighten(hex: string, amount = 0.5): string {
-  const n = parseInt(hex.replace("#", ""), 16);
-  const r = Math.min(255, ((n >> 16) & 0xff) + Math.round(255 * amount));
-  const g = Math.min(255, ((n >> 8) & 0xff) + Math.round(255 * amount));
-  const b = Math.min(255, (n & 0xff) + Math.round(255 * amount));
-  return `rgb(${r},${g},${b})`;
-}
-function darken(hex: string, amount = 0.2): string {
-  const n = parseInt(hex.replace("#", ""), 16);
-  const r = Math.max(0, ((n >> 16) & 0xff) - Math.round(255 * amount));
-  const g = Math.max(0, ((n >> 8) & 0xff) - Math.round(255 * amount));
-  const b = Math.max(0, (n & 0xff) - Math.round(255 * amount));
-  return `rgb(${r},${g},${b})`;
-}
-
+// ── Main ShutdownModal ─────────────────────────────────────────────────────
 export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, onAction }) => {
-  // Close on Escape
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [pressed, setPressed] = useState<string | null>(null);
+  const [shift, setShift] = useState(false);
+  const [tipReady, setTipReady] = useState(false);
+  const tipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ── Keyboard ────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => {
+    const down = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+      if (e.key === "Shift") setShift(true);
     };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    const up = (e: KeyboardEvent) => {
+      if (e.key === "Shift") setShift(false);
+    };
+    document.addEventListener("keydown", down);
+    document.addEventListener("keyup", up);
+    return () => {
+      document.removeEventListener("keydown", down);
+      document.removeEventListener("keyup", up);
+      setShift(false);
+    };
   }, [isOpen, onClose]);
 
-  const handleAction = useCallback(
-    (action: ShutdownAction) => {
-      onClose();
-      onAction(action);
-    },
-    [onClose, onAction],
-  );
+  // ── Reset on close ──────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!isOpen) { setHovered(null); setTipReady(false); setPressed(null); }
+  }, [isOpen]);
+
+  // ── Hover helpers ────────────────────────────────────────────────────────
+  const enter = (id: string) => {
+    setHovered(id);
+    setTipReady(false);
+    if (tipTimer.current) clearTimeout(tipTimer.current);
+    tipTimer.current = setTimeout(() => setTipReady(true), 650);
+  };
+  const leave = () => {
+    setHovered(null);
+    setTipReady(false);
+    if (tipTimer.current) clearTimeout(tipTimer.current);
+  };
+
+  const act = useCallback((action: ShutdownAction) => {
+    onClose();
+    onAction(action);
+  }, [onClose, onAction]);
+
+  const standbyId = shift ? "hibernate" : "standby";
+  const tip = hovered ? TIPS[hovered] : null;
 
   return (
     <AnimatePresence>
       {isOpen && (
-        /* ── Fullscreen fixed centering container ────────────────────────── */
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 99998,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {/* ── Overlay (behind modal, same container) ───────────────────── */}
+        // ── Fullscreen centering wrapper (immune to parent overflow/transforms)
+        <div style={{ position: "fixed", inset: 0, zIndex: 99998, display: "flex", alignItems: "center", justifyContent: "center" }}>
+
+          {/* Dimmed blur overlay */}
           <motion.div
-            key="shutdown-overlay"
+            key="so"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.28 }}
             onClick={onClose}
             style={{
-              position: "absolute",
-              inset: 0,
-              background: "rgba(0,0,0,0.55)",
-              backdropFilter: "blur(2px)",
-              WebkitBackdropFilter: "blur(2px)",
+              position: "absolute", inset: 0,
+              background: "rgba(0,0,0,0.62)",
+              backdropFilter: "blur(3px)",
+              WebkitBackdropFilter: "blur(3px)",
             }}
           />
 
-          {/* ── Modal ───────────────────────────────────────────────────── */}
+          {/* Dialog */}
           <motion.div
-            key="shutdown-modal"
+            key="sm"
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            exit={{ opacity: 0, scale: 0.94 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
             style={{
-              position: "relative",
-              zIndex: 1,
-              width: "420px",
+              position: "relative", zIndex: 1,
+              width: "430px",
               fontFamily: "Tahoma, Arial, sans-serif",
-              /* XP window chrome */
-              borderRadius: "6px 6px 4px 4px",
-              border: "2px solid #0831d9",
+              borderRadius: "8px 8px 4px 4px",
+              border: "2px solid #0832cc",
               boxShadow:
-                "0 0 0 1px #fff inset, 4px 4px 20px rgba(0,0,0,0.7), 0 2px 4px rgba(0,0,0,0.5)",
+                "0 0 0 1px rgba(160,200,255,0.35) inset, 8px 8px 36px rgba(0,0,0,0.92), 0 2px 8px rgba(0,0,0,0.7)",
               overflow: "hidden",
             }}
           >
-            {/* ── Title bar ───────────────────────────────────────────── */}
-            <div
-              style={{
-                background:
-                  "linear-gradient(180deg, #2c6fdb 0%, #1a4fc4 8%, #1a4fc4 92%, #1040b8 100%)",
-                padding: "5px 8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "6px",
-                minHeight: "28px",
-              }}
-            >
+
+            {/* ── Title bar ─────────────────────────────────────────── */}
+            <div style={{
+              background: "linear-gradient(180deg, #549ef8 0%, #2461e6 10%, #1848c8 88%, #0f3db4 100%)",
+              padding: "5px 8px 5px 6px",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              minHeight: "28px", userSelect: "none",
+            }}>
               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                {/* XP window icon */}
-                <span style={{ fontSize: "14px" }}>💻</span>
-                <span
-                  style={{
-                    color: "#fff",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
-                    letterSpacing: "0.3px",
-                  }}
-                >
+                <span style={{ fontSize: "14px", lineHeight: 1 }}>💻</span>
+                <span style={{
+                  color: "#fff", fontSize: "12px", fontWeight: "bold",
+                  textShadow: "1px 1px 2px rgba(0,0,0,0.65)", letterSpacing: "0.2px",
+                }}>
                   Turn off computer
                 </span>
               </div>
-
-              {/* Close button */}
               <XPCloseButton onClick={onClose} />
             </div>
 
-            {/* ── Body ────────────────────────────────────────────────── */}
-            <div
-              style={{
-                background: "linear-gradient(180deg, #dce8f8 0%, #c8dcf5 100%)",
-                padding: "28px 20px 20px",
-              }}
-            >
-              {/* Top accent strip */}
-              <div
-                style={{
-                  height: "3px",
-                  background:
-                    "linear-gradient(90deg, transparent, #4a90d9 30%, #1a5cc4 50%, #4a90d9 70%, transparent)",
-                  borderRadius: "2px",
-                  marginBottom: "24px",
-                  opacity: 0.7,
-                }}
-              />
+            {/* ── Body — authentic XP dark-blue gradient ─────────────── */}
+            <div style={{
+              background: "linear-gradient(170deg, #1252a8 0%, #1660bc 30%, #1452a4 68%, #0b3888 100%)",
+              position: "relative",
+            }}>
 
-              {/* Options row */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: "32px",
-                  marginBottom: "28px",
-                }}
-              >
-                <OptionButton
+              {/* XP watermark */}
+              <div style={{
+                position: "absolute", top: 10, right: 14,
+                pointerEvents: "none", userSelect: "none",
+                textAlign: "right", lineHeight: 1.3,
+              }}>
+                <div style={{ fontSize: "8px", color: "rgba(255,255,255,0.22)", letterSpacing: "1.8px" }}>Microsoft</div>
+                <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.18)", fontWeight: "bold", letterSpacing: "0.5px" }}>Windows XP</div>
+              </div>
+
+              {/* Prompt */}
+              <div style={{ padding: "18px 22px 10px" }}>
+                <p style={{
+                  color: "#fff", fontSize: "13px", margin: 0,
+                  fontWeight: "bold", textShadow: "0 1px 4px rgba(0,0,0,0.85)",
+                }}>
+                  What do you want the computer to do?
+                </p>
+                <p style={{
+                  color: "rgba(255,255,255,0.55)", fontSize: "10px", margin: "4px 0 0",
+                  fontStyle: "italic",
+                }}>
+                  Hold <kbd style={{ fontStyle: "normal", background: "rgba(255,255,255,0.12)", padding: "0 4px", borderRadius: "2px", fontSize: "9px" }}>Shift</kbd> to switch Stand By → Hibernate
+                </p>
+              </div>
+
+              {/* Thin divider */}
+              <div style={{
+                height: "1px", margin: "0 18px 16px",
+                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.18) 20%, rgba(255,255,255,0.18) 80%, transparent)",
+              }} />
+
+              {/* Orb buttons */}
+              <div style={{ display: "flex", justifyContent: "center", gap: "28px", padding: "0 18px 4px" }}>
+                <OrbButton
+                  id={standbyId}
+                  label={shift ? "Hibernate" : "Stand By"}
+                  shortcut={shift ? "H" : "S"}
                   icon={<StandByIcon />}
-                  label="Stand By"
-                  color="#d4a017"
-                  glowColor="rgba(255,190,30,0.6)"
-                  onClick={() => handleAction("standby")}
+                  hex="#b88a00"
+                  glow="rgba(255,195,30,0.65)"
+                  isHovered={hovered === standbyId}
+                  isPressed={pressed === "standby"}
+                  onMouseEnter={() => enter(standbyId)}
+                  onMouseLeave={leave}
+                  onMouseDown={() => setPressed("standby")}
+                  onMouseUp={() => { setPressed(null); act("standby"); }}
                 />
-                <OptionButton
-                  icon={<TurnOffIcon />}
+                <OrbButton
+                  id="turnoff"
                   label="Turn Off"
-                  color="#c0392b"
-                  glowColor="rgba(220,50,50,0.6)"
-                  onClick={() => handleAction("turnoff")}
+                  shortcut="U"
+                  icon={<TurnOffIcon />}
+                  hex="#b81a10"
+                  glow="rgba(220,40,40,0.65)"
+                  isHovered={hovered === "turnoff"}
+                  isPressed={pressed === "turnoff"}
+                  onMouseEnter={() => enter("turnoff")}
+                  onMouseLeave={leave}
+                  onMouseDown={() => setPressed("turnoff")}
+                  onMouseUp={() => { setPressed(null); act("turnoff"); }}
                 />
-                <OptionButton
-                  icon={<RestartIcon />}
+                <OrbButton
+                  id="restart"
                   label="Restart"
-                  color="#27ae60"
-                  glowColor="rgba(50,200,90,0.6)"
-                  onClick={() => handleAction("restart")}
+                  shortcut="R"
+                  icon={<RestartIcon />}
+                  hex="#0e7a20"
+                  glow="rgba(30,190,70,0.65)"
+                  isHovered={hovered === "restart"}
+                  isPressed={pressed === "restart"}
+                  onMouseEnter={() => enter("restart")}
+                  onMouseLeave={leave}
+                  onMouseDown={() => setPressed("restart")}
+                  onMouseUp={() => { setPressed(null); act("restart"); }}
                 />
               </div>
 
-              {/* Bottom divider */}
-              <div
-                style={{
-                  height: "1px",
-                  background: "rgba(0,0,100,0.15)",
-                  marginBottom: "12px",
-                }}
-              />
+              {/* Bubble tooltip area — fixed height so layout doesn't jump */}
+              <div style={{ minHeight: "58px", padding: "8px 18px 6px" }}>
+                <AnimatePresence mode="wait">
+                  {hovered && tipReady && tip && (
+                    <motion.div
+                      key={hovered}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 3 }}
+                      transition={{ duration: 0.2 }}
+                      style={{
+                        background: "rgba(255,255,255,0.11)",
+                        border: "1px solid rgba(255,255,255,0.22)",
+                        borderRadius: "4px",
+                        padding: "7px 10px",
+                        backdropFilter: "blur(4px)",
+                      }}
+                    >
+                      <div style={{
+                        color: "#fff", fontSize: "11px", fontWeight: "bold",
+                        marginBottom: "3px", textShadow: "0 1px 2px rgba(0,0,0,0.7)",
+                      }}>
+                        {tip.title}
+                      </div>
+                      <div style={{
+                        color: "rgba(255,255,255,0.75)", fontSize: "10px",
+                        lineHeight: "1.45",
+                      }}>
+                        {tip.desc}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
-              {/* Cancel row */}
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              {/* Bottom bar */}
+              <div style={{
+                background: "rgba(0,0,0,0.22)",
+                borderTop: "1px solid rgba(255,255,255,0.1)",
+                padding: "8px 12px",
+                display: "flex", justifyContent: "flex-end",
+              }}>
                 <XPButton onClick={onClose} label="Cancel" />
               </div>
             </div>
@@ -266,120 +399,81 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
   );
 };
 
-/* ── Sub-components ─────────────────────────────────────────────────────── */
-
+// ── XP title-bar close button ──────────────────────────────────────────────
 const XPCloseButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
-  const [hovered, setHovered] = useState(false);
+  const [h, setH] = useState(false);
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => setH(true)}
+      onMouseLeave={() => setH(false)}
       style={{
-        width: "21px",
-        height: "21px",
-        borderRadius: "3px",
-        border: "1px solid rgba(0,0,0,0.3)",
-        background: hovered
-          ? "linear-gradient(180deg, #f0514e 0%, #d42020 50%, #bc1010 100%)"
-          : "linear-gradient(180deg, #e8625e 0%, #c23030 50%, #a81414 100%)",
-        color: "#fff",
-        fontSize: "11px",
-        fontWeight: "bold",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexShrink: 0,
-        boxShadow: "inset 0 1px 1px rgba(255,255,255,0.3)",
+        width: "21px", height: "21px", borderRadius: "3px",
+        border: "1px solid rgba(0,0,0,0.35)",
+        background: h
+          ? "linear-gradient(180deg,#f05550 0%,#d42020 50%,#be1010 100%)"
+          : "linear-gradient(180deg,#e86260 0%,#c23030 50%,#aa1414 100%)",
+        color: "#fff", fontSize: "11px", fontWeight: "bold",
+        cursor: "pointer", display: "flex", alignItems: "center",
+        justifyContent: "center", flexShrink: 0,
+        boxShadow: "inset 0 1px 1px rgba(255,255,255,0.32)",
         transition: "background 120ms ease",
       }}
-    >
-      ✕
-    </button>
+    >✕</button>
   );
 };
 
+// ── XP push-button (Cancel) ────────────────────────────────────────────────
 const XPButton: React.FC<{ onClick: () => void; label: string }> = ({ onClick, label }) => {
-  const [hovered, setHovered] = useState(false);
+  const [h, setH] = useState(false);
+  const [p, setP] = useState(false);
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => setH(true)}
+      onMouseLeave={() => { setH(false); setP(false); }}
+      onMouseDown={() => setP(true)}
+      onMouseUp={() => setP(false)}
       style={{
-        padding: "3px 18px",
-        fontSize: "11px",
+        padding: "3px 20px", fontSize: "11px",
         fontFamily: "Tahoma, Arial, sans-serif",
-        border: "1px solid #7f9db9",
-        borderRadius: "3px",
+        border: "1px solid #7f9db9", borderRadius: "3px",
         cursor: "pointer",
-        background: hovered
-          ? "linear-gradient(180deg, #dce8f8 0%, #b8cfe8 100%)"
-          : "linear-gradient(180deg, #f4f8fe 0%, #dce8f8 50%, #c8d8f0 100%)",
+        background: p
+          ? "linear-gradient(180deg,#b8ccec 0%,#c8d8f0 100%)"
+          : h
+          ? "linear-gradient(180deg,#dce8f8 0%,#b8cfe8 100%)"
+          : "linear-gradient(180deg,#f4f8fe 0%,#dce8f8 50%,#c8d8f0 100%)",
         color: "#000",
-        boxShadow: hovered
-          ? "inset 0 0 0 1px #316ac5"
-          : "inset 0 1px 0 rgba(255,255,255,0.8)",
-        outline: hovered ? "1px dotted #000" : "none",
+        boxShadow: h ? "inset 0 0 0 1px #316ac5" : "inset 0 1px 0 rgba(255,255,255,0.85)",
+        outline: h ? "1px dotted #000" : "none",
         outlineOffset: "-3px",
-        transition: "background 120ms ease, box-shadow 120ms ease",
+        transform: p ? "translateY(1px)" : "none",
+        transition: "background 100ms ease, box-shadow 100ms ease, transform 60ms ease",
       }}
-    >
-      {label}
-    </button>
+    >{label}</button>
   );
 };
 
-/* ── SVG Icons ──────────────────────────────────────────────────────────── */
-
+// ── SVG Icons ──────────────────────────────────────────────────────────────
 const StandByIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-    <circle cx="16" cy="16" r="11" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-    <path
-      d="M16 8 L16 16"
-      stroke="rgba(255,255,255,0.9)"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-    />
-    <path
-      d="M10 11 A9 9 0 1 0 22 11"
-      stroke="rgba(255,255,255,0.85)"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      fill="none"
-    />
+  <svg width="34" height="34" viewBox="0 0 32 32" fill="none">
+    <circle cx="16" cy="16" r="11" stroke="rgba(255,255,255,0.45)" strokeWidth="1.4" />
+    <path d="M16 8 L16 16" stroke="rgba(255,255,255,0.92)" strokeWidth="2.6" strokeLinecap="round" />
+    <path d="M10 11 A9 9 0 1 0 22 11" stroke="rgba(255,255,255,0.82)" strokeWidth="2.3" strokeLinecap="round" fill="none" />
   </svg>
 );
 
 const TurnOffIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-    <circle cx="16" cy="16" r="9" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-    <path
-      d="M16 7 L16 17"
-      stroke="rgba(255,255,255,0.95)"
-      strokeWidth="2.8"
-      strokeLinecap="round"
-    />
-    <path
-      d="M10.5 10.5 A9 9 0 1 0 21.5 10.5"
-      stroke="rgba(255,255,255,0.9)"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      fill="none"
-    />
+  <svg width="34" height="34" viewBox="0 0 32 32" fill="none">
+    <path d="M10.5 10.5 A9 9 0 1 0 21.5 10.5" stroke="rgba(255,255,255,0.88)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+    <path d="M16 7 L16 18" stroke="rgba(255,255,255,0.96)" strokeWidth="2.9" strokeLinecap="round" />
   </svg>
 );
 
 const RestartIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-    <path
-      d="M22 16 A7 7 0 1 1 18 9.8"
-      stroke="rgba(255,255,255,0.9)"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      fill="none"
-    />
-    <polygon points="17,7 22,10 17,13" fill="rgba(255,255,255,0.9)" />
+  <svg width="34" height="34" viewBox="0 0 32 32" fill="none">
+    <path d="M22 16 A7 7 0 1 1 18 9.8" stroke="rgba(255,255,255,0.9)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+    <polygon points="17,7 23,10.5 17,14" fill="rgba(255,255,255,0.92)" />
   </svg>
 );
