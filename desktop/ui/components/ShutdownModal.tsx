@@ -113,8 +113,18 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* ── Overlay ─────────────────────────────────────────────────── */}
+        /* ── Fullscreen fixed centering container ────────────────────────── */
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 99998,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {/* ── Overlay (behind modal, same container) ───────────────────── */}
           <motion.div
             key="shutdown-overlay"
             initial={{ opacity: 0 }}
@@ -123,28 +133,24 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
             transition={{ duration: 0.25 }}
             onClick={onClose}
             style={{
-              position: "fixed",
+              position: "absolute",
               inset: 0,
               background: "rgba(0,0,0,0.55)",
               backdropFilter: "blur(2px)",
               WebkitBackdropFilter: "blur(2px)",
-              zIndex: 99998,
             }}
           />
 
           {/* ── Modal ───────────────────────────────────────────────────── */}
           <motion.div
             key="shutdown-modal"
-            initial={{ opacity: 0, scale: 0.93, y: -12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.93, y: -8 }}
-            transition={{ type: "spring", stiffness: 380, damping: 28, mass: 0.8 }}
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
             style={{
-              position: "fixed",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              zIndex: 99999,
+              position: "relative",
+              zIndex: 1,
               width: "420px",
               fontFamily: "Tahoma, Arial, sans-serif",
               /* XP window chrome */
@@ -254,7 +260,7 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
               </div>
             </div>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );

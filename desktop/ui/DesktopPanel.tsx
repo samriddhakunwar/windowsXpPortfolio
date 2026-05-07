@@ -189,6 +189,7 @@ export default function DesktopPanel({ onShutdownAction }: DesktopPanelProps) {
   };
 
   return (
+    <>
     <div
       onClick={handleDesktopClick}
       onContextMenu={handleDesktopContextMenu}
@@ -279,16 +280,6 @@ export default function DesktopPanel({ onShutdownAction }: DesktopPanelProps) {
         />
       )}
 
-      {/* Shutdown Modal */}
-      <ShutdownModal
-        isOpen={shutdownModalOpen}
-        onClose={() => setShutdownModalOpen(false)}
-        onAction={(action) => {
-          setShutdownModalOpen(false);
-          onShutdownAction?.(action);
-        }}
-      />
-
       {/* Start Menu */}
       <StartMenu
         isOpen={startMenuOpen}
@@ -309,5 +300,16 @@ export default function DesktopPanel({ onShutdownAction }: DesktopPanelProps) {
         startMenuOpen={startMenuOpen}
       />
     </div>
+
+      {/* Shutdown Modal — outside overflow:hidden desktop div for perfect centering */}
+      <ShutdownModal
+        isOpen={shutdownModalOpen}
+        onClose={() => setShutdownModalOpen(false)}
+        onAction={(action) => {
+          setShutdownModalOpen(false);
+          onShutdownAction?.(action);
+        }}
+      />
+    </>
   );
 }
