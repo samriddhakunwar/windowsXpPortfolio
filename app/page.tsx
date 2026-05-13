@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import WindowsXPLogin from "./components/WindowsXPLogin";
 import WelcomePage from "./components/page";
+import XPShutdownScreen from "./components/XPShutdownScreen";
 
 type Stage = "boot" | "login" | "welcome" | "desktop";
 
@@ -123,52 +124,31 @@ export default function Home() {
   // ── Render ───────────────────────────────────────────────────────────────
   return (
     <>
-      {/* ── Fullscreen shutdown/standby overlay ─────────────────────── */}
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: overlayBg,
-          opacity: overlayOpacity,
-          pointerEvents: overlayPointerEvents as React.CSSProperties["pointerEvents"],
-          transition: overlayTransition,
-          zIndex: 999997,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "16px",
-        }}
-      >
-        {/* Shutting down / Restarting text */}
-        {(shutdownScreen?.kind === "turnoff" || shutdownScreen?.kind === "restart") && (
-          <div
-            style={{
-              opacity: screenVisible ? 1 : 0,
-              transform: screenVisible ? "translateY(0)" : "translateY(8px)",
-              transition: "opacity 0.6s ease 0.8s, transform 0.6s ease 0.8s",
-              textAlign: "center",
-            }}
-          >
-            <p
-              style={{
-                color: "#ffffff",
-                fontSize: "20px",
-                fontFamily: "Tahoma, Arial, sans-serif",
-                fontWeight: "normal",
-                letterSpacing: "0.5px",
-                margin: 0,
-              }}
-            >
-              {shutdownScreen.kind === "restart" ? "Restarting..." : "Shutting down..."}
-            </p>
-            {/* Loading dots */}
-            <LoadingDots />
-          </div>
-        )}
+      {/* ── Authentic XP shutdown screen (turnoff / restart) ─────────── */}
+      {(shutdownScreen?.kind === "turnoff" || shutdownScreen?.kind === "restart") && (
+        <XPShutdownScreen
+          visible={screenVisible}
+          mode={shutdownScreen.kind}
+        />
+      )}
 
-        {/* Stand By hint */}
-        {shutdownScreen?.kind === "standby" && (
+      {/* ── Standby fullscreen black overlay ─────────────────────────── */}
+      {shutdownScreen?.kind === "standby" && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: overlayBg,
+            opacity: overlayOpacity,
+            pointerEvents: overlayPointerEvents as React.CSSProperties["pointerEvents"],
+            transition: overlayTransition,
+            zIndex: 999997,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <p
             style={{
               color: "rgba(255,255,255,0.25)",
@@ -182,8 +162,8 @@ export default function Home() {
           >
             Press any key or click to wake
           </p>
-        )}
-      </div>
+        </div>
+      )}
 
       {stage === "boot" && <LoadingScreen />}
       {stage === "login" && (
@@ -197,28 +177,5 @@ export default function Home() {
   );
 }
 
-// ── Animated loading dots ────────────────────────────────────────────────────
-function LoadingDots() {
-  const [dots, setDots] = useState(0);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDots((d) => (d + 1) % 4);
-    }, 500);
-    return () => clearInterval(interval);
-  }, []);
 
-  return (
-    <p
-      style={{
-        color: "rgba(255,255,255,0.7)",
-        fontSize: "14px",
-        fontFamily: "Tahoma, Arial, sans-serif",
-        marginTop: "8px",
-        letterSpacing: "4px",
-        minHeight: "20px",
-      }}
-    >
-      {"•".repeat(dots)}
-    </p>
-  );
-}
+
