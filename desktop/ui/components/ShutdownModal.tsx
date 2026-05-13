@@ -41,41 +41,7 @@ const WinLogo = () => (
   </svg>
 );
 
-// ── XP title-bar close button ────────────────────────────────────────────────
-const XPClose: React.FC<{ onClick: () => void }> = ({ onClick }) => {
-  const [h, setH] = useState(false);
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setH(true)}
-      onMouseLeave={() => setH(false)}
-      aria-label="Close"
-      style={{
-        width: "13px",
-        height: "13px",
-        borderRadius: "2px",
-        border: "1px solid rgba(0,0,0,0.6)",
-        background: h
-          ? "linear-gradient(180deg,#f07070 0%,#cc2020 100%)"
-          : "linear-gradient(180deg,#d85050 0%,#a81010 100%)",
-        color: "#fff",
-        fontSize: "7px",
-        fontWeight: "bold",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexShrink: 0,
-        padding: 0,
-        fontFamily: "Tahoma, Arial, sans-serif",
-        lineHeight: 1,
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.3)",
-      }}
-    >
-      ✕
-    </button>
-  );
-};
+
 
 // ── XP Cancel push-button ────────────────────────────────────────────────────
 const XPButton: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick }) => {
@@ -309,20 +275,17 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
             {/* ── Title bar ──────────────────────────────────────────────── */}
             <div
               style={{
-                background:
-                  "linear-gradient(180deg,#4d94f0 0%,#2565e0 8%,#1a52cc 88%,#1040b4 100%)",
+                background: "#003399",
                 padding: "0 4px 0 5px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                height: "22px",
+                height: "36px",
                 userSelect: "none",
                 boxSizing: "border-box",
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
-                {/* Small monitor icon */}
-                <span style={{ fontSize: "11px", lineHeight: 1 }}>🖥️</span>
                 <span
                   style={{
                     color: "#fff",
@@ -335,46 +298,25 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                   Turn off computer
                 </span>
               </div>
-              <div style={{ display: "flex", gap: "2px", alignItems: "center" }}>
-                <XPClose onClick={onClose} />
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img
+                  src="/img/logo-small.png"
+                  alt="Windows XP"
+                  width={30}
+                  height={30}
+                  draggable={false}
+                  style={{ display: "block", pointerEvents: "none" }}
+                />
               </div>
             </div>
 
             {/* ── Body — authentic XP blue ────────────────────────────────── */}
             <div
               style={{
-                background: "#3a6ea5",
+                background: "#98B6F5",
                 position: "relative",
               }}
             >
-              {/* Windows logo — top right */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: "6px",
-                  right: "8px",
-                  opacity: 0.88,
-                  pointerEvents: "none",
-                }}
-              >
-                <WinLogo />
-              </div>
-
-              {/* "What do you want the computer to do?" heading */}
-              <div style={{ padding: "7px 12px 4px 12px" }}>
-                <p
-                  style={{
-                    color: "#fff",
-                    fontSize: "11px",
-                    fontWeight: "bold",
-                    margin: 0,
-                    textShadow: "0 1px 1px rgba(0,0,0,0.6)",
-                  }}
-                >
-                  What do you want the computer to do?
-                </p>
-              </div>
-
               {/* Subtle separator line */}
               <div
                 style={{
@@ -477,7 +419,7 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
               {/* ── Footer bar — slightly darker blue with Cancel ─────────── */}
               <div
                 style={{
-                  background: "#1e4d8c",
+                  background: "#003399",
                   borderTop: "1px solid #0d3066",
                   padding: "5px 8px 6px",
                   display: "flex",
