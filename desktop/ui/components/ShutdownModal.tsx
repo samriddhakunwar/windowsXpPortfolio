@@ -92,6 +92,7 @@ interface OrbBtnProps {
   imgSrc: string;
   hovered: boolean;
   pressed: boolean;
+  disabled?: boolean;
   onEnter: () => void;
   onLeave: () => void;
   onDown: () => void;
@@ -100,7 +101,7 @@ interface OrbBtnProps {
 
 const OrbButton: React.FC<OrbBtnProps> = ({
   label, shortcutChar, imgSrc,
-  hovered, pressed, onEnter, onLeave, onDown, onUp,
+  hovered, pressed, disabled, onEnter, onLeave, onDown, onUp,
 }) => {
   const idx = label.toLowerCase().indexOf(shortcutChar.toLowerCase());
   const labelEl =
@@ -119,15 +120,19 @@ const OrbButton: React.FC<OrbBtnProps> = ({
         flexDirection: "column",
         alignItems: "center",
         gap: "4px",
-        cursor: "pointer",
+        cursor: disabled ? "not-allowed" : "pointer",
         userSelect: "none",
         WebkitUserSelect: "none",
         width: "64px",
+        pointerEvents: disabled ? "none" : "auto",
+        opacity: disabled ? 0.45 : 1,
+        filter: disabled ? "grayscale(100%)" : "none",
+        transition: "opacity 0.15s, filter 0.15s",
       }}
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-      onMouseDown={onDown}
-      onMouseUp={onUp}
+      onMouseEnter={disabled ? undefined : onEnter}
+      onMouseLeave={disabled ? undefined : onLeave}
+      onMouseDown={disabled ? undefined : onDown}
+      onMouseUp={disabled ? undefined : onUp}
     >
       {/* PNG icon */}
       <img
@@ -139,10 +144,10 @@ const OrbButton: React.FC<OrbBtnProps> = ({
         style={{
           borderRadius: "8px",
           display: "block",
-          opacity: pressed ? 0.75 : hovered ? 1 : 0.92,
-          transform: pressed ? "scale(0.93)" : hovered ? "scale(1.06)" : "scale(1)",
+          opacity: disabled ? 1 : pressed ? 0.75 : hovered ? 1 : 0.92,
+          transform: disabled ? "none" : pressed ? "scale(0.93)" : hovered ? "scale(1.06)" : "scale(1)",
           transition: "transform 80ms ease, opacity 80ms ease",
-          boxShadow: hovered
+          boxShadow: disabled ? "none" : hovered
             ? "0 2px 6px rgba(0,0,0,0.55)"
             : "0 1px 3px rgba(0,0,0,0.4)",
           flexShrink: 0,
@@ -184,9 +189,7 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
       if (e.key === "Shift") setShift(true);
       const k = e.key.toLowerCase();
       if (k === "c") onClose();
-      if (k === "u") { onClose(); onAction("turnoff"); }
       if (k === "r") { onClose(); onAction("restart"); }
-      if (k === "s" && !shift) { onClose(); onAction("standby"); }
     };
     const up = (e: KeyboardEvent) => { if (e.key === "Shift") setShift(false); };
     document.addEventListener("keydown", down);
@@ -336,7 +339,7 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                   padding: "10px 12px 6px",
                 }}
               >
-                {/* Stand By */}
+                {/* Stand By — disabled */}
                 <OrbButton
                   id={standbyId}
                   label={shift ? "Hibernate" : "Stand By"}
@@ -344,13 +347,14 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                   imgSrc="/assets/logoff.png"
                   hovered={hovered === standbyId}
                   pressed={pressed === "standby"}
+                  disabled={true}
                   onEnter={() => handleEnter(standbyId)}
                   onLeave={handleLeave}
                   onDown={() => setPressed("standby")}
                   onUp={() => { setPressed(null); act("standby"); }}
                 />
 
-                {/* Turn Off */}
+                {/* Turn Off — disabled */}
                 <OrbButton
                   id="turnoff"
                   label="Turn Off"
@@ -358,6 +362,7 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                   imgSrc="/assets/shutdown.png"
                   hovered={hovered === "turnoff"}
                   pressed={pressed === "turnoff"}
+                  disabled={true}
                   onEnter={() => handleEnter("turnoff")}
                   onLeave={handleLeave}
                   onDown={() => setPressed("turnoff")}
