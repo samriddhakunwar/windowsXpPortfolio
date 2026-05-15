@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import "./LoadingScreen.css"
 export default function LoadingScreen() {
   return (
@@ -10,6 +11,7 @@ export default function LoadingScreen() {
           <div className="windows__logo--inner green" />
           <div className="windows__logo--inner blue" />
           <div className="windows__logo--inner yellow" />
+          {/* <Image src="/img/logo-small.png" alt="logo" width={200} height={200} /> */}
         </div>
 
         <div className="windows__name">
