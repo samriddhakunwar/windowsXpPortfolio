@@ -79,7 +79,7 @@ export const TaskBar: React.FC<TaskbarProps> = ({
         }}
       >
         <Image
-          src="/assets/winlogo.png"
+          src="/img/logo-small.png"
           alt="Windows"
           width={20}
           height={20}
