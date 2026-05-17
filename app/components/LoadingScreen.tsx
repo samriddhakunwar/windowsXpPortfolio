@@ -19,6 +19,9 @@ export default function LoadingScreen() {
           <div className="windows__name--inner">
             Samriddha<span>xp</span>
           </div>
+          <div className="windows__name--edition">
+            Portfolio Edition
+          </div>
         </div>
 
         <div className="windows__bg--loading">

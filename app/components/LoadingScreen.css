@@ -99,6 +99,13 @@
   bottom: 2.8vw;
 }
 
+.windows__name--edition {
+  font-size: 4.0vw;
+  font-weight: normal;
+  color: white;
+  margin-top: -0.5vw;
+}
+
 .windows__bg--loading {
   width: 20vw;
   height: 2.5vw;
