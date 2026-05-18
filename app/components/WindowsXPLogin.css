@@ -216,10 +216,24 @@ body {
 }
 
 #logo {
-  width: var(--logo-size);
+  width: clamp(80px, 12vw, var(--logo-size));
+  height: auto;
   display: block;
-  margin: 20px auto;
-  transform: translateX(300px); /* adjust this value */
+}
+
+#centerLogo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--logo-text-gap);
+}
+
+#text-under-logo {
+  font-size: clamp(10px, 1.2vw, var(--message-font-size));
+  text-align: right;
+  max-width: clamp(160px, 20vw, 260px);
+  line-height: 1.4;
+  opacity: 0.9;
 }
 
 .user-name a,
@@ -268,7 +282,11 @@ body {
   /* Positioning */
   flex: 1 1 0px;
   /* Child Positioning */
-  text-align: end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  padding-right: 2%;
 }
 
 #centerDivider {
