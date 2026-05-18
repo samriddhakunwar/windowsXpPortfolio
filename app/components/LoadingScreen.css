@@ -136,3 +136,28 @@
 @keyframes loading {
   to { left: 20vw; }
 }
+
+.windows__footer {
+  position: absolute;
+  bottom: 1.8vw;
+  left: 2vw;
+  right: 2vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  color: #9ea8b8;
+  font-size: 1.1vw;
+}
+
+.windows__footer--right {
+  font-weight: bold;
+  font-size: 1.3vw;
+  letter-spacing: 0.02em;
+}
+
+.windows__footer--reg {
+  font-size: 0.75em;
+  vertical-align: super;
+  font-weight: normal;
+}

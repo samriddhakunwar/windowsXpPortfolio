@@ -33,6 +33,11 @@ export default function LoadingScreen() {
         </div>
 
       </div>
+
+      <div className="windows__footer">
+        <span className="windows__footer--left">made as a fun and nostalgic way to showcase my portfolio</span>
+        <span className="windows__footer--right">samsoft<span className="windows__footer--reg">®</span></span>
+      </div>
     </div>
   );
 }
