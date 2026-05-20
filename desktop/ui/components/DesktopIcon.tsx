@@ -5,12 +5,14 @@ import { WindowType } from "@/types";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 // ─── Icon Scale ───────────────────────────────────────────────────────────────
-const ICON_SCALE       = 1.25;
+// 1.25 (previous) × 1.25 (this increase) = 1.5625× original base
+const ICON_SCALE       = 1.5625;
 const BASE_ICON_SIZE   = 32;                                   // px
-const ICON_SIZE        = Math.round(BASE_ICON_SIZE * ICON_SCALE); // 40px
-const WRAPPER_WIDTH    = Math.round(76  * ICON_SCALE);         // 95px
-const LABEL_MAX_WIDTH  = Math.round(68  * ICON_SCALE);         // 85px
-const WRAPPER_PADDING  = `${Math.round(6 * ICON_SCALE)}px ${Math.round(4 * ICON_SCALE)}px`; // 8px 5px
+const ICON_SIZE        = Math.round(BASE_ICON_SIZE * ICON_SCALE); // 50px
+const WRAPPER_WIDTH    = Math.round(76  * ICON_SCALE);         // 119px
+const LABEL_MAX_WIDTH  = Math.round(68  * ICON_SCALE);         // 106px
+const WRAPPER_PADDING  = `${Math.round(6 * ICON_SCALE)}px ${Math.round(4 * ICON_SCALE)}px`; // 9px 6px
+const LABEL_FONT_SIZE  = Math.round(11  * ICON_SCALE);         // 17px
 
 const APP_DESCRIPTIONS: Partial<Record<WindowType, string>> = {
   about:      "Learn more about Samriddha",
@@ -111,7 +113,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
         <span
           className="xp-icon-label text-center break-words leading-tight"
           style={{
-            fontSize: "11px",
+            fontSize: `${LABEL_FONT_SIZE}px`,
             color: "#FFFFFF",
             textShadow: "1px 1px 2px rgba(0,0,0,0.9), 0 0 3px rgba(0,0,0,0.7)",
             lineHeight: "1.2",
