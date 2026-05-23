@@ -17,8 +17,9 @@
 }
 
 .windows__logo {
-  width: 18vw;
+  width: 15vw;
   margin-bottom: -1.2vw;
+  float: right;
 }
 
 .winxp-logo-img {
@@ -34,13 +35,13 @@
 }
 
 .windows__name p {
-  font-size: 1.8vw;
+  font-size: 1.2vw;
   margin: 0;
   letter-spacing: 0.01em;
 }
 
 .windows__name--inner {
-  font-size: 6vw;
+  font-size: 4vw;
   font-weight: bold;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -48,7 +49,7 @@
 
 .windows__name--inner span {
   color: #c3441d;
-  font-size: 4.8vw;
+  font-size: 3vw;
   position: relative;
   bottom: 2.2vw;
 }
@@ -62,8 +63,8 @@
 }
 
 .windows__bg--loading {
-  width: 20vw;
-  height: 2.5vw;
+  width: 15vw;
+  height: 1.5vw;
   border: 0.2vw solid #878787;
   margin: 2.5vw auto 0;
   border-radius: 0.5vw;
