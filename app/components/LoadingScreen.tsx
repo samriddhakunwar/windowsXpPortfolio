@@ -1,25 +1,28 @@
 "use client";
 import Image from "next/image";
+import winxpLogo from "../assets/windowsxplogo.png"; // put the image file next to this component
 import "./LoadingScreen.css";
-import winxpLogo from "../assets/windowsxplogo.png";// put the image file next to this component
 
 export default function LoadingScreen() {
   return (
     <div className="windows__bg">
       <div className="windows__bg--inner">
-
         <div className="windows__logo">
-          <Image src={winxpLogo} alt="Windows XP Logo" className="winxp-logo-img" />
+          <Image
+            src={winxpLogo}
+            alt="Windows XP Logo"
+            className="winxp-logo-img"
+          />
         </div>
 
         <div className="windows__name">
-          <p>Samhard<span>®</span></p>
+          <span className="windows__footer--right">
+            Samhard<span className="windows__footer--reg">®</span>
+          </span>
           <div className="windows__name--inner">
             Samriddha<span>xp</span>
           </div>
-          <div className="windows__name--edition">
-            Portfolio Edition
-          </div>
+          <div className="windows__name--edition">Portfolio Edition</div>
         </div>
 
         <div className="windows__bg--loading">
@@ -29,12 +32,15 @@ export default function LoadingScreen() {
             <li />
           </ul>
         </div>
-
       </div>
 
       <div className="windows__footer">
-        <span className="windows__footer--left">made as a fun and nostalgic way to showcase my portfolio</span>
-        <span className="windows__footer--right">samhard<span className="windows__footer--reg">®</span></span>
+        <span className="windows__footer--left">
+          made as a fun and nostalgic way to showcase my portfolio
+        </span>
+        <span className="windows__footer--right">
+          Samhard<span className="windows__footer--reg">®</span>
+        </span>
       </div>
     </div>
   );
