@@ -1,17 +1,15 @@
 "use client";
 import Image from "next/image";
-import "./LoadingScreen.css"
+import "./LoadingScreen.css";
+import winxpLogo from "../assets/windowsxplogo.png";// put the image file next to this component
+
 export default function LoadingScreen() {
   return (
     <div className="windows__bg">
       <div className="windows__bg--inner">
 
         <div className="windows__logo">
-          <div className="windows__logo--inner red" />
-          <div className="windows__logo--inner green" />
-          <div className="windows__logo--inner blue" />
-          <div className="windows__logo--inner yellow" />
-          {/* <Image src="/img/logo-small.png" alt="logo" width={200} height={200} /> */}
+          <Image src={winxpLogo} alt="Windows XP Logo" className="winxp-logo-img" />
         </div>
 
         <div className="windows__name">
