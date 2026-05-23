@@ -13,7 +13,7 @@ export default function LoadingScreen() {
         </div>
 
         <div className="windows__name">
-          <p>Samhard<span>©</span></p>
+          <p>Samhard<span>®</span></p>
           <div className="windows__name--inner">
             Samriddha<span>xp</span>
           </div>
@@ -34,7 +34,7 @@ export default function LoadingScreen() {
 
       <div className="windows__footer">
         <span className="windows__footer--left">made as a fun and nostalgic way to showcase my portfolio</span>
-        <span className="windows__footer--right">samsoft<span className="windows__footer--reg">®</span></span>
+        <span className="windows__footer--right">samhard<span className="windows__footer--reg">®</span></span>
       </div>
     </div>
   );
