@@ -20,6 +20,9 @@
   width: 15vw;
   margin-bottom: -1.2vw;
   float: right;
+  position: relative;
+  left: 3vw;
+  top: 1.65vw;
 }
 
 .winxp-logo-img {
