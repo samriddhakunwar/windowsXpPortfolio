@@ -478,7 +478,7 @@ export const AboutWindow: React.FC = () => {
           {[
             { label: "GitHub",   href: "https://github.com/samriddhakunwar",      icon: "/assets/github.png" },
             { label: "LinkedIn", href: "https://linkedin.com/in/samriddhakunwar", icon: "/assets/linkedin.png" },
-            { label: "Resume",   href: "/Cv-for-website.pdf",                     icon: "/assets/doc.png" },
+            { label: "Resume",   href: "/resume.pdf",                     icon: "/assets/doc.png" },
           ].map((link) => (
             <a
               key={link.label}
