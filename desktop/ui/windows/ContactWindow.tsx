@@ -115,7 +115,7 @@ export const ContactWindow: React.FC = () => {
       )}
 
       <div style={{ marginBottom: "8px" }}>
-        <label style={{ fontWeight: "bold", display: "block", marginBottom: "3px" }}>
+        <label style={{ fontWeight: "bold", display: "block", marginBottom: "3px", color: "#222222" }}>
           Name
         </label>
         <input
@@ -131,12 +131,15 @@ export const ContactWindow: React.FC = () => {
             padding: "4px 6px",
             fontSize: "11px",
             fontFamily: "Tahoma, Arial, sans-serif",
+            color: "#000000",
+            caretColor: "#000000",
+            background: "#ffffff",
           }}
         />
       </div>
 
       <div style={{ marginBottom: "8px" }}>
-        <label style={{ fontWeight: "bold", display: "block", marginBottom: "3px" }}>
+        <label style={{ fontWeight: "bold", display: "block", marginBottom: "3px", color: "#222222" }}>
           Email
         </label>
         <input
@@ -152,12 +155,15 @@ export const ContactWindow: React.FC = () => {
             padding: "4px 6px",
             fontSize: "11px",
             fontFamily: "Tahoma, Arial, sans-serif",
+            color: "#000000",
+            caretColor: "#000000",
+            background: "#ffffff",
           }}
         />
       </div>
 
       <div style={{ marginBottom: "8px" }}>
-        <label style={{ fontWeight: "bold", display: "block", marginBottom: "3px" }}>
+        <label style={{ fontWeight: "bold", display: "block", marginBottom: "3px", color: "#222222" }}>
           Message
         </label>
         <textarea
@@ -174,6 +180,9 @@ export const ContactWindow: React.FC = () => {
             resize: "none",
             fontSize: "11px",
             fontFamily: "Tahoma, Arial, sans-serif",
+            color: "#000000",
+            caretColor: "#000000",
+            background: "#ffffff",
           }}
         />
       </div>

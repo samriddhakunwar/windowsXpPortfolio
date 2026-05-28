@@ -18,6 +18,18 @@ function getRecipient(): string {
   return email;
 }
 
+// ── From address ─────────────────────────────────────────────────────────────
+// • Set RESEND_FROM_EMAIL to an address on your verified domain for production.
+// • The default "onboarding@resend.dev" works ONLY when sending to the email
+//   address you used to sign up for Resend (i.e. your own account email).
+// • If you get 403 "domain not verified" errors, add RESEND_FROM_EMAIL to
+//   .env.local with an address from a domain you've verified in Resend.
+function getFromAddress(): string {
+  return (
+    process.env.RESEND_FROM_EMAIL ?? "Portfolio Contact <onboarding@resend.dev>"
+  );
+}
+
 // ── Input validation ─────────────────────────────────────────────────────────
 function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -111,7 +123,7 @@ export async function POST(req: NextRequest) {
     const recipient = getRecipient();
 
     const { error } = await resend.emails.send({
-      from: "Portfolio Contact <onboarding@resend.dev>",
+      from: getFromAddress(),
       to: [recipient],
       replyTo: email.trim(), // raw (validated) email — safe as header value
       subject: `Portfolio Contact: ${safeName}`,
@@ -142,8 +154,24 @@ export async function POST(req: NextRequest) {
     });
 
     if (error) {
-      // Log to server only — never expose provider error details to the client
-      console.error("[contact] Resend error:", error);
+      // Log to server only — never expose provider error details to the client.
+      // Common causes:
+      //   401 → RESEND_API_KEY is invalid or revoked. Regenerate it at
+      //         https://resend.com/api-keys and update .env.local.
+      //   403 → The "from" domain is not verified in Resend. Set
+      //         RESEND_FROM_EMAIL to an address on a verified domain, or
+      //         ensure CONTACT_EMAIL matches your Resend account email when
+      //         using the default onboarding@resend.dev sender.
+      const resendError = error as { statusCode?: number; message?: string };
+      if (resendError.statusCode === 401) {
+        console.error(
+          "[contact] Resend 401 — API key is invalid or revoked. ",
+          "Go to https://resend.com/api-keys, create a new key, and ",
+          "update RESEND_API_KEY in .env.local (and Vercel env vars for prod)."
+        );
+      } else {
+        console.error("[contact] Resend error:", error);
+      }
       return NextResponse.json(
         { error: "Failed to send message. Please try again later." },
         { status: 500, headers: RATE_LIMIT_HEADERS }
