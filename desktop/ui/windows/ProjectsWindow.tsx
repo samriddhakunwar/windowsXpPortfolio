@@ -13,10 +13,10 @@ type Project = {
 const projects: Project[] = [
   {
     id: "hospital-management",
-    title: "Hospital Management System Backend",
-    description: "A backend system built with Django REST Framework for managing hospital operations including patients, doctors, appointments, and authentication.",
-    technologies: ["Django", "Python", "PostgreSQL"],
-    github: "https://github.com/samriddhakunwar/hospitalmanagementsystembackend",
+    title: "Hospital Management System",
+    description: "A full-stack Django web application combining an SEO-optimized public-facing hospital website with a complete internal Hospital Management System.",
+    technologies: ["Django","SQLite","Bootstrap","HTML", "CSS","JavaScript"],
+    github: "https://github.com/samriddhakunwar/hospital_management",
     image: "/assets/project_hospital.png",
   },
   {
@@ -55,7 +55,7 @@ const projects: Project[] = [
     id: "url-slice",
     title: "URL Slice (Django + FastAPI)",
     description: "A URL shortening service built using Django and FastAPI, focusing on performance and scalable API design.",
-    technologies: ["Django", "FastAPI", "Python"],
+    technologies: ["Django", "FastAPI"],
     github: "https://github.com/samriddhakunwar/url-slice-django-fastapi",
     image: "/assets/project_urlslice.png",
   },
@@ -63,21 +63,21 @@ const projects: Project[] = [
     id: "monkey-pose",
     title: "Monkey Pose Detection with OpenCV",
     description: "A computer vision project using OpenCV to detect and analyze monkey poses in real-time video streams.",
-    technologies: ["Python", "OpenCV"],
+    technologies: ["Python.", "OpenCV"],
     github: "https://github.com/samriddhakunwar/MonkeyPoseWithOpenCV",
   },
 ];
-import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
 
-type FilterKey = "All" | "Web" | "AI/ML" | "Tools";
+type FilterKey = "All" | "Web" | "Data Analysis" | "Tools";
 
 const FILTER_MAP: Record<FilterKey, string[]> = {
   All: [],
   Web: ["Django", "React", "Next.js", "JavaScript", "TypeScript", "Node.js", "HTML", "CSS", "Elasticsearch"],
-  "AI/ML": ["Python", "TensorFlow", "OpenCV", "Scikit-learn", "Pandas"],
-  Tools: ["Docker", "Git", "Linux", "MongoDB", "PostgreSQL", "D3.js"],
+  "Data Analysis": ["Python", "Pandas", "NumPy", "Matplotlib", "Seaborn"],
+  Tools: ["Docker", "Git", "MongoDB", "PostgreSQL","OpenCV"],
 };
 
 const containerVariants = {
@@ -109,7 +109,7 @@ export const ProjectsWindow: React.FC = () => {
         p.technologies.some((t) => FILTER_MAP[activeFilter].includes(t))
       );
 
-  const filters: FilterKey[] = ["All", "Web", "AI/ML", "Tools"];
+  const filters: FilterKey[] = ["All", "Web", "Data Analysis", "Tools"];
 
   return (
     <div style={{
