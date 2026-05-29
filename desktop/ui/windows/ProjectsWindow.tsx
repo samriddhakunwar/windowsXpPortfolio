@@ -145,8 +145,8 @@ export const ProjectsWindow: React.FC = () => {
               fontSize: "10px",
               fontWeight: activeFilter === f ? "bold" : "normal",
               background: activeFilter === f
-                ? "linear-gradient(180deg, #D6D3C4 0%, #C0BDB0 100%)"
-                : undefined,
+                ? "linear-gradient(180deg, #0f0f0fff 0%, #0c0c0cff 100%)"
+                : "linear-gradient(180deg, #3b3b3bff 0%, #D8D2BD 100%)",
               borderBottom: activeFilter === f ? "2px solid #316AC5" : undefined,
             }}
           >
