@@ -167,7 +167,7 @@ export default function DesktopPanel({ onShutdownAction }: DesktopPanelProps) {
   const desktopContextItems = [
     { label: "Arrange Icons By", icon: "🗂", onClick: () => {}, disabled: true },
     { separator: true as const },
-    { label: "Refresh", icon: "🔄", onClick: () => window.location.reload() },
+    { label: "Refresh", icon: "🔄", onClick: () => {}, disabled: true },
     { separator: true as const },
     { label: "New Folder", icon: "📁", onClick: () => {}, disabled: true },
     { separator: true as const },
