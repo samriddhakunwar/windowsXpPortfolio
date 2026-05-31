@@ -1,193 +1,50 @@
-import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { NextResponse } from "next/server";
 
-// ── Runtime guard: fail loudly at request-time if env vars are missing ──────
-function getResendClient(): Resend {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) {
-    throw new Error("RESEND_API_KEY environment variable is not set.");
-  }
-  return new Resend(key);
-}
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-function getRecipient(): string {
-  const email = process.env.CONTACT_EMAIL;
-  if (!email) {
-    throw new Error("CONTACT_EMAIL environment variable is not set.");
-  }
-  return email;
-}
-
-// ── From address ─────────────────────────────────────────────────────────────
-// • Set RESEND_FROM_EMAIL to an address on your verified domain for production.
-// • The default "onboarding@resend.dev" works ONLY when sending to the email
-//   address you used to sign up for Resend (i.e. your own account email).
-// • If you get 403 "domain not verified" errors, add RESEND_FROM_EMAIL to
-//   .env.local with an address from a domain you've verified in Resend.
-function getFromAddress(): string {
-  return (
-    process.env.RESEND_FROM_EMAIL ?? "Portfolio Contact <onboarding@resend.dev>"
-  );
-}
-
-// ── Input validation ─────────────────────────────────────────────────────────
-function validateEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-// ── HTML entity escaping — prevents XSS inside the email body ───────────────
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-// ── Rate-limit response headers (informational; real limiting via Vercel/CDN) ─
-const RATE_LIMIT_HEADERS = {
-  "X-RateLimit-Limit": "10",
-  "X-RateLimit-Policy": "10 requests per minute per IP",
-};
-
-// ── Field length limits ───────────────────────────────────────────────────────
-const MAX_NAME_LENGTH = 100;
-const MAX_EMAIL_LENGTH = 254; // RFC 5321 max
-const MAX_MESSAGE_LENGTH = 5000;
-
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    // ── Parse body ──────────────────────────────────────────────────────────
-    let body: unknown;
-    try {
-      body = await req.json();
-    } catch {
+    const { name, email, subject, message } = await req.json();
+
+    if (!name || !email || !message) {
       return NextResponse.json(
-        { error: "Invalid request body." },
-        { status: 400, headers: RATE_LIMIT_HEADERS }
+        { error: "Missing required fields" },
+        { status: 400 }
       );
     }
 
-    if (typeof body !== "object" || body === null) {
-      return NextResponse.json(
-        { error: "Invalid request body." },
-        { status: 400, headers: RATE_LIMIT_HEADERS }
-      );
-    }
-
-    const { name, email, message } = body as Record<string, unknown>;
-
-    // ── Validation ──────────────────────────────────────────────────────────
-    if (
-      !name ||
-      typeof name !== "string" ||
-      name.trim().length < 2 ||
-      name.trim().length > MAX_NAME_LENGTH
-    ) {
-      return NextResponse.json(
-        { error: "Please provide a valid name (2–100 characters)." },
-        { status: 400, headers: RATE_LIMIT_HEADERS }
-      );
-    }
-    if (
-      !email ||
-      typeof email !== "string" ||
-      email.length > MAX_EMAIL_LENGTH ||
-      !validateEmail(email)
-    ) {
-      return NextResponse.json(
-        { error: "Please provide a valid email address." },
-        { status: 400, headers: RATE_LIMIT_HEADERS }
-      );
-    }
-    if (
-      !message ||
-      typeof message !== "string" ||
-      message.trim().length < 10 ||
-      message.trim().length > MAX_MESSAGE_LENGTH
-    ) {
-      return NextResponse.json(
-        { error: `Message must be between 10 and ${MAX_MESSAGE_LENGTH} characters.` },
-        { status: 400, headers: RATE_LIMIT_HEADERS }
-      );
-    }
-
-    // ── Sanitise inputs before embedding into HTML ──────────────────────────
-    const safeName    = escapeHtml(name.trim());
-    const safeEmail   = escapeHtml(email.trim());
-    const safeMessage = escapeHtml(message.trim());
-
-    // ── Send email ──────────────────────────────────────────────────────────
-    const resend    = getResendClient();
-    const recipient = getRecipient();
-
-    const { error } = await resend.emails.send({
-      from: getFromAddress(),
-      to: [recipient],
-      replyTo: email.trim(), // raw (validated) email — safe as header value
-      subject: `Portfolio Contact: ${safeName}`,
+    const data = await resend.emails.send({
+      from: "Portfolio Contact <onboarding@resend.dev>",
+      to: process.env.CONTACT_EMAIL!,
+      subject: subject || `Portfolio Message from ${name}`,
+      replyTo: email,
       html: `
-        <div style="font-family: Tahoma, Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: linear-gradient(180deg, #0997FF 0%, #0048CE 100%); padding: 16px; color: white; border-radius: 4px 4px 0 0;">
-            <h2 style="margin: 0; font-size: 16px;">📬 New Portfolio Contact Message</h2>
-          </div>
-          <div style="background: #ECE9D8; padding: 20px; border: 2px solid #ACA899; border-top: none;">
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr>
-                <td style="padding: 6px 0; font-weight: bold; width: 80px;">From:</td>
-                <td style="padding: 6px 0;">${safeName}</td>
-              </tr>
-              <tr>
-                <td style="padding: 6px 0; font-weight: bold;">Email:</td>
-                <td style="padding: 6px 0;"><a href="mailto:${safeEmail}">${safeEmail}</a></td>
-              </tr>
-            </table>
-            <hr style="margin: 12px 0; border-color: #ACA899;" />
-            <div style="white-space: pre-wrap; line-height: 1.6;">${safeMessage}</div>
-          </div>
-          <div style="background: #DDD; padding: 8px 16px; font-size: 11px; color: #666; border-radius: 0 0 4px 4px;">
-            Sent via Windows XP Portfolio Contact Form
-          </div>
-        </div>
+        <h2>New Portfolio Contact</h2>
+
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Subject:</strong> ${subject || "No Subject"}</p>
+
+        <hr />
+
+        <p>${message.replace(/\n/g, "<br/>")}</p>
       `,
     });
 
-    if (error) {
-      // Log to server only — never expose provider error details to the client.
-      // Common causes:
-      //   401 → RESEND_API_KEY is invalid or revoked. Regenerate it at
-      //         https://resend.com/api-keys and update .env.local.
-      //   403 → The "from" domain is not verified in Resend. Set
-      //         RESEND_FROM_EMAIL to an address on a verified domain, or
-      //         ensure CONTACT_EMAIL matches your Resend account email when
-      //         using the default onboarding@resend.dev sender.
-      const resendError = error as { statusCode?: number; message?: string };
-      if (resendError.statusCode === 401) {
-        console.error(
-          "[contact] Resend 401 — API key is invalid or revoked. ",
-          "Go to https://resend.com/api-keys, create a new key, and ",
-          "update RESEND_API_KEY in .env.local (and Vercel env vars for prod)."
-        );
-      } else {
-        console.error("[contact] Resend error:", error);
-      }
-      return NextResponse.json(
-        { error: "Failed to send message. Please try again later." },
-        { status: 500, headers: RATE_LIMIT_HEADERS }
-      );
-    }
+    return NextResponse.json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("[contact]", error);
 
     return NextResponse.json(
-      { success: true },
-      { status: 200, headers: RATE_LIMIT_HEADERS }
-    );
-  } catch (err) {
-    // Log to server only
-    console.error("[contact] Unhandled error:", err instanceof Error ? err.message : "unknown");
-    return NextResponse.json(
-      { error: "Internal server error. Please try again later." },
-      { status: 500, headers: RATE_LIMIT_HEADERS }
+      {
+        success: false,
+        error: "Failed to send email",
+      },
+      { status: 500 }
     );
   }
 }
