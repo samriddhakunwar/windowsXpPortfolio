@@ -162,6 +162,20 @@ export const TaskBar: React.FC<TaskbarProps> = ({
           height={16}
           draggable={false}
         />
+        <Image
+          src="/assets/internet.png"
+          alt="Volume"
+          width={16}
+          height={16}
+          draggable={false}
+        />
+        <Image
+          src="/assets/green_shield.png"
+          alt="Volume"
+          width={16}
+          height={16}
+          draggable={false}
+        />
         <div
           className="text-white font-normal"
           style={{ fontSize: "11px", textShadow: "1px 1px 0 rgba(0,0,0,0.3)" }}
