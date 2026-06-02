@@ -4,6 +4,7 @@ import { useWindowManager } from "@/hooks/useWindowManager";
 import { WindowType } from "@/types";
 import React, { createContext, useContext, useEffect } from "react";
 import { AppRegistry } from "./core/AppRegistry";
+import { RecycleBinProvider } from "./context/RecycleBinContext";
 import { WindowManager } from "./core/WindowManager";
 import { DesktopContextType } from "./types";
 
@@ -56,7 +57,9 @@ export function DesktopProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <DesktopContext.Provider value={value}>{children}</DesktopContext.Provider>
+    <RecycleBinProvider>
+      <DesktopContext.Provider value={value}>{children}</DesktopContext.Provider>
+    </RecycleBinProvider>
   );
 }
 

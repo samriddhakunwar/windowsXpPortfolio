@@ -3,33 +3,24 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-
-const FAKE_FILES = [
-  { name: "bad_ideas_2019.txt", size: "12 KB", date: "3/14/2019" },
-  { name: "excuses.docx", size: "4 KB", date: "7/22/2021" },
-  { name: "todo_next_week.txt", size: "2 KB", date: "1/1/2020" },
-  { name: "definitely_not_important.zip", size: "128 KB", date: "9/9/2022" },
-  { name: "resume_final_FINAL_v3.docx", size: "86 KB", date: "2/28/2023" },
-  { name: "why_it_doesnt_work.md", size: "9 KB", date: "5/5/2024" },
-  { name: "my_plans.xlsx", size: "44 KB", date: "11/11/2021" },
-];
+import { useRecycleBin } from "@/desktop/context/RecycleBinContext";
 
 export const RecycleBinWindow: React.FC = () => {
-  const [files, setFiles] = useState(FAKE_FILES);
+  // ── All state lives in the shared context ──────────────────────────────────
+  const { files, isEmpty, emptyBin, restoreFile } = useRecycleBin();
+
   const [selected, setSelected] = useState<string | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [emptied, setEmptied] = useState(false);
 
   const handleEmpty = () => {
-    setFiles([]);
+    emptyBin();
     setSelected(null);
     setShowConfirm(false);
-    setEmptied(true);
   };
 
   const handleRestore = () => {
     if (!selected) return;
-    setFiles((prev) => prev.filter((f) => f.name !== selected));
+    restoreFile(selected);
     setSelected(null);
   };
 
@@ -79,7 +70,7 @@ export const RecycleBinWindow: React.FC = () => {
           >
             <div className="xp-panel" style={{ width: 280, padding: "16px", boxShadow: "0 6px 24px rgba(0,0,0,0.4)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
-                <Image src="/assets/recycling_bin.png" alt="" width={24} height={24} />
+                <Image src="/assets/Recycle_bin_full.webp" alt="" width={24} height={24} unoptimized />
                 <strong>Confirm Delete</strong>
               </div>
               <p style={{ margin: "0 0 12px", color: "#333", lineHeight: "1.5" }}>
@@ -114,13 +105,8 @@ export const RecycleBinWindow: React.FC = () => {
           </div>
         )}
 
-        {files.length === 0 && !emptied && (
-          <div style={{ padding: "24px", color: "#808080", textAlign: "center" }}>
-            This folder is empty
-          </div>
-        )}
-
-        {emptied && files.length === 0 && (
+        {/* Empty state */}
+        {isEmpty && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -129,13 +115,13 @@ export const RecycleBinWindow: React.FC = () => {
               justifyContent: "center", gap: "10px", padding: "24px", textAlign: "center",
             }}
           >
-            <Image src="/assets/recycling_bin.png" alt="Empty" width={48} height={48} draggable={false} />
+            <Image src="/assets/recycling_bin.png" alt="Empty" width={48} height={48} draggable={false} unoptimized />
             <div>
               <div style={{ fontWeight: "bold", fontSize: "12px", color: "#333", marginBottom: "4px" }}>
-                Recycle Bin is now empty!
+                Recycle Bin is empty
               </div>
               <div style={{ color: "#666", lineHeight: "1.5" }}>
-                Everything you value is intact. Bad ideas? Gone. 🎉
+                Nothing here. Bad ideas? Gone forever. 🎉
               </div>
             </div>
           </motion.div>
@@ -150,7 +136,7 @@ export const RecycleBinWindow: React.FC = () => {
               transition={{ duration: 0.2 }}
               onClick={() => setSelected(file.name)}
               onDoubleClick={() => {
-                setFiles((prev) => prev.filter((f) => f.name !== file.name));
+                restoreFile(file.name);
                 setSelected(null);
               }}
               style={{

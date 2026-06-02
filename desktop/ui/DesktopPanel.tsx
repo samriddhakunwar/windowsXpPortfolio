@@ -5,9 +5,10 @@ import { AppRegistry } from "@/desktop/core/AppRegistry";
 import { Window as WindowType } from "@/types";
 import { useSoundSystem } from "@/hooks/useSoundSystem";
 import { AnimatePresence } from "framer-motion";
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { ContextMenu } from "./components/ContextMenu";
 import { DesktopIcon } from "./components/DesktopIcon";
+import { RecycleBinDynamicIcon } from "./components/RecycleBinDynamicIcon";
 import { ShutdownModal, ShutdownAction } from "./components/ShutdownModal";
 import { StartMenu } from "./components/StartMenu";
 import { TaskBar } from "./components/TaskBar";
@@ -114,10 +115,13 @@ export default function DesktopPanel({ onShutdownAction }: DesktopPanelProps) {
       label: app.title,
       icon: app.icon,
     }));
-    const recycleApp = AppRegistry.getApp("recycle");
-    if (recycleApp) {
-      icons.push({ type: "recycle", label: "Recycle Bin", icon: recycleApp.icon });
-    }
+    // Recycle Bin uses a live React element that reads from RecycleBinContext
+    // so the icon switches between empty/full without any page refresh.
+    icons.push({
+      type: "recycle" as const,
+      label: "Recycle Bin",
+      icon: React.createElement(RecycleBinDynamicIcon),
+    });
     return icons;
   }, []);
 
