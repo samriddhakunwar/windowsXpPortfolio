@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { useDesktop } from "@/desktop/DesktopProvider";
+import { WindowType } from "@/types";
 
 interface BreadcrumbItem {
   label: string;
@@ -11,11 +13,12 @@ interface BreadcrumbItem {
 interface FsItem {
   id: string;
   name: string;
-  type: "folder" | "file" | "link";
+  type: "folder" | "file" | "link" | "app";
   children?: FsItem[];
   href?: string;
   desc?: string;
   icon?: string;
+  appId?: WindowType;
 }
 
 const fileSystem: FsItem[] = [
@@ -31,13 +34,10 @@ const fileSystem: FsItem[] = [
   {
     id: "projects",
     name: "Projects",
-    type: "folder",
-    children: [
-      { id: "p1", name: "Smart Traffic System", type: "folder", icon: "📁", desc: "AI-powered traffic management using Django + OpenCV" },
-      { id: "p2", name: "Search Engine", type: "folder", icon: "📁", desc: "Full-stack search engine with crawler" },
-      { id: "p3", name: "XP Portfolio", type: "folder", icon: "📁", desc: "This very website!" },
-      { id: "p4", name: "ML Model", type: "folder", icon: "📁", desc: "Predictive ML time-series model" },
-    ],
+    type: "app",
+    appId: "projects",
+    icon: "📁",
+    desc: "Open the Projects application",
   },
   {
     id: "pictures",
@@ -60,21 +60,26 @@ const fileSystem: FsItem[] = [
 ];
 
 export const MyComputerWindow: React.FC = () => {
+  const { launchApp } = useDesktop();
   const [path, setPath] = useState<BreadcrumbItem[]>([{ label: "My Computer", path: "root" }]);
   const [currentItems, setCurrentItems] = useState<FsItem[]>(fileSystem);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [statusText, setStatusText] = useState(`${fileSystem.length} object(s)`);
 
-  const navigateTo = (folder: FsItem) => {
-    if (folder.type === "link" && folder.href) {
-      window.open(folder.href, "_blank", "noopener,noreferrer");
+  const navigateTo = (item: FsItem) => {
+    if (item.type === "app" && item.appId) {
+      launchApp(item.appId);
       return;
     }
-    if (folder.type !== "folder") return;
-    setPath((prev) => [...prev, { label: folder.name, path: folder.id }]);
-    setCurrentItems(folder.children ?? []);
+    if (item.type === "link" && item.href) {
+      window.open(item.href, "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (item.type !== "folder") return;
+    setPath((prev) => [...prev, { label: item.name, path: item.id }]);
+    setCurrentItems(item.children ?? []);
     setSelectedId(null);
-    setStatusText(`${folder.children?.length ?? 0} object(s)`);
+    setStatusText(`${item.children?.length ?? 0} object(s)`);
   };
 
   const navigateBreadcrumb = (index: number) => {
@@ -186,6 +191,11 @@ export const MyComputerWindow: React.FC = () => {
             {item.type === "folder" && (
               <span style={{ color: selectedId === item.id ? "#C8E0FF" : "#888", fontSize: "10px" }}>
                 {item.children?.length ?? 0} items
+              </span>
+            )}
+            {item.type === "app" && (
+              <span style={{ color: selectedId === item.id ? "#C8E0FF" : "#888", fontSize: "10px" }}>
+                Shortcut
               </span>
             )}
             {item.type === "link" && (
