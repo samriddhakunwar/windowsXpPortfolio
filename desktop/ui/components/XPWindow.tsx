@@ -336,7 +336,7 @@ export const XPWindow: React.FC<XPWindowProps> = ({
               className="flex-1 overflow-auto"
               style={{ background: "#ECE9D8", borderTop: "1px solid #0831D9" }}
             >
-              <div className="p-3">{children}</div>
+              <div className="p-3 h-full">{children}</div>
             </div>
           </div>
         </motion.div>

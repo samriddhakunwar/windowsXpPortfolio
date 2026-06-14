@@ -81,7 +81,7 @@ export class AppRegistry {
           default: m.ResumeWindow,
         }))
       ),
-      icon: icon("/assets/doc.png", "Resume"),
+      icon: icon("/assets/pdf.png", "Resume"),
       launchable: true,
     });
 

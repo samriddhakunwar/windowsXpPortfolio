@@ -19,15 +19,16 @@ export const FAKE_FILES = [
   { name: "my_plans.xlsx", size: "44 KB", date: "11/11/2021" },
 ];
 
-const SESSION_KEY = "recycleBinEmptied";
-
-function getInitialFiles() {
-  if (typeof window === "undefined") return FAKE_FILES;
-  try {
-    const emptied = sessionStorage.getItem(SESSION_KEY);
-    if (emptied === "true") return [];
-  } catch {}
-  return FAKE_FILES;
+/**
+ * Initial contents for a fresh page load.
+ *
+ * The bin's emptied / restored state is kept in the long-lived provider state
+ * below (the provider is mounted at the app root for the whole session), so the
+ * bin stays empty when re-opened during a session, yet a full browser refresh
+ * re-runs this and brings the original files back — exactly like a demo VM.
+ */
+function getInitialFiles(): RecycleBinFile[] {
+  return [...FAKE_FILES];
 }
 
 // ─── Context type ─────────────────────────────────────────────────────────────
@@ -42,6 +43,7 @@ export interface RecycleBinContextType {
   isEmpty: boolean;
   emptyBin: () => void;
   restoreFile: (name: string) => void;
+  restoreAll: () => void;
   setFiles: React.Dispatch<React.SetStateAction<RecycleBinFile[]>>;
 }
 
@@ -54,20 +56,21 @@ export function RecycleBinProvider({ children }: { children: React.ReactNode }) 
 
   const emptyBin = useCallback(() => {
     setFiles([]);
-    try {
-      sessionStorage.setItem(SESSION_KEY, "true");
-    } catch {}
   }, []);
 
   const restoreFile = useCallback((name: string) => {
     setFiles((prev) => prev.filter((f) => f.name !== name));
   }, []);
 
+  const restoreAll = useCallback(() => {
+    setFiles([]);
+  }, []);
+
   const isEmpty = files.length === 0;
 
   const value = useMemo<RecycleBinContextType>(
-    () => ({ files, isEmpty, emptyBin, restoreFile, setFiles }),
-    [files, isEmpty, emptyBin, restoreFile],
+    () => ({ files, isEmpty, emptyBin, restoreFile, restoreAll, setFiles }),
+    [files, isEmpty, emptyBin, restoreFile, restoreAll],
   );
 
   return (

@@ -308,7 +308,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                 <div style={{ height: "1px", background: "rgba(255,255,255,0.3)", margin: "4px 6px" }} />
 
                 {[
-                  { label: "Resume",      type: "resume"      as WindowType, icon: "/assets/doc.png" },
+                  { label: "Resume",      type: "resume"      as WindowType, icon: "/assets/pdf.png" },
                   { label: "GitHub",      type: "github"      as WindowType, icon: "/assets/github.png" },
                   { label: "Contact",     type: "contact"     as WindowType, icon: "/assets/outlook.png" },
                   { label: "Minesweeper", type: "minesweeper" as WindowType, icon: "/assets/minesweeper.png" },
