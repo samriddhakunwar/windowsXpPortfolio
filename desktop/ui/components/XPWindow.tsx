@@ -292,7 +292,7 @@ export const XPWindow: React.FC<XPWindowProps> = ({
                     borderRight: "1px solid #0241A0",
                   }}
                 >
-                  <Image src="/assets/minimise.png" alt="Minimize" width={9} height={9} draggable={false} />
+                  <Image src="/assets/minimise.png" alt="Minimize" width={20} height={20} draggable={false} />
                 </motion.button>
                 {/* Maximize/Restore */}
                 <motion.button
@@ -310,7 +310,7 @@ export const XPWindow: React.FC<XPWindowProps> = ({
                   <Image
                     src={isMaximized ? "/assets/resize.png" : "/assets/maximise.png"}
                     alt={isMaximized ? "Restore" : "Maximize"}
-                    width={9} height={9} draggable={false}
+                    width={20} height={20} draggable={false}
                   />
                 </motion.button>
                 {/* Close */}
@@ -326,7 +326,7 @@ export const XPWindow: React.FC<XPWindowProps> = ({
                     borderRight: "1px solid #9B1B0A",
                   }}
                 >
-                  <Image src="/assets/close.png" alt="Close" width={9} height={9} draggable={false} />
+                  <Image src="/assets/close.png" alt="Close" width={20} height={20} draggable={false} />
                 </motion.button>
               </div>
             </div>
