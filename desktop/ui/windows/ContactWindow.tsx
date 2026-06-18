@@ -33,6 +33,13 @@ const FONT = '"Tahoma", "Segoe UI", Arial, sans-serif';
 const BEIGE = "#ECE9D8";
 const SUNKEN_BORDER = "2px solid"; // colors set per element via borderColor
 
+// All messages are always delivered to this address (display only — the server
+// sets the real recipient from CONTACT_EMAIL and never trusts visitor input).
+const RECIPIENT_EMAIL = "kunwarsamriddha@gmail.com";
+
+// Fixed label-column width — wide enough for "Your Email:".
+const LABEL_W = "72px";
+
 // White, sunken XP inset field
 const insetStyle: React.CSSProperties = {
   background: "#ffffff",
@@ -263,7 +270,7 @@ export const ContactWindow: React.FC = () => {
           <ToolbarButton label="Attach" icon={ICONS.Attach} />
         </div>
 
-        {/* ── Header fields: To / Cc / Subject ───────────────────────────────── */}
+        {/* ── Header fields: To (fixed) / Your Name / Your Email / Subject ────── */}
         <div
           style={{
             padding: "6px 8px",
@@ -274,48 +281,64 @@ export const ContactWindow: React.FC = () => {
             gap: "4px",
           }}
         >
-          {/* To: = Name */}
+          {/* To: — permanently the site owner; read-only, cannot be changed */}
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <button type="button" style={{ ...raisedButton, width: "56px" }} tabIndex={-1}>
+            <button type="button" style={{ ...raisedButton, width: LABEL_W }} tabIndex={-1}>
               To:
             </button>
+            <input
+              type="text"
+              value={RECIPIENT_EMAIL}
+              readOnly
+              tabIndex={-1}
+              aria-label="To (fixed recipient)"
+              title="All messages are delivered to the site owner"
+              style={{
+                ...insetStyle,
+                flex: 1,
+                minWidth: 0,
+                background: "#ECE9D8",
+                color: "#3B3B3B",
+                cursor: "default",
+              }}
+            />
+          </div>
+
+          {/* Your Name = name */}
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <span style={{ width: LABEL_W, paddingLeft: "2px", color: "#000000", flexShrink: 0 }}>
+              Your Name:
+            </span>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => update("name", e.target.value)}
               disabled={loading}
-              aria-label="To (your name)"
+              aria-label="Your name"
               aria-invalid={!!(touched && fieldErrors.name)}
               style={{ ...insetStyle, ...invalidBorder("name"), flex: 1, minWidth: 0 }}
             />
           </div>
 
-          {/* Cc: = Email */}
+          {/* Your Email = email (used as reply-to) */}
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <button type="button" style={{ ...raisedButton, width: "56px" }} tabIndex={-1}>
-              Cc:
-            </button>
+            <span style={{ width: LABEL_W, paddingLeft: "2px", color: "#000000", flexShrink: 0 }}>
+              Your Email:
+            </span>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => update("email", e.target.value)}
               disabled={loading}
-              aria-label="Cc (your email)"
+              aria-label="Your email"
               aria-invalid={!!(touched && fieldErrors.email)}
               style={{ ...insetStyle, ...invalidBorder("email"), flex: 1, minWidth: 0 }}
             />
           </div>
 
-          {/* Subject: = Subject */}
+          {/* Subject = subject */}
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <span
-              style={{
-                width: "56px",
-                paddingLeft: "2px",
-                color: "#000000",
-                flexShrink: 0,
-              }}
-            >
+            <span style={{ width: LABEL_W, paddingLeft: "2px", color: "#000000", flexShrink: 0 }}>
               Subject:
             </span>
             <input
@@ -326,6 +349,11 @@ export const ContactWindow: React.FC = () => {
               aria-label="Subject"
               style={{ ...insetStyle, flex: 1, minWidth: 0 }}
             />
+          </div>
+
+          {/* Make it explicit that the recipient is fixed */}
+          <div style={{ paddingLeft: "2px", color: "#666666", fontSize: "11px" }}>
+            All messages are delivered to {RECIPIENT_EMAIL}.
           </div>
         </div>
 

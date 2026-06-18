@@ -157,10 +157,10 @@ export async function POST(req: Request) {
 
     const html = `
       <div style="font-family: Tahoma, Arial, sans-serif; font-size: 14px; color: #222; max-width: 600px;">
-        <h2 style="color: #0A246A; margin: 0 0 16px;">New Contact Form Message</h2>
-        <p><strong>Name:</strong> ${safeName}</p>
-        <p><strong>Email:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p>
+        <p><strong>From Name:</strong> ${safeName}</p>
+        <p><strong>From Email:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p>
         <p><strong>Subject:</strong> ${safeSubject}</p>
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 12px 0;" />
         <p><strong>Message:</strong></p>
         <div style="background: #f6f6f6; border: 1px solid #ddd; border-radius: 4px; padding: 12px; white-space: pre-wrap;">${safeMessage}</div>
         <hr style="border: none; border-top: 1px solid #ddd; margin: 16px 0;" />
@@ -168,16 +168,25 @@ export async function POST(req: Request) {
       </div>
     `;
 
+    // Plain-text alternative in the exact requested format.
+    const text =
+      `From Name: ${name}\n` +
+      `From Email: ${email}\n` +
+      `Subject: ${subject || "No subject"}\n\n` +
+      `Message:\n${message}\n`;
+
     const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
     const response = await resend.emails.send({
+      // Recipient is ALWAYS the site owner (server-side env), never visitor input.
       from: `Portfolio Contact <${fromEmail}>`,
       to: process.env.CONTACT_EMAIL,
       subject: subject
-        ? `New Portfolio Contact: ${subject}`
-        : "New Portfolio Contact Form Submission",
+        ? `Portfolio Contact - ${subject}`
+        : "Portfolio Contact - New Message",
       replyTo: email,
       html,
+      text,
     });
 
     console.log("[contact] Resend response:", response);
