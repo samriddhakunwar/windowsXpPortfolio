@@ -161,34 +161,71 @@ select:focus {
 
 /* Context menu */
 .xp-context-menu {
-  background: #ECE9D8;
-  border: 1px solid #7a7a7a;
-  box-shadow: 2px 2px 6px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.6);
-  border-radius: 2px;
-  padding: 2px 0;
-  min-width: 160px;
+  background: #F1F1F1;
+  border: 1px solid #7A7A7A;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 0;
+  padding: 2px;
+  min-width: 180px;
   font-size: 11px;
-  font-family: "Tahoma", Arial, sans-serif;
+  font-family: Tahoma, Arial, sans-serif;
   color: #000000;
+  user-select: none;
+  animation: xp-context-fade 80ms ease-out;
+}
+
+@keyframes xp-context-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .xp-context-item {
-  padding: 3px 24px 3px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 20px 3px 6px;
   cursor: default;
   white-space: nowrap;
   color: #000000;
-  transition: background var(--transition-fast), color var(--transition-fast);
 }
 
 .xp-context-item:hover {
   background: #316AC5;
-  color: #ffffff;
+  color: #FFFFFF;
+}
+
+.xp-context-item.disabled {
+  color: #6D6D6D;
+}
+
+.xp-context-item.disabled:hover {
+  background: transparent;
+  color: #6D6D6D;
+}
+
+.xp-context-item.disabled .xp-context-icon {
+  opacity: 0.5;
+}
+
+.xp-context-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  flex-shrink: 0;
+  font-size: 13px;
+  text-align: center;
+}
+
+.xp-context-label {
+  flex: 1;
+  text-align: left;
 }
 
 .xp-context-separator {
   height: 1px;
   background: #ACA899;
-  margin: 3px 2px;
+  margin: 2px 0;
 }
 
 /* Loading spinner (XP style) */
@@ -229,4 +266,35 @@ select:focus {
   background: rgba(236,233,216,0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Form field readability (Contact form and any XP inset inputs)
+   Guarantees black, visible text regardless of inherited/parent colors.
+   ───────────────────────────────────────────────────────────────────────────── */
+input.xp-inset,
+textarea.xp-inset,
+select.xp-inset {
+  color: #000000;
+  caret-color: #000000;
+  background-color: #ffffff;
+}
+
+/* Gray placeholder text */
+input.xp-inset::placeholder,
+textarea.xp-inset::placeholder {
+  color: #808080;
+  opacity: 1; /* Firefox dims placeholders by default */
+}
+
+/* Windows XP text-selection highlight (royal blue / white) */
+input.xp-inset::selection,
+textarea.xp-inset::selection {
+  background: #316AC5;
+  color: #ffffff;
+}
+input.xp-inset::-moz-selection,
+textarea.xp-inset::-moz-selection {
+  background: #316AC5;
+  color: #ffffff;
 }

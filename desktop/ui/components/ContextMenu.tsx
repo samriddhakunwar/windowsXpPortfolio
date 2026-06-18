@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useRef } from "react";
 
 interface ContextMenuItem {
@@ -57,50 +56,40 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, items, onClose }
   const clampedY = Math.min(y, window.innerHeight - menuHeight - 48);
 
   return (
-    <AnimatePresence>
-      <motion.div
-        ref={ref}
-        initial={{ opacity: 0, scale: 0.92, y: -4 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.92, y: -4 }}
-        transition={{ duration: 0.1, ease: "easeOut" }}
-        className="xp-context-menu"
-        style={{
-          position: "fixed",
-          left: clampedX,
-          top: clampedY,
-          zIndex: 99999,
-        }}
-      >
-        {items.map((item, i) => {
-          if ("separator" in item && item.separator) {
-            return <div key={i} className="xp-context-separator" />;
-          }
-          const menuItem = item as ContextMenuItem;
-          return (
-            <div
-              key={i}
-              className="xp-context-item"
-              onClick={() => {
-                if (!menuItem.disabled) {
-                  menuItem.onClick();
-                  onClose();
-                }
-              }}
-              style={{
-                opacity: menuItem.disabled ? 0.4 : 1,
-                cursor: menuItem.disabled ? "default" : "default",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
-              {menuItem.icon && <span style={{ fontSize: "13px", width: "16px" }}>{menuItem.icon}</span>}
-              {menuItem.label}
-            </div>
-          );
-        })}
-      </motion.div>
-    </AnimatePresence>
+    <div
+      ref={ref}
+      role="menu"
+      className="xp-context-menu"
+      style={{
+        position: "fixed",
+        left: clampedX,
+        top: clampedY,
+        zIndex: 99999,
+      }}
+    >
+      {items.map((item, i) => {
+        if ("separator" in item && item.separator) {
+          return <div key={i} className="xp-context-separator" role="separator" />;
+        }
+        const menuItem = item as ContextMenuItem;
+        return (
+          <div
+            key={i}
+            role="menuitem"
+            aria-disabled={menuItem.disabled || undefined}
+            className={`xp-context-item${menuItem.disabled ? " disabled" : ""}`}
+            onClick={() => {
+              if (!menuItem.disabled) {
+                menuItem.onClick();
+                onClose();
+              }
+            }}
+          >
+            <span className="xp-context-icon">{menuItem.icon}</span>
+            <span className="xp-context-label">{menuItem.label}</span>
+          </div>
+        );
+      })}
+    </div>
   );
 };
