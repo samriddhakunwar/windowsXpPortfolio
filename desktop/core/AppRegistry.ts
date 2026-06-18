@@ -59,9 +59,9 @@ export class AppRegistry {
 
     this.registerApp({
       id: "contact",
-      title: "Contact",
-      defaultWidth: 600,
-      defaultHeight: 420,
+      title: "Contact - New Message",
+      defaultWidth: 620,
+      defaultHeight: 460,
       component: lazy(() =>
         import("@/desktop/ui/windows/ContactWindow").then((m) => ({
           default: m.ContactWindow,
