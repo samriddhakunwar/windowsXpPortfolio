@@ -34,7 +34,7 @@ interface DriveEntry {
 const FONT = `"Tahoma", "Segoe UI", Arial, sans-serif`;
 
 const STORED_FILES: FolderEntry[] = [
-  { id: "mydocs", label: "My Documents", icon: "/assets/folder.png", app: "resume", type: "File Folder" },
+  { id: "mydocs", label: "My Resume", icon: "/assets/folder.png", app: "resume", type: "File Folder" },
   { id: "projects", label: "Projects", icon: "/assets/folder_program.png", app: "projects", type: "File Folder" },
 ];
 
