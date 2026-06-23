@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { motion, useInView } from "framer-motion";
+import { useDesktop } from "@/desktop/DesktopProvider";
 
-// ─── Skill data ───────────────────────────────────────────────────────────────
+// ─── Skill data (UNCHANGED) ─────────────────────────────────────────────────────
 
 interface SkillItem {
   name: string;
@@ -116,248 +116,303 @@ const highlights = [
   { icon: "🤖", label: "AI / ML Enthusiast",     sub: "TensorFlow, OpenCV" },
 ];
 
-// ─── Animated progress bar ────────────────────────────────────────────────────
+const TECH_STACK = [
+  { name: "Next.js",    color: "#000000" },
+  { name: "React",      color: "#61DAFB" },
+  { name: "TypeScript", color: "#3178C6" },
+  { name: "Python",     color: "#3572A5" },
+  { name: "Django",     color: "#092E20" },
+  { name: "PostgreSQL", color: "#336791" },
+  { name: "Docker",     color: "#2496ED" },
+  { name: "Git",        color: "#F05032" },
+  { name: "TensorFlow", color: "#FF6F00" },
+  { name: "OpenCV",     color: "#5C3EE8" },
+];
 
-interface AnimatedBarProps {
-  proficiency: number;
-  barGradient: string;
-  glowColor: string;
-  delay: number;
-}
+const FONT = `"Tahoma", "Segoe UI", Arial, sans-serif`;
 
-const AnimatedBar: React.FC<AnimatedBarProps> = ({ proficiency, barGradient, glowColor, delay }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-10px" });
-  const [hovered, setHovered] = useState(false);
+/** Skills shown as XP progress lists; the "tools" category is shown as a Details view. */
+const TOOLS_CATEGORY = SKILL_CATEGORIES.find((c) => c.id === "tools")!;
+const SKILL_LIST_CATEGORIES = SKILL_CATEGORIES.filter((c) => c.id !== "tools");
 
-  return (
-    <div
-      ref={ref}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+/** Map a numeric proficiency onto an Explorer-style experience word. */
+const experienceLabel = (p: number): string =>
+  p >= 90 ? "Expert" : p >= 75 ? "Advanced" : "Intermediate";
+
+// ─── Reusable XP primitives ─────────────────────────────────────────────────────
+
+/** Etched property-sheet group box, à la System Properties. */
+const GroupBox: React.FC<{ title: string; children: React.ReactNode; style?: React.CSSProperties }> = ({
+  title,
+  children,
+  style,
+}) => (
+  <fieldset
+    style={{
+      border: "1px solid #ACA899",
+      margin: "0 0 12px 0",
+      padding: "10px 12px 12px 12px",
+      ...style,
+    }}
+  >
+    <legend
       style={{
-        width: "100%",
-        height: "12px",
-        background: "#D8D0C0",
-        border: "1px solid #ACA899",
-        borderRadius: "1px",
-        overflow: "hidden",
-        boxShadow: "inset 0 1px 2px rgba(0,0,0,0.18)",
-        transition: "box-shadow 200ms",
-        ...(hovered ? { boxShadow: `inset 0 1px 2px rgba(0,0,0,0.18), 0 0 5px ${glowColor}` } : {}),
+        padding: "0 4px",
+        fontWeight: "bold",
+        fontSize: 11,
+        color: "#0A246A",
+        background: "#ECE9D8",
       }}
     >
-      <motion.div
-        initial={{ width: 0 }}
-        animate={inView ? { width: `${proficiency}%` } : { width: 0 }}
-        transition={{ duration: 0.85, delay, ease: [0.4, 0, 0.2, 1] }}
+      {title}
+    </legend>
+    {children}
+  </fieldset>
+);
+
+/** Native-looking XP segmented progress bar (sunken track + green blocks). */
+const XPProgressBar: React.FC<{ value: number }> = ({ value }) => (
+  <div
+    style={{
+      flex: 1,
+      height: 15,
+      background: "#FFFFFF",
+      border: "1px solid",
+      borderColor: "#808080 #FFFFFF #FFFFFF #808080",
+      padding: 1,
+      boxSizing: "border-box",
+    }}
+  >
+    <div
+      style={{
+        width: `${value}%`,
+        height: "100%",
+        backgroundColor: "#16A516",
+        backgroundImage:
+          "repeating-linear-gradient(90deg, rgba(255,255,255,0) 0px, rgba(255,255,255,0) 8px, #FFFFFF 8px, #FFFFFF 10px)," +
+          "linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,0.10) 100%)",
+      }}
+    />
+  </div>
+);
+
+/** Up-chevron inside the blue task-pane header (mirrors My Computer). */
+const HeaderChevron: React.FC = () => (
+  <span
+    style={{
+      width: 13,
+      height: 13,
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: "50%",
+      background: "linear-gradient(180deg, #5E97EC 0%, #2A5BC0 100%)",
+      boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.4)",
+      flexShrink: 0,
+    }}
+  >
+    <span
+      style={{
+        width: 0,
+        height: 0,
+        borderLeft: "3px solid transparent",
+        borderRight: "3px solid transparent",
+        borderBottom: "4px solid #FFFFFF",
+      }}
+    />
+  </span>
+);
+
+/** Collapsible-looking task-pane group (System Tasks / Other Places / Details). */
+const TaskGroup: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+  <div style={{ margin: "0 0 10px 0" }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "3px 8px",
+        background: "linear-gradient(180deg, #F0F4FD 0%, #C6D9F1 100%)",
+        borderTop: "1px solid #FFFFFF",
+        color: "#1B438F",
+        fontWeight: "bold",
+        fontSize: 11,
+      }}
+    >
+      <span>{title}</span>
+      <HeaderChevron />
+    </div>
+    <div
+      style={{
+        background: "linear-gradient(180deg, #EEF3FC 0%, #D9E4F5 100%)",
+        padding: "6px 10px 8px 10px",
+      }}
+    >
+      {children}
+    </div>
+  </div>
+);
+
+/** A single-click task-pane link (icon + blue underline-on-hover). */
+const TaskLink: React.FC<{
+  icon?: string;
+  label: string;
+  href?: string;
+  onClick?: () => void;
+}> = ({ icon, label, href, onClick }) => {
+  const [hover, setHover] = useState(false);
+  const inner = (
+    <>
+      {icon && (
+        <Image src={icon} alt="" width={16} height={16} draggable={false} unoptimized style={{ flexShrink: 0 }} />
+      )}
+      <span
         style={{
-          height: "100%",
-          background: barGradient,
-          borderRadius: "1px",
-          position: "relative",
-          overflow: "hidden",
+          fontSize: 11,
+          color: hover ? "#1E5FCC" : "#0E3A8C",
+          textDecoration: hover ? "underline" : "none",
         }}
       >
-        {/* Repeating XP-style ridges */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage:
-              "repeating-linear-gradient(90deg, transparent 0px, transparent 6px, rgba(255,255,255,0.08) 6px, rgba(255,255,255,0.08) 7px)",
-          }}
-        />
-        {/* Shine sweep */}
-        <motion.div
-          initial={{ x: "-100%" }}
-          animate={inView ? { x: "220%" } : { x: "-100%" }}
-          transition={{ duration: 0.55, delay: delay + 0.75, ease: "easeOut" }}
-          style={{
-            position: "absolute",
-            top: 0, bottom: 0,
-            width: "35%",
-            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.42), transparent)",
-          }}
-        />
-        {/* Top highlight line */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0, left: 0, right: 0,
-            height: "3px",
-            background: "rgba(255,255,255,0.28)",
-          }}
-        />
-      </motion.div>
+        {label}
+      </span>
+    </>
+  );
+  const sharedStyle: React.CSSProperties = {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    padding: "2px 0",
+    cursor: "pointer",
+    userSelect: "none",
+    textDecoration: "none",
+  };
+  if (href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={sharedStyle}
+      >
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={sharedStyle}
+    >
+      {inner}
     </div>
   );
 };
 
-// ─── Skill category card ──────────────────────────────────────────────────────
-
-interface SkillCardProps {
-  category: SkillCategory;
-  baseDelay: number;
-}
-
-const SkillCard: React.FC<SkillCardProps> = ({ category, baseDelay }) => (
-  <div
-    style={{
-      border: `1px solid ${category.accentColor}55`,
-      borderRadius: "2px",
-      background: "#FAFAFA",
-      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.08)",
-      overflow: "hidden",
-    }}
-  >
-    {/* XP group-box header */}
-    <div
+/** Blue category divider used above content groups (mirrors My Computer). */
+const CategoryHeader: React.FC<{ title: string }> = ({ title }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 0 6px 0" }}>
+    <span style={{ fontSize: 11, fontWeight: "bold", color: "#003399", whiteSpace: "nowrap" }}>{title}</span>
+    <span
       style={{
-        background: `linear-gradient(180deg, ${category.accentColor}28 0%, ${category.accentColor}12 100%)`,
-        borderBottom: `1px solid ${category.accentColor}44`,
-        padding: "4px 8px",
-        display: "flex",
-        alignItems: "center",
-        gap: "5px",
+        flex: 1,
+        height: 2,
+        background: "linear-gradient(to right, #A6C0E8 0%, #E8EEF8 60%, transparent 100%)",
       }}
-    >
-      <span style={{ fontSize: "12px" }}>{category.icon}</span>
-      <span style={{ fontWeight: "bold", fontSize: "10px", color: category.accentColor }}>
-        {category.title}
-      </span>
-    </div>
-
-    {/* Skill rows */}
-    <div style={{ padding: "7px 8px", display: "flex", flexDirection: "column", gap: "6px" }}>
-      {category.items.map((item, i) => (
-        <div key={item.name}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "2px" }}>
-            <span style={{ fontWeight: "bold", color: "#222", fontSize: "10px" }}>{item.name}</span>
-            <span
-              style={{
-                color: category.accentColor,
-                fontWeight: "bold",
-                fontSize: "9px",
-                background: `${category.accentColor}14`,
-                padding: "1px 4px",
-                borderRadius: "2px",
-                border: `1px solid ${category.accentColor}30`,
-              }}
-            >
-              {item.proficiency}%
-            </span>
-          </div>
-          <AnimatedBar
-            proficiency={item.proficiency}
-            barGradient={category.barGradient}
-            glowColor={category.glowColor}
-            delay={baseDelay + i * 0.055}
-          />
-        </div>
-      ))}
-    </div>
+    />
   </div>
 );
 
-// ─── XP Group Box wrapper ─────────────────────────────────────────────────────
-
-const XPGroupBox: React.FC<{
-  title: string;
-  icon?: string;
-  children: React.ReactNode;
-  style?: React.CSSProperties;
-}> = ({ title, icon, children, style }) => (
-  <div
-    style={{
-      border: "1px solid #7AA7E0",
-      borderRadius: "3px",
-      marginBottom: "8px",
-      background: "#FFFFFF",
-      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)",
-      ...style,
-    }}
-  >
+/** One row of the Tools "Details view" (Explorer-style). */
+const ToolRow: React.FC<{ name: string; experience: string; even: boolean }> = ({ name, experience, even }) => {
+  const [hover, setHover] = useState(false);
+  const cell: React.CSSProperties = {
+    padding: "2px 8px",
+    fontSize: 11,
+    color: hover ? "#FFFFFF" : "#000000",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  };
+  return (
     <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       style={{
-        background: "linear-gradient(180deg, #DAE9FF 0%, #C5D9F5 100%)",
-        borderBottom: "1px solid #7AA7E0",
-        padding: "4px 8px",
-        display: "flex",
+        display: "grid",
+        gridTemplateColumns: "1fr 120px",
         alignItems: "center",
-        gap: "5px",
-        borderRadius: "2px 2px 0 0",
+        background: hover ? "#316AC5" : even ? "#FFFFFF" : "#F4F7FD",
+        cursor: "default",
+        userSelect: "none",
       }}
     >
-      {icon && <span style={{ fontSize: "12px" }}>{icon}</span>}
-      <span style={{ fontWeight: "bold", fontSize: "11px", color: "#0040A0" }}>{title}</span>
+      <div style={{ ...cell, display: "flex", alignItems: "center", gap: 6 }}>
+        <Image src="/assets/defaultprog.png" alt="" width={16} height={16} draggable={false} unoptimized style={{ flexShrink: 0 }} />
+        {name}
+      </div>
+      <div style={cell}>{experience}</div>
     </div>
-    <div style={{ padding: "8px" }}>{children}</div>
-  </div>
-);
+  );
+};
 
-// ─── Main component ───────────────────────────────────────────────────────────
+// ─── Main component ─────────────────────────────────────────────────────────────
 
 export const AboutWindow: React.FC = () => {
+  const { launchApp } = useDesktop();
+
+  const totalSkills = SKILL_CATEGORIES.reduce((acc, c) => acc + c.items.length, 0);
+
   return (
     <div
       style={{
-        fontFamily: "Tahoma, Arial, sans-serif",
-        fontSize: "11px",
-        height: "100%",
+        // Cancel the host window's 12px content padding so the chrome runs edge-to-edge.
+        margin: -12,
+        height: "calc(100% + 24px)",
+        fontFamily: FONT,
+        fontSize: 11,
+        color: "#000000",
         display: "flex",
         flexDirection: "column",
-        overflow: "hidden",
         background: "#ECE9D8",
+        overflow: "hidden",
       }}
     >
-      {/* ── Header banner ── */}
+      {/* ── Profile header — Windows XP "User Accounts" style ── */}
       <div
         style={{
-          background: "linear-gradient(180deg, #0058E0 0%, #004ECC 100%)",
-          padding: "6px 10px 5px",
           display: "flex",
           alignItems: "center",
-          gap: "10px",
+          gap: 12,
+          padding: "10px 12px",
+          background: "linear-gradient(180deg, #FFFFFF 0%, #ECE9D8 100%)",
+          borderBottom: "1px solid #ACA899",
           flexShrink: 0,
-          borderBottom: "2px solid #003BB0",
         }}
       >
         <div
-          style={{
-            width: 40, height: 40,
-            borderRadius: "3px",
-            border: "2px solid rgba(255,255,255,0.5)",
-            overflow: "hidden",
-            flexShrink: 0,
-          }}
+          className="xp-inset"
+          style={{ padding: 2, background: "#FFFFFF", lineHeight: 0, flexShrink: 0 }}
         >
           <Image
             src="/assets/userprofile.jpg"
-            alt="Samriddha"
-            width={40}
-            height={40}
-            style={{ objectFit: "cover" }}
+            alt="Samriddha Kunwar"
+            width={48}
+            height={48}
+            style={{ objectFit: "cover", display: "block" }}
           />
         </div>
 
-        <div style={{ flex: 1 }}>
-          <div
-            style={{
-              color: "#FFF",
-              fontWeight: "bold",
-              fontSize: "13px",
-              textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
-            }}
-          >
-            Samriddha Kunwar
-          </div>
-          <div style={{ color: "#B8D8FF", fontSize: "10px" }}>
-            Full-Stack Developer · Kathmandu, Nepal
-          </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontWeight: "bold", fontSize: 13, color: "#0A246A" }}>Samriddha Kunwar</div>
+          <div style={{ fontSize: 11, color: "#000000" }}>Full-Stack Developer</div>
+          <div style={{ fontSize: 11, color: "#666666" }}>Kathmandu, Nepal</div>
         </div>
 
-        <div style={{ display: "flex", gap: "5px" }}>
+        <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
           <a
             href="https://github.com/samriddhakunwar"
             target="_blank"
@@ -365,15 +420,16 @@ export const AboutWindow: React.FC = () => {
             className="xp-button"
             style={{
               textDecoration: "none",
-              color: "#000",
-              fontSize: "10px",
-              padding: "2px 7px",
+              color: "#000000",
+              fontSize: 11,
+              padding: "2px 10px 2px 7px",
               display: "inline-flex",
               alignItems: "center",
-              gap: "3px",
+              gap: 5,
+              height: 22,
             }}
           >
-            <Image src="/assets/github.png" alt="" width={11} height={11} /> GitHub
+            <Image src="/assets/github.png" alt="" width={14} height={14} unoptimized /> GitHub
           </a>
           <a
             href="https://linkedin.com/in/samriddhakunwar"
@@ -382,305 +438,192 @@ export const AboutWindow: React.FC = () => {
             className="xp-button"
             style={{
               textDecoration: "none",
-              color: "#000",
-              fontSize: "10px",
-              padding: "2px 7px",
+              color: "#000000",
+              fontSize: 11,
+              padding: "2px 10px 2px 7px",
               display: "inline-flex",
               alignItems: "center",
-              gap: "3px",
+              gap: 5,
+              height: 22,
             }}
           >
-            <Image src="/assets/linkedin.png" alt="" width={11} height={11} /> LinkedIn
+            <Image src="/assets/linkedin.png" alt="" width={14} height={14} unoptimized /> LinkedIn
           </a>
         </div>
       </div>
 
-      {/* ── Body: two-column layout ── */}
-      <div style={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 0 }}>
-
-        {/* ══ LEFT SIDEBAR ══ */}
+      {/* ── Body: task pane + property sheet ── */}
+      <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
+        {/* ══ LEFT TASK PANE ══ */}
         <div
           style={{
-            width: "175px",
+            width: 190,
             flexShrink: 0,
-            background: "linear-gradient(180deg, #C5D9F5 0%, #B8CEF0 100%)",
-            borderRight: "1px solid #7AA7E0",
-            display: "flex",
-            flexDirection: "column",
             overflowY: "auto",
-            padding: "8px 6px",
+            padding: "10px 8px",
+            background: "linear-gradient(180deg, #E9EFFB 0%, #C9D7EF 100%)",
+            borderRight: "1px solid #BAC6DD",
           }}
         >
-          {/* Basic Information header */}
-          <div
-            style={{
-              background: "linear-gradient(180deg, #3580CB 0%, #2B6BBF 100%)",
-              borderRadius: "3px",
-              padding: "4px 8px",
-              marginBottom: "8px",
-              color: "#FFF",
-              fontWeight: "bold",
-              fontSize: "11px",
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
-              border: "1px solid #1A5AAF",
-            }}
-          >
-            <span>📋</span> Basic Information
-          </div>
+          <TaskGroup title="System Tasks">
+            <TaskLink icon="/assets/pdf.png" label="View Resume" href="/resume.pdf" />
+            <TaskLink icon="/assets/folder_program.png" label="Open Projects" onClick={() => launchApp("projects")} />
+            <TaskLink icon="/assets/outlook_large.png" label="Contact Me" onClick={() => launchApp("contact")} />
+          </TaskGroup>
 
-          {highlights.map((h) => (
-            <div
-              key={h.label}
-              style={{
-                background: "rgba(255,255,255,0.65)",
-                border: "1px solid #A8C4E8",
-                borderRadius: "2px",
-                padding: "5px 6px",
-                marginBottom: "4px",
-                display: "flex",
-                alignItems: "flex-start",
-                gap: "6px",
-              }}
-            >
-              <span style={{ fontSize: "14px", flexShrink: 0 }}>{h.icon}</span>
-              <div>
-                <div style={{ fontWeight: "bold", fontSize: "10px", color: "#002080" }}>
-                  {h.label}
-                </div>
-                <div style={{ color: "#4A6A9A", fontSize: "9px" }}>{h.sub}</div>
+          <TaskGroup title="Other Places">
+            <TaskLink icon="/assets/mycomputer.png" label="My Computer" onClick={() => launchApp("mycomputer")} />
+            <TaskLink icon="/assets/folder.png" label="My Documents" onClick={() => launchApp("resume")} />
+            <TaskLink icon="/assets/github.png" label="GitHub" href="https://github.com/samriddhakunwar" />
+            <TaskLink icon="/assets/linkedin.png" label="LinkedIn" href="https://linkedin.com/in/samriddhakunwar" />
+          </TaskGroup>
+
+          <TaskGroup title="Details">
+            <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 8 }}>
+              <Image src="/assets/users.png" alt="" width={28} height={28} draggable={false} unoptimized style={{ flexShrink: 0 }} />
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontWeight: "bold", color: "#1B438F" }}>Samriddha Kunwar</div>
+                <div style={{ color: "#3A3A3A" }}>Full-Stack Developer</div>
               </div>
             </div>
-          ))}
-
-          <div style={{ height: "1px", background: "#7AA7E0", margin: "8px 0" }} />
-
-          {/* Quick Links header */}
-          <div
-            style={{
-              background: "linear-gradient(180deg, #3580CB 0%, #2B6BBF 100%)",
-              borderRadius: "3px",
-              padding: "4px 8px",
-              marginBottom: "8px",
-              color: "#FFF",
-              fontWeight: "bold",
-              fontSize: "11px",
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
-              border: "1px solid #1A5AAF",
-            }}
-          >
-            <span>🔗</span> Quick Links
-          </div>
-
-          {[
-            { label: "GitHub",   href: "https://github.com/samriddhakunwar",      icon: "/assets/github.png" },
-            { label: "LinkedIn", href: "https://linkedin.com/in/samriddhakunwar", icon: "/assets/linkedin.png" },
-            { label: "Resume",   href: "/resume.pdf",                     icon: "/assets/pdf.png" },
-          ].map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "4px 6px",
-                marginBottom: "3px",
-                background: "rgba(255,255,255,0.55)",
-                border: "1px solid #A8C4E8",
-                borderRadius: "2px",
-                textDecoration: "none",
-                color: "#0040C0",
-                fontSize: "10px",
-                fontWeight: "bold",
-                cursor: "pointer",
-                transition: "background 120ms",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.9)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.55)";
-              }}
-            >
-              <Image src={link.icon} alt="" width={14} height={14} unoptimized />
-              {link.label}
-            </a>
-          ))}
-
-          {/* Skills legend */}
-          <div style={{ height: "1px", background: "#7AA7E0", margin: "8px 0" }} />
-          <div
-            style={{
-              background: "linear-gradient(180deg, #3580CB 0%, #2B6BBF 100%)",
-              borderRadius: "3px",
-              padding: "4px 8px",
-              marginBottom: "8px",
-              color: "#FFF",
-              fontWeight: "bold",
-              fontSize: "11px",
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
-              border: "1px solid #1A5AAF",
-            }}
-          >
-            <span>📊</span> Skill Legend
-          </div>
-          {SKILL_CATEGORIES.map((cat) => (
-            <div
-              key={cat.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "5px",
-                padding: "3px 5px",
-                marginBottom: "2px",
-                fontSize: "9px",
-                color: "#222",
-              }}
-            >
-              <div
-                style={{
-                  width: "22px",
-                  height: "6px",
-                  background: cat.barGradient,
-                  borderRadius: "1px",
-                  border: "1px solid rgba(0,0,0,0.12)",
-                  flexShrink: 0,
-                }}
-              />
-              <span style={{ color: cat.accentColor, fontWeight: "bold" }}>
-                {cat.icon} {cat.title}
-              </span>
+            {highlights.map((h) => (
+              <div key={h.label} style={{ marginBottom: 5 }}>
+                <div style={{ fontWeight: "bold", fontSize: 11, color: "#1B438F" }}>{h.label}</div>
+                <div style={{ fontSize: 11, color: "#3A3A3A" }}>{h.sub}</div>
+              </div>
+            ))}
+            <div style={{ marginTop: 2 }}>
+              <div style={{ fontWeight: "bold", fontSize: 11, color: "#1B438F" }}>Location</div>
+              <div style={{ fontSize: 11, color: "#3A3A3A" }}>Kathmandu, Nepal</div>
             </div>
-          ))}
+          </TaskGroup>
         </div>
 
-        {/* ══ RIGHT MAIN CONTENT ══ */}
+        {/* ══ RIGHT PROPERTY SHEET ══ */}
         <div
           style={{
             flex: 1,
             overflowY: "auto",
-            padding: "8px",
-            background: "#F0EBE0",
+            padding: "12px 14px",
+            background: "#ECE9D8",
             minWidth: 0,
           }}
         >
-          {/* About Me group box */}
-          <XPGroupBox title="About Me" icon="👤">
-            <p style={{ lineHeight: "1.7", margin: 0, color: "#333" }}>
+          {/* About Me */}
+          <GroupBox title="About Me">
+            <p style={{ margin: 0, lineHeight: 1.55, color: "#000000" }}>
               Hi! I&apos;m a passionate <strong>Full-Stack Developer</strong> from Nepal with a love for
               building clean, performant, and user-friendly web applications. I specialize in the{" "}
               <strong>React / Next.js</strong> ecosystem on the frontend and{" "}
               <strong>Django / Node.js</strong> on the backend.
             </p>
-            <p style={{ lineHeight: "1.7", margin: "6px 0 0", color: "#333" }}>
+            <p style={{ margin: "8px 0 0 0", lineHeight: 1.55, color: "#000000" }}>
               When I&apos;m not coding, I enjoy exploring <strong>AI &amp; machine learning</strong>,
               contributing to open source, and building side projects that solve real-world problems.
             </p>
-          </XPGroupBox>
+          </GroupBox>
 
-          {/* Skills group box — 2-column card grid */}
-          <XPGroupBox title="Skills" icon="🛠">
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "8px",
-              }}
-            >
-              {SKILL_CATEGORIES.map((cat, idx) => (
-                <SkillCard
-                  key={cat.id}
-                  category={cat}
-                  baseDelay={idx * 0.08}
+          {/* Skills — XP progress lists grouped by category */}
+          <GroupBox title="Skills">
+            {SKILL_LIST_CATEGORIES.map((cat, idx) => (
+              <div key={cat.id} style={{ marginTop: idx === 0 ? 0 : 12 }}>
+                <CategoryHeader title={cat.title} />
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  {cat.items.map((item) => (
+                    <div key={item.name} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ width: 110, flexShrink: 0, fontSize: 11, color: "#000000" }}>{item.name}</span>
+                      <XPProgressBar value={item.proficiency} />
+                      <span style={{ width: 32, flexShrink: 0, textAlign: "right", fontSize: 11, color: "#333333" }}>
+                        {item.proficiency}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </GroupBox>
+
+          {/* Tools & Technologies — Explorer Details view */}
+          <GroupBox title={TOOLS_CATEGORY.title}>
+            <div className="xp-inset" style={{ background: "#FFFFFF", padding: 0 }}>
+              {/* column headers */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 120px",
+                  background: "linear-gradient(180deg, #FFFFFF 0%, #ECE9D8 100%)",
+                  borderBottom: "1px solid #ACA899",
+                }}
+              >
+                <div style={{ padding: "2px 8px", fontSize: 11, borderRight: "1px solid #ACA899" }}>Name</div>
+                <div style={{ padding: "2px 8px", fontSize: 11 }}>Experience</div>
+              </div>
+              {/* rows */}
+              {TOOLS_CATEGORY.items.map((item, i) => (
+                <ToolRow
+                  key={item.name}
+                  name={item.name}
+                  experience={experienceLabel(item.proficiency)}
+                  even={i % 2 === 0}
                 />
               ))}
             </div>
-          </XPGroupBox>
+          </GroupBox>
 
-          {/* Tech Stack group box */}
-          <XPGroupBox title="Tech Stack" icon="💻" style={{ marginBottom: 0 }}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-              {[
-                { name: "Next.js",    color: "#000000" },
-                { name: "React",      color: "#61DAFB" },
-                { name: "TypeScript", color: "#3178C6" },
-                { name: "Python",     color: "#3572A5" },
-                { name: "Django",     color: "#092E20" },
-                { name: "PostgreSQL", color: "#336791" },
-                { name: "Docker",     color: "#2496ED" },
-                { name: "Git",        color: "#F05032" },
-                { name: "TensorFlow", color: "#FF6F00" },
-                { name: "OpenCV",     color: "#5C3EE8" },
-              ].map((tech) => (
-                <motion.span
+          {/* Tech Stack — flat XP tags */}
+          <GroupBox title="Tech Stack" style={{ marginBottom: 0 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+              {TECH_STACK.map((tech) => (
+                <span
                   key={tech.name}
-                  whileHover={{ scale: 1.08, y: -1 }}
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
-                    gap: "4px",
-                    padding: "3px 8px",
-                    background: "linear-gradient(180deg, #fff 0%, #ECE9D8 100%)",
+                    gap: 5,
+                    padding: "2px 7px",
+                    background: "#FFFFFF",
                     border: "1px solid #ACA899",
-                    borderRadius: "3px",
-                    fontSize: "10px",
-                    fontWeight: "bold",
-                    cursor: "default",
-                    color: "#333",
-                    transition: "all 150ms ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.background = `${tech.color}22`;
-                    el.style.borderColor = tech.color;
-                    el.style.color = tech.color;
-                  }}
-                  onMouseLeave={(e) => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.background = "linear-gradient(180deg, #fff 0%, #ECE9D8 100%)";
-                    el.style.borderColor = "#ACA899";
-                    el.style.color = "#333";
+                    fontSize: 11,
+                    color: "#000000",
                   }}
                 >
                   <span
                     style={{
-                      width: 7,
-                      height: 7,
-                      borderRadius: "50%",
+                      width: 8,
+                      height: 8,
                       background: tech.color,
                       display: "inline-block",
-                      border: "1px solid rgba(0,0,0,0.15)",
+                      border: "1px solid rgba(0,0,0,0.25)",
                     }}
                   />
                   {tech.name}
-                </motion.span>
+                </span>
               ))}
             </div>
-          </XPGroupBox>
+          </GroupBox>
         </div>
       </div>
 
       {/* ── Status bar ── */}
       <div
         style={{
-          background: "linear-gradient(180deg, #D4E4F8 0%, #C8D8F0 100%)",
-          borderTop: "1px solid #7AA7E0",
-          padding: "2px 10px",
-          fontSize: "10px",
-          color: "#003080",
+          display: "flex",
+          alignItems: "stretch",
+          height: 20,
+          borderTop: "1px solid #FFFFFF",
+          background: "#ECE9D8",
+          fontSize: 11,
+          color: "#3A3A3A",
           flexShrink: 0,
         }}
       >
-        Full-Stack Developer · {SKILL_CATEGORIES.reduce((acc, c) => acc + c.items.length, 0)} skills across{" "}
-        {SKILL_CATEGORIES.length} categories
+        <div style={{ flex: 1, display: "flex", alignItems: "center", padding: "0 8px", borderTop: "1px solid #ACA899", margin: "1px 0 1px 1px" }}>
+          Full-Stack Developer
+        </div>
+        <div style={{ width: 200, display: "flex", alignItems: "center", gap: 5, padding: "0 8px", borderTop: "1px solid #ACA899", borderLeft: "1px solid #ACA899", margin: "1px 1px 1px 0" }}>
+          <Image src="/assets/users.png" alt="" width={14} height={14} draggable={false} unoptimized />
+          {totalSkills} skills · {SKILL_CATEGORIES.length} categories
+        </div>
       </div>
     </div>
   );
