@@ -365,8 +365,8 @@ const DetailRow: React.FC<RowProps> = ({ project, selected, onClick, onDoubleCli
         fontSize: 11,
       }}
     >
-      <div style={{ ...cell, gap: 6 }}>
-        <Image src={m.icon} alt="" width={16} height={16} draggable={false} unoptimized style={{ flexShrink: 0 }} />
+      <div style={{ ...cell, gap: 8 }}>
+        <Image src={m.icon} alt="" width={32} height={32} draggable={false} unoptimized style={{ flexShrink: 0 }} />
         <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{project.title}</span>
       </div>
       <div style={cell}>{m.type}</div>
@@ -572,7 +572,7 @@ export const ProjectsWindow: React.FC = () => {
                     color: isActive ? "#FFFFFF" : "#0E3A8C",
                   }}
                 >
-                  <Image src="/assets/folder.png" alt="" width={16} height={16} draggable={false} unoptimized style={{ flexShrink: 0 }} />
+                  <Image src="/assets/folder.png" alt="" width={20} height={20} draggable={false} unoptimized style={{ flexShrink: 0 }} />
                   <span style={{ fontSize: 11 }}>{CATEGORY_LABEL[key]}</span>
                 </div>
               );
@@ -583,8 +583,8 @@ export const ProjectsWindow: React.FC = () => {
           <TaskGroup title="Details">
             {selected ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                  <Image src={metaFor(selected.id).icon} alt="" width={28} height={28} draggable={false} unoptimized style={{ flexShrink: 0 }} />
+                <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                  <Image src={metaFor(selected.id).icon} alt="" width={48} height={48} draggable={false} unoptimized style={{ flexShrink: 0 }} />
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontWeight: "bold", color: "#1B438F" }}>{selected.title}</div>
                     <div style={{ color: "#3A3A3A" }}>{metaFor(selected.id).type}</div>
@@ -614,8 +614,8 @@ export const ProjectsWindow: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                <Image src="/assets/folder_program.png" alt="" width={28} height={28} draggable={false} unoptimized style={{ flexShrink: 0 }} />
+              <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                <Image src="/assets/folder_program.png" alt="" width={48} height={48} draggable={false} unoptimized style={{ flexShrink: 0 }} />
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontWeight: "bold", color: "#1B438F" }}>Projects</div>
                   <div style={{ color: "#3A3A3A" }}>File Folder</div>
