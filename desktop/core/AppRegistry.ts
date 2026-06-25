@@ -117,8 +117,8 @@ export class AppRegistry {
     this.registerApp({
       id: "help",
       title: "Help & Support",
-      defaultWidth: 580,
-      defaultHeight: 440,
+      defaultWidth: 720,
+      defaultHeight: 540,
       component: lazy(() =>
         import("@/desktop/ui/windows/HelpWindow").then((m) => ({
           default: m.HelpWindow,
