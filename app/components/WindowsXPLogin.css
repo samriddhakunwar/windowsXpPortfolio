@@ -216,7 +216,7 @@ body {
 }
 
 #logo {
-  width: clamp(80px, 12vw, var(--logo-size));
+  width: clamp(100px, 15vw, var(--logo-size));
   height: auto;
   display: block;
 }
@@ -365,6 +365,13 @@ body {
 #footer > * {
   margin: var(--footer-content-margin-top) var(--footer-content-margin-side) 0
     var(--footer-content-margin-side);
+}
+
+#shutdown-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
 }
 
 #shutdown-group:hover {

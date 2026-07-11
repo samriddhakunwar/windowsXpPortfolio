@@ -19,11 +19,11 @@ export default function WindowsXPLogin({ onLogin }: { onLogin: () => void }) {
               src="/img/logo.png"
               id="logo"
               alt="Windows XP Logo"
-              width={200}
-              height={200}
+              width={500}
+              height={500}
               priority
             />
-            <span id="text-under-logo">
+            <span id="text-under-logo" style={{fontSize: "18px"}}>
               To checkout my portfolio, click my user name
             </span>
           </div>
@@ -104,13 +104,14 @@ export default function WindowsXPLogin({ onLogin }: { onLogin: () => void }) {
 
       <div id="footer">
         <div id="shutdown-group">
-          <Image
+          <img
             src="/img/shutdown.png"
             id="shutdown-options"
             className="img-button"
             alt="Shutdown"
             width={24}
             height={24}
+            draggable={false}
           />
           <span>Turn off computer</span>
         </div>
