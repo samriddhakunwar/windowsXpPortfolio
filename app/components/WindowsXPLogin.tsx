@@ -19,8 +19,8 @@ export default function WindowsXPLogin({ onLogin }: { onLogin: () => void }) {
               src="/img/logo.png"
               id="logo"
               alt="Windows XP Logo"
-              width={500}
-              height={500}
+              width={450}
+              height={450}
               priority
             />
             <span id="text-under-logo" style={{fontSize: "18px"}}>

@@ -97,7 +97,7 @@ Image {
   --stripe-height: 2px;
   --center-divider-width: 1px;
   --center-divider-height: 100%;
-  --logo-size: 136px;
+  --logo-size: 204px;
   --logo-text-gap: 16px;
   --image-button-size: 24px;
 
@@ -216,7 +216,7 @@ body {
 }
 
 #logo {
-  width: clamp(100px, 15vw, var(--logo-size));
+  width: clamp(140px, 20vw, var(--logo-size));
   height: auto;
   display: block;
 }
@@ -231,7 +231,7 @@ body {
 #text-under-logo {
   font-size: clamp(10px, 1.2vw, var(--message-font-size));
   text-align: right;
-  max-width: clamp(160px, 20vw, 260px);
+  max-width: clamp(200px, 22vw, 320px);
   line-height: 1.4;
   opacity: 0.9;
 }
