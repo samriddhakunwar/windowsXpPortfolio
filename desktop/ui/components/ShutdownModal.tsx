@@ -374,7 +374,7 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                   id="restart"
                   label="Restart"
                   shortcutChar="R"
-                  imgSrc="/assets/restart-icon-32272.png"
+                  imgSrc="/img/restart.png"
                   hovered={hovered === "restart"}
                   pressed={pressed === "restart"}
                   onEnter={() => handleEnter("restart")}
