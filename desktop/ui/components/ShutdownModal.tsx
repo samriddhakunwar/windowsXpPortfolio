@@ -268,17 +268,25 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
               zIndex: 1,
               width: "320px",
               fontFamily: "Tahoma, Arial, sans-serif",
-              /* XP outer window border — thin 3-D bevel */
+              /* XP authentic 3-layer bevel border */
               border: "2px solid #0a246a",
+              outline: "1px solid #5a7fcd",
+              outlineOffset: "-3px",
               borderRadius: "6px 6px 4px 4px",
-              boxShadow: "1px 1px 0 #6699cc, 4px 6px 14px rgba(0,0,0,0.65)",
+              /* Blue outer glow (XP dialog shadow) + dark drop shadow underneath */
+              boxShadow:
+                "0 0 0 1px #8aaee8, " +
+                "0 0 8px 2px rgba(90,126,220,0.55), " +
+                "3px 6px 18px rgba(0,0,0,0.60)",
               overflow: "hidden",
             }}
           >
             {/* ── Title bar ──────────────────────────────────────────────── */}
             <div
               style={{
-                background: "#003399",
+                /* XP Luna Blue title bar: deep navy base with a glossy highlight */
+                background:
+                  "linear-gradient(180deg, #1a5cbf 0%, #0044bb 18%, #003399 40%, #002a80 100%)",
                 padding: "0 4px 0 5px",
                 display: "flex",
                 alignItems: "center",
@@ -286,22 +294,37 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                 height: "36px",
                 userSelect: "none",
                 boxSizing: "border-box",
+                position: "relative",
+                overflow: "hidden",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+              {/* Glossy top-half highlight strip */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "50%",
+                  background:
+                    "linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.07) 100%)",
+                  pointerEvents: "none",
+                }}
+              />
+              <div style={{ display: "flex", alignItems: "center", gap: "3px", position: "relative" }}>
                 <span
                   style={{
                     color: "#fff",
                     fontSize: "11px",
                     fontWeight: "bold",
-                    textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
+                    textShadow: "1px 1px 2px rgba(0,0,0,0.7)",
                     letterSpacing: "0.1px",
                   }}
                 >
                   Turn off computer
                 </span>
               </div>
-              <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", position: "relative" }}>
                 <img
                   src="/img/logo-small.png"
                   alt="Windows XP"
@@ -316,17 +339,38 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
             {/* ── Body — authentic XP blue ────────────────────────────────── */}
             <div
               style={{
-                background: "#98B6F5",
+                /*
+                 * Matches XPShutdownScreen body exactly:
+                 * radial-gradient from upper-left (bright highlight) fading into
+                 * mid-tone #6E8FE3, with a darker lower-right region for XP lighting.
+                 * Layered backgrounds simulate the body-lighting vignette.
+                 */
+                background:
+                  "radial-gradient(ellipse at 5% 5%, #a8c3f7 0%, #91b1ef 4%, #7698e6 10%, #639ae3 18%, #5a8fe0 30%, #5a7edc 50%, #4e70cc 70%, #4060be 100%)",
                 position: "relative",
               }}
             >
+              {/* Body lighting overlay: brighten upper-left, darken lower-right */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "radial-gradient(ellipse at 10% 10%, rgba(255,255,255,0.18) 0%, transparent 55%), " +
+                    "radial-gradient(ellipse at 90% 90%, rgba(0,0,30,0.22) 0%, transparent 55%)",
+                  pointerEvents: "none",
+                  zIndex: 0,
+                }}
+              />
               {/* Subtle separator line */}
               <div
                 style={{
                   height: "1px",
                   margin: "0 0 0",
                   background:
-                    "linear-gradient(90deg,rgba(255,255,255,0.05),rgba(255,255,255,0.20) 20%,rgba(255,255,255,0.20) 80%,rgba(255,255,255,0.05))",
+                    "linear-gradient(90deg,rgba(255,255,255,0.05),rgba(255,255,255,0.32) 20%,rgba(255,255,255,0.32) 80%,rgba(255,255,255,0.05))",
+                  position: "relative",
+                  zIndex: 1,
                 }}
               />
 
@@ -337,6 +381,8 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                   justifyContent: "center",
                   gap: "12px",
                   padding: "10px 12px 6px",
+                  position: "relative",
+                  zIndex: 1,
                 }}
               >
                 {/* Stand By — disabled */}
@@ -385,7 +431,7 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
               </div>
 
               {/* ── Tooltip area ─────────────────────────────────────────── */}
-              <div style={{ minHeight: "38px", padding: "2px 12px 2px" }}>
+              <div style={{ minHeight: "38px", padding: "2px 12px 2px", position: "relative", zIndex: 1 }}>
                 <AnimatePresence mode="wait">
                   {hovered && tipVisible && tip && (
                     <motion.div
@@ -421,15 +467,18 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                 </AnimatePresence>
               </div>
 
-              {/* ── Footer bar — slightly darker blue with Cancel ─────────── */}
+              {/* ── Footer bar — XP gradient matching XPShutdownScreen ─────── */}
               <div
                 style={{
-                  background: "#003399",
-                  borderTop: "1px solid #0d3066",
+                  background: "linear-gradient(90deg, #3833ac, #00309c)",
+                  /* Thin top highlight line — matches XP's footer stripe */
+                  borderTop: "1px solid rgba(100,140,220,0.55)",
                   padding: "5px 8px 6px",
                   display: "flex",
                   justifyContent: "flex-end",
                   alignItems: "center",
+                  position: "relative",
+                  zIndex: 1,
                 }}
               >
                 <XPButton label="Cancel" onClick={onClose} />
