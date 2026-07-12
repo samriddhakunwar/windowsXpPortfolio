@@ -290,7 +290,7 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                 padding: "0 4px 0 5px",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "space-between",
+                justifyContent: "flex-start",
                 height: "36px",
                 userSelect: "none",
                 boxSizing: "border-box",
@@ -311,7 +311,16 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                   pointerEvents: "none",
                 }}
               />
-              <div style={{ display: "flex", alignItems: "center", gap: "3px", position: "relative" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "5px", position: "relative" }}>
+                {/* XP window icon — logo left of title, authentic XP chrome */}
+                <img
+                  src="/img/logo-small.png"
+                  alt=""
+                  width={18}
+                  height={18}
+                  draggable={false}
+                  style={{ display: "block", pointerEvents: "none", flexShrink: 0 }}
+                />
                 <span
                   style={{
                     color: "#fff",
@@ -323,16 +332,6 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                 >
                   Turn off computer
                 </span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", position: "relative" }}>
-                <img
-                  src="/img/logo-small.png"
-                  alt="Windows XP"
-                  width={30}
-                  height={30}
-                  draggable={false}
-                  style={{ display: "block", pointerEvents: "none" }}
-                />
               </div>
             </div>
 
