@@ -31,9 +31,9 @@ const TIPS: Record<string, { title: string; desc: string }> = {
   },
 };
 
-// Authentic Windows XP 4-colour flag logo
+// Authentic Windows XP 4-colour flag logo — scaled 20×20 → 25×25
 const WinLogo = () => (
-  <svg width="20" height="20" viewBox="0 0 38 38" aria-hidden>
+  <svg width="25" height="25" viewBox="0 0 38 38" aria-hidden>
     <path d="M0 5.6 L17 3.2 L17 18.2 L0 18.2 Z" fill="#FF6B2B" />
     <path d="M18.4 3 L38 0 L38 18.2 L18.4 18.2 Z" fill="#8DC63F" />
     <path d="M0 19.8 L17 19.8 L17 34.8 L0 32.4 Z" fill="#2BAAE1" />
@@ -55,15 +55,15 @@ const XPButton: React.FC<{ label: string; onClick: () => void }> = ({ label, onC
       onMouseDown={() => setP(true)}
       onMouseUp={() => setP(false)}
       style={{
-        padding: "1px 12px",
-        fontSize: "11px",
+        padding: "2px 15px",
+        fontSize: "14px",
         fontFamily: "Tahoma, Arial, sans-serif",
         border: p
           ? "1px solid #2050a0"
           : h
           ? "1px solid #316ac5"
           : "1px solid #7f9db9",
-        borderRadius: "3px",
+        borderRadius: "4px",
         cursor: "pointer",
         background: p
           ? "linear-gradient(180deg,#b8cce8,#c8d8f0)"
@@ -72,10 +72,10 @@ const XPButton: React.FC<{ label: string; onClick: () => void }> = ({ label, onC
           : "linear-gradient(180deg,#f0f5fc 0%,#dce8f8 50%,#c8d8f0 100%)",
         color: "#000",
         outline: h ? "1px dotted #000" : "none",
-        outlineOffset: "-3px",
+        outlineOffset: "-4px",
         transform: p ? "translateY(1px)" : "none",
-        minWidth: "60px",
-        height: "21px",
+        minWidth: "75px",
+        height: "26px",
         boxSizing: "border-box",
       }}
     >
@@ -119,11 +119,11 @@ const OrbButton: React.FC<OrbBtnProps> = ({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: "4px",
+        gap: "5px",
         cursor: disabled ? "not-allowed" : "pointer",
         userSelect: "none",
         WebkitUserSelect: "none",
-        width: "64px",
+        width: "80px",
         pointerEvents: disabled ? "none" : "auto",
         opacity: disabled ? 0.45 : 1,
         filter: disabled ? "grayscale(100%)" : "none",
@@ -134,15 +134,15 @@ const OrbButton: React.FC<OrbBtnProps> = ({
       onMouseDown={disabled ? undefined : onDown}
       onMouseUp={disabled ? undefined : onUp}
     >
-      {/* PNG icon */}
+      {/* PNG icon — 40×40 → 50×50 */}
       <img
         src={imgSrc}
         alt={label}
-        width={40}
-        height={40}
+        width={50}
+        height={50}
         draggable={false}
         style={{
-          borderRadius: "8px",
+          borderRadius: "10px",
           display: "block",
           opacity: disabled ? 1 : pressed ? 0.75 : hovered ? 1 : 0.92,
           transform: disabled ? "none" : pressed ? "scale(0.93)" : hovered ? "scale(1.06)" : "scale(1)",
@@ -154,10 +154,10 @@ const OrbButton: React.FC<OrbBtnProps> = ({
         }}
       />
 
-      {/* Label */}
+      {/* Label — 10px → 13px */}
       <span
         style={{
-          fontSize: "10px",
+          fontSize: "13px",
           fontFamily: "Tahoma, Arial, sans-serif",
           color: "#fff",
           fontWeight: "normal",
@@ -256,7 +256,7 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
             }}
           />
 
-          {/* ── Dialog window ──────────────────────────────────────────────── */}
+          {/* ── Dialog window — 320px → 400px ────────────────────────────────── */}
           <motion.div
             key="sd-dialog"
             initial={{ opacity: 0, scale: 0.97 }}
@@ -266,13 +266,13 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
             style={{
               position: "relative",
               zIndex: 1,
-              width: "320px",
+              width: "400px",
               fontFamily: "Tahoma, Arial, sans-serif",
               /* XP authentic 3-layer bevel border */
               border: "2px solid #0a246a",
               outline: "1px solid #5a7fcd",
-              outlineOffset: "-3px",
-              borderRadius: "6px 6px 4px 4px",
+              outlineOffset: "-4px",
+              borderRadius: "8px 8px 5px 5px",
               /* Blue outer glow (XP dialog shadow) + dark drop shadow underneath */
               boxShadow:
                 "0 0 0 1px #8aaee8, " +
@@ -281,17 +281,17 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
               overflow: "hidden",
             }}
           >
-            {/* ── Title bar ──────────────────────────────────────────────── */}
+            {/* ── Title bar — 36px → 45px ─────────────────────────────────── */}
             <div
               style={{
                 /* XP Luna Blue title bar: deep navy base with a glossy highlight */
                 background:
                   "linear-gradient(180deg, #1a5cbf 0%, #0044bb 18%, #003399 40%, #002a80 100%)",
-                padding: "0 4px 0 5px",
+                padding: "0 5px 0 6px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "flex-start",
-                height: "36px",
+                height: "45px",
                 userSelect: "none",
                 boxSizing: "border-box",
                 position: "relative",
@@ -311,20 +311,20 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                   pointerEvents: "none",
                 }}
               />
-              <div style={{ display: "flex", alignItems: "center", gap: "5px", position: "relative" }}>
-                {/* XP window icon — logo left of title, authentic XP chrome */}
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", position: "relative" }}>
+                {/* XP window icon — 18×18 → 22×22 */}
                 <img
                   src="/img/logo-small.png"
                   alt=""
-                  width={18}
-                  height={18}
+                  width={22}
+                  height={22}
                   draggable={false}
                   style={{ display: "block", pointerEvents: "none", flexShrink: 0 }}
                 />
                 <span
                   style={{
                     color: "#fff",
-                    fontSize: "11px",
+                    fontSize: "14px",
                     fontWeight: "bold",
                     textShadow: "1px 1px 2px rgba(0,0,0,0.7)",
                     letterSpacing: "0.1px",
@@ -335,7 +335,7 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
               </div>
             </div>
 
-            {/* ── Body — authentic XP blue ────────────────────────────────── */}
+            {/* ── Body — authentic XP blue ─────────────────────────────────── */}
             <div
               style={{
                 /*
@@ -373,13 +373,13 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                 }}
               />
 
-              {/* ── Three orb buttons ──────────────────────────────────────── */}
+              {/* ── Three orb buttons — gap 12→15px, padding 10px 12px 6px → 13px 15px 8px */}
               <div
                 style={{
                   display: "flex",
                   justifyContent: "center",
-                  gap: "12px",
-                  padding: "10px 12px 6px",
+                  gap: "15px",
+                  padding: "13px 15px 8px",
                   position: "relative",
                   zIndex: 1,
                 }}
@@ -429,8 +429,8 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                 />
               </div>
 
-              {/* ── Tooltip area ─────────────────────────────────────────── */}
-              <div style={{ minHeight: "38px", padding: "2px 12px 2px", position: "relative", zIndex: 1 }}>
+              {/* ── Tooltip area — minHeight 38→48px, padding 2px 12px→3px 15px, fonts 10→13px */}
+              <div style={{ minHeight: "48px", padding: "3px 15px 3px", position: "relative", zIndex: 1 }}>
                 <AnimatePresence mode="wait">
                   {hovered && tipVisible && tip && (
                     <motion.div
@@ -443,9 +443,9 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                       <div
                         style={{
                           color: "#fff",
-                          fontSize: "10px",
+                          fontSize: "13px",
                           fontWeight: "bold",
-                          marginBottom: "1px",
+                          marginBottom: "2px",
                           textShadow: "0 1px 1px rgba(0,0,0,0.6)",
                         }}
                       >
@@ -454,8 +454,8 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                       <div
                         style={{
                           color: "rgba(255,255,255,0.85)",
-                          fontSize: "10px",
-                          lineHeight: "1.3",
+                          fontSize: "13px",
+                          lineHeight: "1.4",
                           textShadow: "0 1px 1px rgba(0,0,0,0.5)",
                         }}
                       >
@@ -466,13 +466,13 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
                 </AnimatePresence>
               </div>
 
-              {/* ── Footer bar — XP gradient matching XPShutdownScreen ─────── */}
+              {/* ── Footer bar — padding 5px 8px 6px → 6px 10px 8px ────────── */}
               <div
                 style={{
                   background: "linear-gradient(90deg, #3833ac, #00309c)",
                   /* Thin top highlight line — matches XP's footer stripe */
                   borderTop: "1px solid rgba(100,140,220,0.55)",
-                  padding: "5px 8px 6px",
+                  padding: "6px 10px 8px",
                   display: "flex",
                   justifyContent: "flex-end",
                   alignItems: "center",
