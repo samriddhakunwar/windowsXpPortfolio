@@ -3,9 +3,9 @@
 import { useDesktop } from "@/desktop/DesktopProvider";
 import { AppRegistry } from "@/desktop/core/AppRegistry";
 import { WindowType } from "@/types";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface StartMenuProps {
   isOpen: boolean;
@@ -63,9 +63,10 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
     { label: "My Projects", type: "projects" as WindowType, bold: true },
   ];
 
+  // 1.25× scaled from original: padding 6px→8px/10px→13px, fontSize 12px→15px, gap 10px→13px
   const menuItemStyle: React.CSSProperties = {
-    padding: "6px 10px",
-    fontSize: "12px",
+    padding: "8px 13px",
+    fontSize: "15px",
     color: "#000",
     border: "none",
     background: "transparent",
@@ -73,7 +74,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
     width: "100%",
     display: "flex",
     alignItems: "center",
-    gap: "10px",
+    gap: "13px",
     textAlign: "left" as const,
     transition: "background 120ms ease, color 120ms ease",
   };
@@ -92,8 +93,8 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
         >
           <div
             style={{
-              width: "400px",
-              borderRadius: "6px 6px 0 0",
+              width: "500px",
+              borderRadius: "8px 8px 0 0",
               overflow: "hidden",
               border: "2px solid #0055E5",
               boxShadow: "4px 0 16px rgba(0,0,0,0.5), 2px 2px 8px rgba(0,0,0,0.4)",
@@ -103,22 +104,22 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
             <div
               style={{
                 background: "linear-gradient(180deg, #1E6BC5 0%, #1659B3 40%, #1555AF 100%)",
-                padding: "8px 10px",
+                padding: "10px 13px",
                 display: "flex",
                 alignItems: "center",
-                gap: "10px",
+                gap: "13px",
               }}
             >
               <Image
                 src="/assets/userprofile.jpg"
                 alt="User"
-                width={40}
-                height={40}
+                width={50}
+                height={50}
                 className="rounded-md"
-                style={{ border: "2px solid #C2DCF5", borderRadius: "3px", objectFit: "cover" }}
+                style={{ border: "2px solid #C2DCF5", borderRadius: "4px", objectFit: "cover" }}
                 draggable={false}
               />
-              <span className="text-white font-bold" style={{ fontSize: "13px", textShadow: "1px 1px 1px rgba(0,0,0,0.5)" }}>
+              <span className="text-white font-bold" style={{ fontSize: "16px", textShadow: "1px 1px 1px rgba(0,0,0,0.5)" }}>
                 Samriddha
               </span>
             </div>
@@ -127,14 +128,14 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
             <div
               style={{
                 background: "#FFFFFF",
-                padding: "4px 10px",
+                padding: "5px 13px",
                 borderBottom: "1px solid #C0C0C0",
                 display: "flex",
                 alignItems: "center",
-                gap: "6px",
+                gap: "8px",
               }}
             >
-              <Image src="/assets/search.png" alt="Search" width={14} height={14} draggable={false} />
+              <Image src="/assets/search.png" alt="Search" width={18} height={18} draggable={false} />
               <input
                 type="text"
                 placeholder="Search programs..."
@@ -143,7 +144,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                 style={{
                   border: "none",
                   outline: "none",
-                  fontSize: "11px",
+                  fontSize: "14px",
                   flex: 1,
                   background: "transparent",
                   fontFamily: "Tahoma, Arial, sans-serif",
@@ -154,9 +155,9 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
             </div>
 
             {/* Body */}
-            <div className="flex" style={{ minHeight: "280px", position: "relative" }}>
+            <div className="flex" style={{ minHeight: "350px", position: "relative" }}>
               {/* Left panel */}
-              <div className="flex-1 flex flex-col" style={{ background: "#FFFFFF", padding: "4px 0", overflow: "hidden" }}>
+              <div className="flex-1 flex flex-col" style={{ background: "#FFFFFF", padding: "5px 0", overflow: "hidden" }}>
 
                 {/* All Programs slide-in panel */}
                 <AnimatePresence>
@@ -169,7 +170,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                       style={{
                         position: "absolute",
                         top: 0, left: 0, bottom: 0,
-                        width: "calc(100% - 180px)",
+                        width: "calc(100% - 225px)",
                         background: "#FFFFFF",
                         zIndex: 2,
                         overflowY: "auto",
@@ -185,15 +186,15 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                           borderBottom: "1px solid #C0C0C0",
                           color: "#0055E5",
                           fontWeight: "bold",
-                          fontSize: "11px",
-                          padding: "5px 10px",
+                          fontSize: "14px",
+                          padding: "6px 13px",
                         }}
                         onMouseEnter={(e) => { e.currentTarget.style.background = "#EEF4FF"; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                       >
                         ◂ Back
                       </button>
-                      <div style={{ padding: "3px 10px 2px", fontSize: "9px", fontWeight: "bold", color: "#808080", letterSpacing: "1px", textTransform: "uppercase" }}>
+                      <div style={{ padding: "4px 13px 3px", fontSize: "11px", fontWeight: "bold", color: "#808080", letterSpacing: "1px", textTransform: "uppercase" }}>
                         All Programs
                       </div>
                       {apps.map((app) => (
@@ -204,10 +205,10 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                           onMouseEnter={(e) => { e.currentTarget.style.background = "#2B71B3"; e.currentTarget.style.color = "#FFF"; }}
                           onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#000"; }}
                         >
-                          <div className="w-[20px] h-[20px] flex items-center justify-center flex-shrink-0" style={{ fontSize: "13px" }}>
+                          <div className="flex items-center justify-center flex-shrink-0" style={{ width: "25px", height: "25px", fontSize: "16px" }}>
                             {app.icon}
                           </div>
-                          <span style={{ fontSize: "11px", truncate: "true" } as any}>{app.title}</span>
+                          <span style={{ fontSize: "14px", truncate: "true" } as any}>{app.title}</span>
                         </button>
                       ))}
                     </motion.div>
@@ -225,7 +226,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                         onMouseEnter={(e) => { e.currentTarget.style.background = "#2B71B3"; e.currentTarget.style.color = "#FFF"; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#000"; }}
                       >
-                        <div className="w-[24px] h-[24px] flex items-center justify-center flex-shrink-0">
+                        <div className="flex items-center justify-center flex-shrink-0" style={{ width: "30px", height: "30px" }}>
                           {app.icon}
                         </div>
                         <span className="font-bold truncate">{app.title}</span>
@@ -233,14 +234,14 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                     ))}
 
                     {searchQuery && filteredApps.length === 0 && (
-                      <div style={{ padding: "12px 10px", color: "#808080", fontSize: "11px" }}>
+                      <div style={{ padding: "15px 13px", color: "#808080", fontSize: "14px" }}>
                         No results for &ldquo;{searchQuery}&rdquo;
                       </div>
                     )}
 
                     {!searchQuery && (
                       <>
-                        <div style={{ height: "1px", background: "#C0C0C0", margin: "4px 6px" }} />
+                        <div style={{ height: "1px", background: "#C0C0C0", margin: "5px 8px" }} />
                         <button
                           className="flex items-center gap-2 w-full text-left"
                           style={menuItemStyle}
@@ -248,7 +249,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                           onMouseEnter={(e) => { e.currentTarget.style.background = "#2B71B3"; e.currentTarget.style.color = "#FFF"; }}
                           onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#000"; }}
                         >
-                          <Image src="/assets/all-programs.ico" alt="" width={16} height={16} draggable={false} />
+                          <Image src="/assets/all-programs.ico" alt="" width={20} height={20} draggable={false} />
                           <span className="font-bold">All Programs</span>
                           <span style={{ marginLeft: "auto" }}>▸</span>
                         </button>
@@ -262,9 +263,9 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
               <div
                 className="flex flex-col"
                 style={{
-                  width: "180px",
+                  width: "225px",
                   background: "linear-gradient(180deg, #4B97D7 0%, #3983C9 20%, #3983C9 80%, #2F76BE 100%)",
-                  padding: "4px 0",
+                  padding: "5px 0",
                   borderLeft: "1px solid #3B87CB",
                   flexShrink: 0,
                 }}
@@ -275,8 +276,8 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                     onClick={() => item.type && handleAppClick(item.type)}
                     className="flex items-center gap-2 w-full text-left text-white"
                     style={{
-                      padding: "5px 10px",
-                      fontSize: "11px",
+                      padding: "6px 13px",
+                      fontSize: "14px",
                       border: "none",
                       background: "transparent",
                       cursor: item.type ? "pointer" : "default",
@@ -296,8 +297,8 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                             : "/assets/folder_program.png"
                       }
                       alt=""
-                      width={20}
-                      height={20}
+                      width={25}
+                      height={25}
                       draggable={false}
                       unoptimized
                     />
@@ -305,7 +306,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                   </button>
                 ))}
 
-                <div style={{ height: "1px", background: "rgba(255,255,255,0.3)", margin: "4px 6px" }} />
+                <div style={{ height: "1px", background: "rgba(255,255,255,0.3)", margin: "5px 8px" }} />
 
                 {[
                   { label: "Resume",      type: "resume"      as WindowType, icon: "/assets/pdf.png" },
@@ -318,8 +319,8 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                     onClick={() => handleAppClick(item.type)}
                     className="flex items-center gap-2 w-full text-left text-white"
                     style={{
-                      padding: "5px 10px",
-                      fontSize: "11px",
+                      padding: "6px 13px",
+                      fontSize: "14px",
                       border: "none",
                       background: "transparent",
                       cursor: "pointer",
@@ -329,7 +330,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                     onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.18)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                   >
-                    <Image src={item.icon} alt="" width={20} height={20} draggable={false} unoptimized />
+                    <Image src={item.icon} alt="" width={25} height={25} draggable={false} unoptimized />
                     <span>{item.label}</span>
                   </button>
                 ))}
@@ -340,10 +341,10 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
             <div
               style={{
                 background: "linear-gradient(180deg, #3580CB 0%, #295EA8 50%, #25559F 100%)",
-                padding: "6px 8px",
+                padding: "8px 10px",
                 display: "flex",
                 justifyContent: "flex-end",
-                gap: "6px",
+                gap: "8px",
                 borderTop: "1px solid #1548A0",
               }}
             >
@@ -351,12 +352,12 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
               <button
                 className="flex items-center gap-2 text-white"
                 style={{
-                  fontSize: "11px",
+                  fontSize: "14px",
                   border: "none",
                   background: "transparent",
                   cursor: "pointer",
-                  padding: "2px 6px",
-                  borderRadius: "3px",
+                  padding: "3px 8px",
+                  borderRadius: "4px",
                   textShadow: "1px 1px 0 rgba(0,0,0,0.3)",
                   transition: "background 120ms ease",
                 }}
@@ -367,7 +368,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                   onShutdownRequest?.();
                 }}
               >
-                <Image src="/assets/logoff.png" alt="Log Off" width={20} height={20} draggable={false} />
+                <Image src="/assets/logoff.png" alt="Log Off" width={25} height={25} draggable={false} />
                 <span>Log Off</span>
               </button>
 
@@ -375,12 +376,12 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
               <button
                 className="flex items-center gap-2 text-white"
                 style={{
-                  fontSize: "11px",
+                  fontSize: "14px",
                   border: "none",
                   background: "transparent",
                   cursor: "pointer",
-                  padding: "2px 6px",
-                  borderRadius: "3px",
+                  padding: "3px 8px",
+                  borderRadius: "4px",
                   textShadow: "1px 1px 0 rgba(0,0,0,0.3)",
                   transition: "background 120ms ease",
                 }}
@@ -391,7 +392,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                   onShutdownRequest?.();
                 }}
               >
-                <Image src="/assets/shutdown.png" alt="Turn Off Computer" width={20} height={20} draggable={false} />
+                <Image src="/assets/shutdown.png" alt="Turn Off Computer" width={25} height={25} draggable={false} />
                 <span>Turn Off Computer</span>
               </button>
             </div>
