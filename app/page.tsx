@@ -1,12 +1,12 @@
 "use client";
 
 import DesktopPanel from "@/desktop/ui/DesktopPanel";
-import { ShutdownAction } from "@/desktop/ui/components/ShutdownModal";
+import { ShutdownAction, ShutdownModal } from "@/desktop/ui/components/ShutdownModal";
 import { useCallback, useEffect, useState } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import WindowsXPLogin from "./components/WindowsXPLogin";
-import WelcomePage from "./components/page";
 import XPShutdownScreen from "./components/XPShutdownScreen";
+import WelcomePage from "./components/page";
 
 type Stage = "boot" | "login" | "welcome" | "desktop";
 
@@ -17,6 +17,7 @@ type ShutdownScreen =
 
 export default function Home() {
   const [stage, setStage] = useState<Stage>("boot");
+  const [shutdownModalOpen, setShutdownModalOpen] = useState(false);
   const [shutdownScreen, setShutdownScreen] = useState<ShutdownScreen | null>(null);
   const [screenVisible, setScreenVisible] = useState(false);   // fade-in trigger
   const [standbyDimmed, setStandbyDimmed] = useState(false);  // standby extra dim pulse
@@ -166,8 +167,21 @@ export default function Home() {
       )}
 
       {stage === "boot" && <LoadingScreen />}
+      {/* Page-level ShutdownModal — shared by login screen and desktop */}
+      <ShutdownModal
+        isOpen={shutdownModalOpen}
+        onClose={() => setShutdownModalOpen(false)}
+        onAction={(action) => {
+          setShutdownModalOpen(false);
+          handleShutdownAction(action);
+        }}
+      />
+
       {stage === "login" && (
-        <WindowsXPLogin onLogin={() => setStage("welcome")} />
+        <WindowsXPLogin
+          onLogin={() => setStage("welcome")}
+          onShutdownRequest={() => setShutdownModalOpen(true)}
+        />
       )}
       {stage === "welcome" && <WelcomePage />}
       {stage === "desktop" && (
