@@ -3,7 +3,12 @@ import Image from "next/image";
 
 import "./WindowsXPLogin.css";
 
-export default function WindowsXPLogin({ onLogin }: { onLogin: () => void }) {
+interface WindowsXPLoginProps {
+  onLogin: () => void;
+  onShutdownRequest?: () => void;
+}
+
+export default function WindowsXPLogin({ onLogin, onShutdownRequest }: WindowsXPLoginProps) {
   return (
     <div id="main-content">
       {/* Header */}
@@ -103,7 +108,11 @@ export default function WindowsXPLogin({ onLogin }: { onLogin: () => void }) {
       <div id="footerStripe"></div>
 
       <div id="footer">
-        <div id="shutdown-group">
+        <div
+          id="shutdown-group"
+          onClick={onShutdownRequest}
+          style={{ cursor: onShutdownRequest ? "pointer" : "default" }}
+        >
           <img
             src="/img/shutdown.png"
             id="shutdown-options"
@@ -123,68 +132,7 @@ export default function WindowsXPLogin({ onLogin }: { onLogin: () => void }) {
         </div>
       </div>
 
-      {/* Shutdown Prompt Overlay */}
-      <div id="shutdown-prompt-overlay">
-        <div id="shutdown-prompt">
-          <div id="shutdown-prompt-header">
-            <span>Turn off computer</span>
-            <Image
-              src="/img/logo-small.png"
-              id="logo-small"
-              alt="XP Logo Small"
-              width={16}
-              height={16}
-            />
-          </div>
 
-          <div id="shutdown-prompt-header-stripe"></div>
-
-          <div id="shutdown-prompt-options">
-            <div className="shutdown-prompt-option">
-              <Image
-                src="/img/suspend.png"
-                className="img-button"
-                alt="Stand By"
-                width={24}
-                height={24}
-              />
-              <span>Stand By</span>
-            </div>
-
-            <div className="shutdown-prompt-option">
-              <Image
-                src="/img/shutdown.png"
-                className="img-button"
-                alt="Turn Off"
-                width={24}
-                height={24}
-              />
-              <span>Turn Off</span>
-            </div>
-
-            <div className="shutdown-prompt-option">
-              <Image
-                src="/img/restart.png"
-                className="img-button"
-                alt="Restart"
-                width={24}
-                height={24}
-              />
-              <span>Restart</span>
-            </div>
-          </div>
-
-          <div id="shutdown-prompt-footer">
-            <div id="shutdown-cancel-button-outline">
-              <div id="shutdown-cancel-button-border">
-                <div id="shutdown-cancel-button">
-                  Cancel
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
