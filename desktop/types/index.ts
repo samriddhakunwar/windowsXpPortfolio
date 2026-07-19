@@ -12,6 +12,7 @@ export interface DesktopContextType {
   updateWindowPosition: (id: string, x: number, y: number) => void;
   resizeWindow: (id: string, w: number, h: number, x: number, y: number) => void;
   minimizeAll: () => void;
+  closeAllWindows: () => void;
 }
 
 export interface DesktopIconData {

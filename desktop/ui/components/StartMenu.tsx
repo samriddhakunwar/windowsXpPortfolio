@@ -11,9 +11,10 @@ interface StartMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onShutdownRequest?: () => void;
+  onLogOffRequest?: () => void;
 }
 
-export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdownRequest }) => {
+export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdownRequest, onLogOffRequest }) => {
   const { launchApp } = useDesktop();
   const menuRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -365,7 +366,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                 onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                 onClick={() => {
                   onClose();
-                  onShutdownRequest?.();
+                  onLogOffRequest?.();
                 }}
               >
                 <Image src="/assets/logoff.png" alt="Log Off" width={25} height={25} draggable={false} />

@@ -125,6 +125,11 @@ export const useWindowManager = () => {
     );
   }, []);
 
+  const closeAllWindows = useCallback(() => {
+    setWindows([]);
+    nextZIndexRef.current = 100;
+  }, []);
+
   return {
     windows,
     openWindow,
@@ -136,5 +141,6 @@ export const useWindowManager = () => {
     updateWindowPosition,
     resizeWindow,
     minimizeAll,
+    closeAllWindows,
   };
 };

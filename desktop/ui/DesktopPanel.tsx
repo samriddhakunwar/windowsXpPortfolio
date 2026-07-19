@@ -2,14 +2,14 @@
 
 import { useDesktop } from "@/desktop/DesktopProvider";
 import { AppRegistry } from "@/desktop/core/AppRegistry";
-import { Window as WindowType } from "@/types";
 import { useSoundSystem } from "@/hooks/useSoundSystem";
+import { Window as WindowType } from "@/types";
 import { AnimatePresence } from "framer-motion";
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { ContextMenu } from "./components/ContextMenu";
 import { DesktopIcon } from "./components/DesktopIcon";
 import { RecycleBinDynamicIcon } from "./components/RecycleBinDynamicIcon";
-import { ShutdownModal, ShutdownAction } from "./components/ShutdownModal";
+import { ShutdownAction, ShutdownModal } from "./components/ShutdownModal";
 import { StartMenu } from "./components/StartMenu";
 import { TaskBar } from "./components/TaskBar";
 import { XPWindow } from "./components/XPWindow";
@@ -34,9 +34,10 @@ function getWallpaper(): string {
 
 interface DesktopPanelProps {
   onShutdownAction?: (action: ShutdownAction) => void;
+  onLogOffRequest?: () => void;
 }
 
-export default function DesktopPanel({ onShutdownAction }: DesktopPanelProps) {
+export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: DesktopPanelProps) {
   const {
     windows,
     launchApp,
@@ -48,6 +49,7 @@ export default function DesktopPanel({ onShutdownAction }: DesktopPanelProps) {
     updateWindowPosition,
     resizeWindow,
     minimizeAll,
+    closeAllWindows,
   } = useDesktop();
 
   const { playSound } = useSoundSystem();
@@ -291,6 +293,11 @@ export default function DesktopPanel({ onShutdownAction }: DesktopPanelProps) {
         onShutdownRequest={() => {
           setStartMenuOpen(false);
           setShutdownModalOpen(true);
+        }}
+        onLogOffRequest={() => {
+          setStartMenuOpen(false);
+          closeAllWindows();
+          onLogOffRequest?.();
         }}
       />
 

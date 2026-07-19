@@ -21,6 +21,8 @@ export default function Home() {
   const [shutdownScreen, setShutdownScreen] = useState<ShutdownScreen | null>(null);
   const [screenVisible, setScreenVisible] = useState(false);   // fade-in trigger
   const [standbyDimmed, setStandbyDimmed] = useState(false);  // standby extra dim pulse
+  const [logoffActive, setLogoffActive] = useState(false);     // logoff screen active
+  const [logoffVisible, setLogoffVisible] = useState(false);   // logoff fade-in trigger
 
   // ── Initial boot delay (3s) ──────────────────────────────────────────────
   useEffect(() => {
@@ -106,6 +108,24 @@ export default function Home() {
     // "turnoff" just stays faded to black — no reload
   }, []);
 
+  // ── Log Off handler ──────────────────────────────────────────────────────
+  const handleLogOffRequest = useCallback(() => {
+    // Show logoff screen (desktop session was already cleared in DesktopPanel)
+    setLogoffActive(true);
+    // Tiny delay so React mounts the element before transition
+    const fadeIn = setTimeout(() => setLogoffVisible(true), 30);
+    // After 2.8 s return to the login screen
+    const navigate = setTimeout(() => {
+      setLogoffVisible(false);
+      // Wait for fade-out before switching stage
+      setTimeout(() => {
+        setLogoffActive(false);
+        setStage("login");
+      }, 900);
+    }, 2800);
+    return () => { clearTimeout(fadeIn); clearTimeout(navigate); };
+  }, []);
+
   // ── Overlay colours / content by screen kind ────────────────────────────
   const overlayBg =
     shutdownScreen?.kind === "standby"
@@ -130,6 +150,14 @@ export default function Home() {
         <XPShutdownScreen
           visible={screenVisible}
           mode={shutdownScreen.kind}
+        />
+      )}
+
+      {/* ── Log Off screen ─────────────────────────────────────────────── */}
+      {logoffActive && (
+        <XPShutdownScreen
+          visible={logoffVisible}
+          mode="logoff"
         />
       )}
 
@@ -185,7 +213,10 @@ export default function Home() {
       )}
       {stage === "welcome" && <WelcomePage />}
       {stage === "desktop" && (
-        <DesktopPanel onShutdownAction={handleShutdownAction} />
+        <DesktopPanel
+          onShutdownAction={handleShutdownAction}
+          onLogOffRequest={handleLogOffRequest}
+        />
       )}
     </>
   );
