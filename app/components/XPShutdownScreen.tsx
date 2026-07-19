@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 interface XPShutdownScreenProps {
   visible: boolean;
-  mode: "turnoff" | "restart";
+  mode: "turnoff" | "restart" | "logoff";
 }
 
 export default function XPShutdownScreen({ visible, mode }: XPShutdownScreenProps) {
@@ -36,7 +36,9 @@ export default function XPShutdownScreen({ visible, mode }: XPShutdownScreenProp
   const statusText =
     mode === "restart"
       ? "Windows is restarting"
-      : "Windows is shutting down";
+      : mode === "logoff"
+        ? "Windows is logging off"
+        : "Windows is shutting down";
 
   // Trailing dots cycle: "", ".", "..", "..."
   const dots = ".".repeat(dotFrame);
