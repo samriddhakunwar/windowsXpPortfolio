@@ -110,18 +110,16 @@ export default function Home() {
 
   // ── Log Off handler ──────────────────────────────────────────────────────
   const handleLogOffRequest = useCallback(() => {
-    // Show logoff screen (desktop session was already cleared in DesktopPanel)
+    // 1. Immediately unmount the desktop (logoffActive gates DesktopPanel below)
     setLogoffActive(true);
-    // Tiny delay so React mounts the element before transition
+    // 2. Tiny paint delay so the element is in the DOM before opacity transitions
     const fadeIn = setTimeout(() => setLogoffVisible(true), 30);
-    // After 2.8 s return to the login screen
+    // 3. After 2.8 s jump straight to login — no fade-out so desktop never bleeds through
     const navigate = setTimeout(() => {
+      // Switch stage AND clear logoff state atomically (React 18 batches these)
+      setLogoffActive(false);
       setLogoffVisible(false);
-      // Wait for fade-out before switching stage
-      setTimeout(() => {
-        setLogoffActive(false);
-        setStage("login");
-      }, 900);
+      setStage("login");
     }, 2800);
     return () => { clearTimeout(fadeIn); clearTimeout(navigate); };
   }, []);
@@ -212,7 +210,8 @@ export default function Home() {
         />
       )}
       {stage === "welcome" && <WelcomePage />}
-      {stage === "desktop" && (
+      {/* Desktop is unmounted the instant logoffActive becomes true */}
+      {stage === "desktop" && !logoffActive && (
         <DesktopPanel
           onShutdownAction={handleShutdownAction}
           onLogOffRequest={handleLogOffRequest}
