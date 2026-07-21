@@ -1,362 +1,228 @@
-# Windows XP Portfolio Website – AI Project Specification
+# 🖥️ Samriddha XP — Portfolio Edition
 
-## Repository
+> A pixel-perfect Windows XP desktop experience, built as an interactive developer portfolio.
 
-https://github.com/samriddhakunwar/windowsXpPortfolio
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61dafb?logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 
-## Objective
-
-Build a **fully functional portfolio website themed around the Windows XP desktop experience**.
-The site should mimic the nostalgic UI of Windows XP while showcasing my **developer portfolio, projects, and skills**.
-
-The website should feel like interacting with a **Windows XP desktop environment inside the browser**.
+Live site: **[samriddhakunwar/windowsXpPortfolio](https://github.com/samriddhakunwar/windowsXpPortfolio)**
 
 ---
 
-# Tech Stack
+## ✨ Overview
 
-Use the following technologies:
-
-- **Next.js 16+ (App Router)**
-- **React 19**
-- **TypeScript**
-- **Tailwind CSS 4**
-- **ShadCN UI (optional where useful)**
-- **Lucide Icons**
-- **Framer Motion for animations**
+This portfolio recreates the authentic **Windows XP desktop environment** inside a browser. Visitors experience a fully interactive OS simulation — from the boot sequence and login screen all the way through to the desktop, draggable windows, Start Menu, and shutdown flow.
 
 ---
 
-# Core Concept
+## 🚀 Features
 
-The website should replicate a **Windows XP operating system UI** in the browser.
+### 🖥️ Boot & Login Flow
+- **Boot Screen** — Animated Windows XP-style BIOS/boot loader screen
+- **Loading Screen** — "Samriddha XP — Portfolio Edition" branded loading bar
+- **Login Screen** — Pixel-perfect Windows XP Welcome Screen with user account selection
+- **Shutdown from Login** — Functional "Turn off computer" button on the login screen, triggering the full shutdown modal
 
-When users open the site they should see:
+### 🗂️ Desktop Environment
+- **XP Wallpaper** — Classic "Bliss" inspired background
+- **Desktop Icons** — Double-click to open windows; icons snap and are draggable
+- **Taskbar** — Pinned apps, open window buttons, system tray, and live clock
+- **Start Menu** — Full Windows XP-style Start Menu with user panel, quick-launch items, and all-programs list
+- **Right-Click Context Menu** — Desktop context menu with XP-style options
 
-A **Windows XP desktop** with:
+### 🪟 Window System
+- **Draggable & Resizable** Windows with authentic XP chrome (title bar, min/max/close buttons)
+- **Minimize / Maximize / Close** with Framer Motion animations
+- **Z-index management** — clicking a window brings it to focus
+- **Taskbar integration** — minimized windows appear in the taskbar
 
-- Wallpaper
-- Desktop icons
-- Start menu
-- Taskbar
-- Draggable windows
-- XP-style UI elements
+### 📂 Portfolio Windows
+| Window | Content |
+|---|---|
+| **About Me** | Photo, bio, tech stack, interests, and career goals |
+| **Projects** | Project cards with title, description, tech stack, GitHub & live demo links |
+| **Skills** | Frontend, Backend, Tools — animated progress bars |
+| **Resume** | Embedded PDF viewer with a download button |
+| **Contact** | Contact form (Name / Email / Message) with email delivery via Resend API |
+| **My Computer** | XP-style "My Computer" with drive and folder navigation |
+| **GitHub** | Live GitHub stats and repository viewer |
+| **Recycle Bin** | Fun Easter egg — an interactive recycle bin |
+| **Minesweeper** | Fully playable Minesweeper game |
+| **Help Center** | XP Help & Support center styled page |
 
-Each icon opens a **window that displays portfolio content**.
-
----
-
-# UI Layout
-
-## Desktop
-
-The main screen should look like a Windows XP desktop.
-
-Features:
-
-- XP wallpaper
-- Desktop icons
-- Taskbar at bottom
-- Start button
-- System tray
-- Clock
-
----
-
-## Desktop Icons
-
-Icons should open draggable windows.
-
-Icons required:
-
-- My Computer
-- About Me
-- Projects
-- Skills
-- Contact
-- Resume
-- GitHub
-
-Each icon opens a window similar to XP explorer windows.
+### ⚙️ Shutdown & Log Off
+- **Shutdown Modal** — Authentic XP "Turn Off Computer" dialog (Stand By / Turn Off / Restart)
+- **XP Shutdown Screen** — Full-screen animated shutdown/restart/logoff sequence
+- **Log Off** — Closes all windows, resets desktop state, and returns to the Login screen
+- **Shutdown / Restart** — Animated XP shutdown screen before returning to Boot
 
 ---
 
-# Windows Behavior
-
-Each window should:
-
-- Be draggable
-- Have minimize button
-- Have maximize button
-- Have close button
-- Appear in taskbar when open
-- Animate when opening
-
-Use **Framer Motion** for animations.
-
----
-
-# Pages / Window Content
-
-## About Me
-
-Display:
-
-- Photo
-- Short bio
-- Tech stack
-- Current interests
-- Career goals
-
----
-
-## Projects
-
-Projects should appear like **folders or files**.
-
-Example:
-
-Project Window Layout:
-
-Project Card
-
-- Title
-- Description
-- Tech stack
-- GitHub link
-- Live demo
-
-Example projects:
-
-- Smart Traffic Management System (Django)
-- Search Engine Project (Django + React)
-- Portfolio Website
-- Data Analysis Project
-
----
-
-## Skills
-
-Display skills grouped into categories.
-
-Example:
-
-Frontend
-
-- React
-- Next.js
-- TypeScript
-- Tailwind
-
-Backend
-
-- Django
-- Django REST Framework
-- Node.js
-
-Tools
-
-- Git
-- Docker
-- Linux
-
-Use animated progress bars.
-
----
-
-## Resume
-
-Show resume preview with:
-
-- Download button
-- PDF viewer
-
----
-
-## Contact
-
-Include:
-
-Contact form:
-
-- Name
-- Email
-- Message
-
-Form should show success message on submit.
-
-No backend required yet.
-
----
-
-# Start Menu
-
-Clicking **Start** should open a Windows XP style start menu.
-
-Menu Items:
-
-- About
-- Projects
-- Skills
-- Resume
-- Contact
-- GitHub
-- Shutdown
-
-Shutdown can display:
-
-"Thanks for visiting my portfolio!"
-
----
-
-# Animations
-
-Use **Framer Motion** for:
-
-- Window open animation
-- Window minimize
-- Taskbar transitions
-- Icon hover effects
-
----
-
-# Folder Structure
-
-The project should follow this structure:
+## 🗃️ Project Structure
 
 ```
-app/
-  layout.tsx
-  page.tsx
-
-components/
-  Desktop.tsx
-  Taskbar.tsx
-  StartMenu.tsx
-  Window.tsx
-  DesktopIcon.tsx
-  DraggableWindow.tsx
-
-windows/
-  AboutWindow.tsx
-  ProjectsWindow.tsx
-  SkillsWindow.tsx
-  ContactWindow.tsx
-  ResumeWindow.tsx
-
-data/
-  projects.ts
-  skills.ts
-
-styles/
-  globals.css
-
-public/
-  icons/
-  wallpaper/
+windowsxp-portfolio-website/
+│
+├── app/                        # Next.js App Router
+│   ├── layout.tsx
+│   ├── page.tsx                # Root entry (renders flow controller)
+│   ├── globals.css
+│   └── components/             # Boot / Login / Shutdown screens
+│       ├── BootScreen.tsx
+│       ├── LoadingScreen.tsx
+│       ├── WindowsXPLogin.tsx
+│       └── XPShutdownScreen.tsx
+│
+├── desktop/                    # Desktop environment
+│   ├── DesktopProvider.tsx     # Global desktop context
+│   ├── context/                # React context for window state
+│   ├── core/                   # Architecture utilities
+│   │   ├── AppRegistry.ts      # Registered apps/windows
+│   │   ├── EventBus.ts         # Cross-component pub/sub events
+│   │   └── WindowManager.ts    # Window lifecycle management
+│   ├── types/                  # Shared TypeScript types
+│   ├── styles/                 # Desktop-specific CSS
+│   └── ui/
+│       ├── DesktopPanel.tsx    # Main desktop canvas
+│       ├── components/         # UI building blocks
+│       │   ├── TaskBar.tsx
+│       │   ├── StartMenu.tsx
+│       │   ├── ShutdownModal.tsx
+│       │   ├── XPWindow.tsx    # Reusable draggable window shell
+│       │   ├── DesktopIcon.tsx
+│       │   ├── ContextMenu.tsx
+│       │   ├── ErrorDialog.tsx
+│       │   └── RecycleBinDynamicIcon.tsx
+│       └── windows/            # Portfolio content windows
+│           ├── AboutWindow.tsx
+│           ├── ProjectsWindow.tsx
+│           ├── SkillsWindow.tsx (via Skills tab in About/Projects)
+│           ├── ContactWindow.tsx
+│           ├── ResumeWindow.tsx
+│           ├── MyComputerWindow.tsx
+│           ├── GithubWindow.tsx
+│           ├── RecycleBinWindow.tsx
+│           ├── MinesweeperWindow.tsx
+│           └── HelpWindow.tsx
+│
+├── data/                       # Static portfolio data
+│   ├── projects.ts
+│   └── skills.ts
+│
+├── hooks/                      # Custom React hooks
+├── types/                      # Global TypeScript types
+│
+└── public/                     # Static assets
+    ├── icons/                  # XP-style PNG icons
+    └── wallpaper/              # Desktop wallpaper
 ```
 
 ---
 
-# Desktop State Management
+## 🛠️ Tech Stack
 
-Use React state to manage:
-
-- Open windows
-- Active window
-- Window position
-- Taskbar items
-
----
-
-# Styling Requirements
-
-UI must match Windows XP design:
-
-- Blue gradients
-- Rounded XP window borders
-- XP style buttons
-- Pixel-like icons
-- Classic fonts
-
-Optional:
-
-Use **Press Start 2P** or similar retro fonts.
+| Technology | Version | Purpose |
+|---|---|---|
+| **Next.js** | 16 | Framework (App Router) |
+| **React** | 19 | UI library |
+| **TypeScript** | 5 | Type safety |
+| **Tailwind CSS** | 4 | Utility-first styling |
+| **Framer Motion** | 11 | Animations & transitions |
+| **react-draggable** | 4 | Draggable window behaviour |
+| **Lucide React** | latest | Icon set |
+| **Resend** | 6 | Contact form email delivery |
+| **uuid** | 9 | Unique window/instance IDs |
 
 ---
 
-# Additional Features
+## ⚡ Getting Started
 
-Add the following if possible:
+### Prerequisites
 
-- Draggable icons
-- Sound effects for opening windows
-- Fake loading screen
-- Boot animation
-- Right-click desktop menu
+- Node.js **18+**
+- npm or yarn
 
----
+### Installation
 
-# Performance Requirements
+```bash
+# Clone the repository
+git clone https://github.com/samriddhakunwar/windowsXpPortfolio.git
+cd windowsXpPortfolio
 
-- Fast loading
-- Responsive
-- Works on desktop and mobile
-- Lighthouse score > 90
-
----
-
-# Deliverables
-
-Claude should generate:
-
-- All React components
-- All pages
-- TypeScript types
-- Sample project data
-- Tailwind styles
-- Functional UI
-
-The site should run using:
-
-```
+# Install dependencies
 npm install
+
+# Copy environment variables
+cp .env.example .env.local
+```
+
+### Environment Variables
+
+Edit `.env.local` and fill in your values:
+
+```env
+# Resend API key (for the Contact window email form)
+RESEND_API_KEY=your_resend_api_key_here
+```
+
+### Running Locally
+
+```bash
 npm run dev
 ```
 
----
+Open [http://localhost:3000](http://localhost:3000) — the site boots through the full XP sequence automatically.
 
-# Expected Result
+### Building for Production
 
-A **fully interactive Windows XP themed portfolio website** where users can:
-
-- Click desktop icons
-- Open windows
-- Browse projects
-- View skills
-- Contact me
-
-The experience should feel like **using Windows XP in the browser**.
+```bash
+npm run build
+npm start
+```
 
 ---
 
-# Repository
+## 🎮 User Flow
 
-https://github.com/samriddhakunwar/windowsXpPortfolio
+```
+Boot Screen → Loading Screen → Login Screen → Desktop
+                                                  │
+                          ┌───────────────────────┤
+                          │                       │
+                     Start Menu              Desktop Icons
+                          │                       │
+              ┌───────────┴──────┐           Open Windows
+              │                  │          (About, Projects,
+           Log Off           Shutdown           Skills…)
+              │             Modal / Screen
+              │
+         Returns to Login
+```
 
-## Credits
+---
 
-* Inspired by the classic Microsoft Windows XP UI by Microsoft
-* UI/UX inspiration from https://mitchivin.com/
-* Additional inspiration from https://github.com/firwer/winxpsite
-* Icons and visual references based on Windows XP design language
-* Built using Next.js, React, Tailwind CSS, and Framer Motion
+## 📧 Contact Form
 
-## Acknowledgements
+The **Contact** window uses the [Resend](https://resend.com) API to send emails server-side via a Next.js API route (`app/api/`). Set your `RESEND_API_KEY` in `.env.local` to enable it.
 
-Special thanks to:
+---
 
-* The open source community
-* Developers who share creative portfolio ideas
+## 📸 Credits & Inspiration
 
+- Windows XP UI design language © Microsoft Corporation
+- UI inspiration: [mitchivin.com](https://mitchivin.com/)
+- Additional reference: [github.com/firwer/winxpsite](https://github.com/firwer/winxpsite)
+- Icons and visual references based on the Windows XP design system
 
+---
+
+## 🙏 Acknowledgements
+
+- The open-source community for making tools like Next.js, Framer Motion, and react-draggable freely available
+- Developers who share creative, unconventional portfolio ideas
+
+---
+
+*Built with ❤️ by [Samriddha Kunwar](https://github.com/samriddhakunwar)*
