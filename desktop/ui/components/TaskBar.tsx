@@ -156,6 +156,13 @@ export const TaskBar: React.FC<TaskbarProps> = ({
         }}
       >
         <Image
+          src="/assets/dialog/info.png"
+          alt="Volume"
+          width={20}
+          height={20}
+          draggable={false}
+        />
+        <Image
           src="/assets/sound.png"
           alt="Volume"
           width={20}
