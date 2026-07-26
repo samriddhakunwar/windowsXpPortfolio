@@ -110,6 +110,11 @@ export default function Home() {
 
   // ── Log Off handler ──────────────────────────────────────────────────────
   const handleLogOffRequest = useCallback(() => {
+    // Play the authentic Windows XP Log Off sound immediately
+    const logoffAudio = new Audio("/audio/windows-xp-logoff.wav");
+    logoffAudio.volume = 0.7;
+    logoffAudio.play().catch(() => {});
+
     // 1. Immediately unmount the desktop (logoffActive gates DesktopPanel below)
     setLogoffActive(true);
     // 2. Tiny paint delay so the element is in the DOM before opacity transitions
