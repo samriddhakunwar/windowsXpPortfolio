@@ -228,6 +228,61 @@ select:focus {
   margin: 2px 0;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Desktop Icon Right-Click Context Menu (XP style)
+   ───────────────────────────────────────────────────────────────────────────── */
+.xp-icon-context-menu {
+  background: #F1F1F1;
+  border: 1px solid #7A7A7A;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.30);
+  border-radius: 0;
+  padding: 2px 0;
+  min-width: 180px;
+  font-size: 11px;
+  font-family: Tahoma, Arial, sans-serif;
+  color: #000000;
+  user-select: none;
+  animation: xp-context-fade 80ms ease-out;
+}
+
+.xp-icon-ctx-item {
+  display: block;
+  padding: 3px 22px 3px 24px;
+  cursor: default;
+  white-space: nowrap;
+  color: #000000;
+  line-height: 1.5;
+}
+
+.xp-icon-ctx-item:hover {
+  background: #316AC5;
+  color: #FFFFFF;
+}
+
+/* "Open" is shown in bold — classic XP default action */
+.xp-icon-ctx-bold {
+  font-weight: bold;
+}
+
+/* Disabled / non-functional items — grayed out, fully inert */
+.xp-icon-ctx-disabled {
+  color: #808080;
+  pointer-events: none;
+  cursor: default;
+}
+
+.xp-icon-ctx-disabled:hover {
+  background: transparent;
+  color: #808080;
+}
+
+.xp-icon-ctx-separator {
+  height: 1px;
+  background: #D0CEC5;
+  margin: 2px 0;
+  border: none;
+}
+
 /* Loading spinner (XP style) */
 @keyframes xp-progress {
   0% { transform: translateX(-100%); }

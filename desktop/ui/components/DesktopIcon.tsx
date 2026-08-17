@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { WindowType } from "@/types";
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 // ─── Icon Scale ───────────────────────────────────────────────────────────────
@@ -30,6 +30,7 @@ interface DesktopIconProps {
   label: string;
   icon: React.ReactNode;
   onDoubleClick: () => void;
+  onContextMenu?: (e: React.MouseEvent) => void;
   position?: { x: number; y: number };
 }
 
@@ -38,6 +39,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
   label,
   icon,
   onDoubleClick,
+  onContextMenu,
 }) => {
   const [selected, setSelected] = useState(false);
   const [clicked, setClicked] = useState(false);
@@ -74,13 +76,21 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
 
   const description = APP_DESCRIPTIONS[type] ?? label;
 
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onContextMenu?.(e);
+  };
+
   return (
     <div
       ref={ref}
+      data-desktop-icon
       className="select-none"
       style={{ width: `${WRAPPER_WIDTH}px`, padding: WRAPPER_PADDING, textAlign: "center", cursor: "default", position: "relative" }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onContextMenu={handleContextMenu}
     >
       <motion.div
         onClick={() => setSelected(true)}

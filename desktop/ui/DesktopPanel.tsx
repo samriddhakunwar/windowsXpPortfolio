@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { ContextMenu } from "./components/ContextMenu";
 import { DesktopIcon } from "./components/DesktopIcon";
+import { DesktopIconContextMenu, DesktopIconInfo } from "./components/DesktopIconContextMenu";
 import { RecycleBinDynamicIcon } from "./components/RecycleBinDynamicIcon";
 import { ShutdownAction, ShutdownModal } from "./components/ShutdownModal";
 import { StartMenu } from "./components/StartMenu";
@@ -19,6 +20,12 @@ interface ContextMenuState {
   y: number;
   type: "desktop" | "window";
   windowId?: string;
+}
+
+interface IconContextMenuState {
+  icon: DesktopIconInfo;
+  x: number;
+  y: number;
 }
 
 function getWallpaper(): string {
@@ -56,6 +63,7 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
   const [startMenuOpen, setStartMenuOpen] = useState(false);
   const [shutdownModalOpen, setShutdownModalOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+  const [iconContextMenu, setIconContextMenu] = useState<IconContextMenuState | null>(null);
   const [wallpaper, setWallpaper] = useState("/assets/bg.jpg");
 
   // Load wallpaper from localStorage on mount
@@ -85,6 +93,7 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
       if (e.key === "Escape") {
         setStartMenuOpen(false);
         setContextMenu(null);
+        setIconContextMenu(null);
       }
 
       // Alt + F4 → close focused window
@@ -141,15 +150,30 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
       if (e.target === e.currentTarget) {
         setStartMenuOpen(false);
         setContextMenu(null);
+        setIconContextMenu(null);
       }
     },
     [],
   );
 
   const handleDesktopContextMenu = useCallback((e: React.MouseEvent) => {
+    // Only show desktop context menu when clicking the actual desktop background element itself,
+    // not desktop icons, windows, taskbar, start menu, or any other UI elements.
+    const target = e.target as HTMLElement;
+    if (!target.hasAttribute("data-desktop-background")) return;
     e.preventDefault();
+    setIconContextMenu(null);
     setContextMenu({ x: e.clientX, y: e.clientY, type: "desktop" });
   }, []);
+
+  const handleIconContextMenu = useCallback(
+    (e: React.MouseEvent, iconData: DesktopIconInfo) => {
+      // e.preventDefault() and e.stopPropagation() are already called inside DesktopIcon
+      setContextMenu(null);
+      setIconContextMenu({ icon: iconData, x: e.clientX, y: e.clientY });
+    },
+    [],
+  );
 
   const handleWindowContextMenu = useCallback(
     (e: React.MouseEvent, windowId: string) => {
@@ -197,6 +221,7 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
   return (
     <>
     <div
+      data-desktop-background
       onClick={handleDesktopClick}
       onContextMenu={handleDesktopContextMenu}
       style={{
@@ -233,6 +258,9 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
             label={iconData.label}
             icon={iconData.icon}
             onDoubleClick={() => handleIconDoubleClick(iconData.type)}
+            onContextMenu={(e) =>
+              handleIconContextMenu(e, { type: iconData.type, label: iconData.label })
+            }
           />
         ))}
       </div>
@@ -272,7 +300,7 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
         })}
       </AnimatePresence>
 
-      {/* Context Menu */}
+      {/* Desktop / Window Context Menu */}
       {contextMenu && (
         <ContextMenu
           x={contextMenu.x}
@@ -283,6 +311,18 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
               : getWindowContextItems(contextMenu.windowId ?? "")
           }
           onClose={() => setContextMenu(null)}
+        />
+      )}
+
+      {/* Desktop Icon Context Menu */}
+      {iconContextMenu && (
+        <DesktopIconContextMenu
+          icon={iconContextMenu.icon}
+          position={{ x: iconContextMenu.x, y: iconContextMenu.y }}
+          onOpen={() => {
+            handleIconDoubleClick(iconContextMenu.icon.type);
+          }}
+          onClose={() => setIconContextMenu(null)}
         />
       )}
 

@@ -52,8 +52,10 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, items, onClose }
   // Clamp position so menu doesn't go offscreen
   const menuWidth = 180;
   const menuHeight = items.length * 22 + 8;
-  const clampedX = Math.min(x, window.innerWidth - menuWidth - 8);
-  const clampedY = Math.min(y, window.innerHeight - menuHeight - 48);
+  const vw = typeof window !== "undefined" ? window.innerWidth : 1280;
+  const vh = typeof window !== "undefined" ? window.innerHeight : 768;
+  const clampedX = Math.min(x, vw - menuWidth - 8);
+  const clampedY = Math.min(y, vh - menuHeight - 48);
 
   return (
     <div
