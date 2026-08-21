@@ -115,20 +115,6 @@ export class AppRegistry {
 
 
     this.registerApp({
-      id: "help",
-      title: "Help & Support",
-      defaultWidth: 720,
-      defaultHeight: 540,
-      component: lazy(() =>
-        import("@/desktop/ui/windows/HelpWindow").then((m) => ({
-          default: m.HelpWindow,
-        }))
-      ),
-      icon: icon("/assets/help.png", "Help & Support"),
-      launchable: true,
-    });
-
-    this.registerApp({
       id: "recycle",
       title: "Recycle Bin",
       defaultWidth: 580,
@@ -153,6 +139,20 @@ export class AppRegistry {
         }))
       ),
       icon: icon("/assets/minesweeper.png", "Minesweeper"),
+      launchable: true,
+    });
+
+    this.registerApp({
+      id: "help",
+      title: "Help & Support",
+      defaultWidth: 720,
+      defaultHeight: 540,
+      component: lazy(() =>
+        import("@/desktop/ui/windows/HelpWindow").then((m) => ({
+          default: m.HelpWindow,
+        }))
+      ),
+      icon: icon("/assets/help.png", "Help & Support"),
       launchable: true,
     });
 

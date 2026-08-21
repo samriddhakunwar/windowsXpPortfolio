@@ -128,7 +128,8 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
     }));
     // Recycle Bin uses a live React element that reads from RecycleBinContext
     // so the icon switches between empty/full without any page refresh.
-    icons.push({
+    // Insert at index 6 (after GitHub, before Minesweeper) → col-2 row-2.
+    icons.splice(6, 0, {
       type: "recycle" as const,
       label: "Recycle Bin",
       icon: React.createElement(RecycleBinDynamicIcon),
