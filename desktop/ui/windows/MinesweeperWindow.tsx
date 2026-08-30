@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useReducer, useRef, useState } from "react";
 import { useDesktop } from "@/desktop/DesktopProvider";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
