@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import React, { useCallback, useRef } from "react";
 
@@ -23,6 +23,8 @@ interface XPWindowProps {
   onResize?: (w: number, h: number, x: number, y: number) => void;
   onFocus?: () => void;
   zIndex?: number;
+  /** When true the maximize button is shown but disabled (grayed-out, non-interactive) */
+  disableMaximize?: boolean;
 }
 
 const MIN_W = 160;
@@ -60,6 +62,7 @@ export const XPWindow: React.FC<XPWindowProps> = ({
   onResize,
   onFocus,
   zIndex = 10,
+  disableMaximize = false,
 }) => {
   const dragRef = useRef<{
     startX: number;
@@ -107,9 +110,10 @@ export const XPWindow: React.FC<XPWindowProps> = ({
   const handleTitleBarDoubleClick = useCallback(
     (e: React.MouseEvent) => {
       if ((e.target as HTMLElement).closest("button")) return;
+      if (disableMaximize) return;
       onMaximize();
     },
-    [onMaximize],
+    [onMaximize, disableMaximize],
   );
 
   const handleResizeMouseDown = useCallback(
@@ -295,24 +299,47 @@ export const XPWindow: React.FC<XPWindowProps> = ({
                   <Image src="/assets/minimise.png" alt="Minimize" width={20} height={20} draggable={false} />
                 </motion.button>
                 {/* Maximize/Restore */}
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={(e) => { e.stopPropagation(); onMaximize(); }}
-                  className="w-[21px] h-[21px] flex items-center justify-center rounded-sm"
-                  style={{
-                    background: "linear-gradient(180deg, #3C8CF6 0%, #0E59CE 50%, #0853C2 100%)",
-                    border: "1px solid #fff",
-                    borderBottom: "1px solid #0241A0",
-                    borderRight: "1px solid #0241A0",
-                  }}
-                >
-                  <Image
-                    src={isMaximized ? "/assets/resize.png" : "/assets/maximise.png"}
-                    alt={isMaximized ? "Restore" : "Maximize"}
-                    width={20} height={20} draggable={false}
-                  />
-                </motion.button>
+                {disableMaximize ? (
+                  <div
+                    className="w-[21px] h-[21px] flex items-center justify-center rounded-sm"
+                    title="Maximize is disabled"
+                    style={{
+                      background: "linear-gradient(180deg, #8aacd6 0%, #6080a8 50%, #5a789e 100%)",
+                      border: "1px solid rgba(255,255,255,0.5)",
+                      borderBottom: "1px solid #3a5270",
+                      borderRight: "1px solid #3a5270",
+                      opacity: 0.55,
+                      cursor: "default",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    <Image
+                      src="/assets/maximise.png"
+                      alt="Maximize (disabled)"
+                      width={20} height={20} draggable={false}
+                      style={{ opacity: 0.5 }}
+                    />
+                  </div>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={(e) => { e.stopPropagation(); onMaximize(); }}
+                    className="w-[21px] h-[21px] flex items-center justify-center rounded-sm"
+                    style={{
+                      background: "linear-gradient(180deg, #3C8CF6 0%, #0E59CE 50%, #0853C2 100%)",
+                      border: "1px solid #fff",
+                      borderBottom: "1px solid #0241A0",
+                      borderRight: "1px solid #0241A0",
+                    }}
+                  >
+                    <Image
+                      src={isMaximized ? "/assets/resize.png" : "/assets/maximise.png"}
+                      alt={isMaximized ? "Restore" : "Maximize"}
+                      width={20} height={20} draggable={false}
+                    />
+                  </motion.button>
+                )}
                 {/* Close */}
                 <motion.button
                   whileHover={{ scale: 1.1 }}

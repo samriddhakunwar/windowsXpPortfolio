@@ -293,6 +293,7 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
                 onFocus={() => focusWindow(window.id)}
                 onDragEnd={(x, y) => updateWindowPosition(window.id, x, y)}
                 onResize={(w, h, x, y) => resizeWindow(window.id, w, h, x, y)}
+                disableMaximize={window.type === "minesweeper"}
               >
                 {renderWindowContent(window)}
               </XPWindow>
