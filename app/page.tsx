@@ -23,6 +23,7 @@ export default function Home() {
   const [standbyDimmed, setStandbyDimmed] = useState(false);  // standby extra dim pulse
   const [logoffActive, setLogoffActive] = useState(false);     // logoff screen active
   const [logoffVisible, setLogoffVisible] = useState(false);   // logoff fade-in trigger
+  const [startupSoundEnded, setStartupSoundEnded] = useState(false); // XP startup sound finished playing
 
   // ── Initial boot delay (3s) ──────────────────────────────────────────────
   useEffect(() => {
@@ -35,13 +36,30 @@ export default function Home() {
   // ── Welcome → play XP startup sound → desktop ───────────────────────────
   useEffect(() => {
     if (stage === "welcome") {
+      let notifyTimer: ReturnType<typeof setTimeout> | null = null;
+      // The desktop's welcome notification waits 1s past this instead of a
+      // guessed startup-sound duration, so it never appears before the
+      // sound is actually done.
+      const scheduleNotification = () => {
+        notifyTimer = setTimeout(() => setStartupSoundEnded(true), 1000);
+      };
+
       const timer = setTimeout(() => {
         const audio = new Audio("/audio/windows-xp-startup.mp3");
         audio.volume = 0.7;
-        audio.play().catch(() => {});
+        audio.addEventListener("ended", scheduleNotification, { once: true });
+        audio.play().catch(() => {
+          // Autoplay blocked — nothing will ever fire "ended", so don't
+          // leave the desktop's welcome notification stuck waiting forever.
+          scheduleNotification();
+        });
         setStage("desktop");
       }, 3000);
-      return () => clearTimeout(timer);
+
+      return () => {
+        clearTimeout(timer);
+        if (notifyTimer) clearTimeout(notifyTimer);
+      };
     }
   }, [stage]);
 
@@ -210,7 +228,10 @@ export default function Home() {
 
       {stage === "login" && (
         <WindowsXPLogin
-          onLogin={() => setStage("welcome")}
+          onLogin={() => {
+            setStartupSoundEnded(false);
+            setStage("welcome");
+          }}
           onShutdownRequest={() => setShutdownModalOpen(true)}
         />
       )}
@@ -220,6 +241,7 @@ export default function Home() {
         <DesktopPanel
           onShutdownAction={handleShutdownAction}
           onLogOffRequest={handleLogOffRequest}
+          startupSoundEnded={startupSoundEnded}
         />
       )}
     </>

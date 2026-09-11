@@ -31,8 +31,6 @@ interface IconContextMenuState {
 
 const DEFAULT_WALLPAPER = "/assets/bg.jpg";
 const BALLOON_SOUND_SRC = "/audio/windows-xp-balloon_C_minor.wav";
-/** Delay after mount before the welcome balloon appears (no sound — see handleInfoClick). */
-const BALLOON_WELCOME_DELAY_MS = 500;
 
 function getWallpaper(): string {
   try {
@@ -57,9 +55,11 @@ function getServerWallpaper() {
 interface DesktopPanelProps {
   onShutdownAction?: (action: ShutdownAction) => void;
   onLogOffRequest?: () => void;
+  /** True once the XP startup sound has fully finished playing (see app/page.tsx). */
+  startupSoundEnded?: boolean;
 }
 
-export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: DesktopPanelProps) {
+export default function DesktopPanel({ onShutdownAction, onLogOffRequest, startupSoundEnded }: DesktopPanelProps) {
   const {
     windows,
     launchApp,
@@ -80,6 +80,7 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const [iconContextMenu, setIconContextMenu] = useState<IconContextMenuState | null>(null);
   const [balloonVisible, setBalloonVisible] = useState(false);
+  const [balloonAutoShown, setBalloonAutoShown] = useState(false);
   const infoButtonRef = useRef<HTMLButtonElement>(null);
   const wallpaper = useSyncExternalStore(
     subscribeToWallpaperChanges,
@@ -87,12 +88,28 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
     getServerWallpaper,
   );
 
-  // Welcome balloon — appears once, shortly after the desktop mounts. No
-  // sound here; the balloon sound only plays for an explicit Info click.
+  // Welcome balloon — appears (with sound) 1s after the XP startup sound has
+  // completely finished, or immediately if it was blocked from playing at
+  // all (see app/page.tsx). Adjusted during render, React's documented
+  // pattern for syncing local state to a prop change, rather than in an
+  // effect — this is a one-shot trigger, not a subscription to an external
+  // system.
+  if (startupSoundEnded && !balloonAutoShown) {
+    setBalloonAutoShown(true);
+    setBalloonVisible(true);
+  }
+
+  // Plays exactly once, reacting to the auto-show trigger above — separate
+  // from handleInfoClick's own sound so a manual toggle never double-plays it.
   useEffect(() => {
-    const timer = setTimeout(() => setBalloonVisible(true), BALLOON_WELCOME_DELAY_MS);
-    return () => clearTimeout(timer);
-  }, []);
+    if (!balloonAutoShown) return;
+    const audio = new Audio(BALLOON_SOUND_SRC);
+    audio.volume = 0.7;
+    audio.play().catch(() => {
+      // Autoplay blocked by the browser — fail silently, same as the
+      // existing startup/shutdown sounds elsewhere in the app.
+    });
+  }, [balloonAutoShown]);
 
   const handleInfoClick = useCallback(() => {
     setBalloonVisible((prev) => !prev);
