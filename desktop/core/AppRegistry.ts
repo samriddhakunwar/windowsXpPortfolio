@@ -1,4 +1,5 @@
 import { WindowType } from "@/types";
+import NextImage from "next/image";
 import React, { lazy, ReactNode } from "react";
 
 export interface AppMetadata {
@@ -6,7 +7,7 @@ export interface AppMetadata {
   title: string;
   defaultWidth: number;
   defaultHeight: number;
-  component: React.LazyExoticComponent<React.ComponentType<any>>;
+  component: React.LazyExoticComponent<React.ComponentType<Record<string, never>>>;
   icon: ReactNode;
   launchable: boolean;
 }
@@ -18,7 +19,6 @@ export class AppRegistry {
   static initialize() {
     if (this.initialized) return;
 
-    const NextImage = require("next/image").default;
     const icon = (src: string, alt: string) =>
       React.createElement(NextImage, {
         src,

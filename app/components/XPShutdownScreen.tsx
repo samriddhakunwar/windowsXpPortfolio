@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface XPShutdownScreenProps {
   visible: boolean;
@@ -11,26 +11,27 @@ interface XPShutdownScreenProps {
 export default function XPShutdownScreen({ visible, mode }: XPShutdownScreenProps) {
   const [cursorHidden, setCursorHidden] = useState(false);
   const [dotFrame, setDotFrame] = useState(0);
-  const dotTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Hide cursor after 1.5 s (authentic XP behaviour)
+  // Hide cursor after 1.5 s (authentic XP behaviour); reset on hide via cleanup.
   useEffect(() => {
-    if (!visible) { setCursorHidden(false); return; }
+    if (!visible) return;
     const t = setTimeout(() => setCursorHidden(true), 1500);
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      setCursorHidden(false);
+    };
   }, [visible]);
 
-  // Animate loading dots while visible
+  // Animate loading dots while visible; reset on hide via cleanup.
   useEffect(() => {
-    if (visible) {
-      dotTimer.current = setInterval(() => {
-        setDotFrame(f => (f + 1) % 4);
-      }, 450);
-    } else {
-      if (dotTimer.current) clearInterval(dotTimer.current);
+    if (!visible) return;
+    const id = setInterval(() => {
+      setDotFrame(f => (f + 1) % 4);
+    }, 450);
+    return () => {
+      clearInterval(id);
       setDotFrame(0);
-    }
-    return () => { if (dotTimer.current) clearInterval(dotTimer.current); };
+    };
   }, [visible]);
 
   const statusText =

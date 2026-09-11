@@ -16,7 +16,6 @@ interface DesktopIconContextMenuProps {
 }
 
 export const DesktopIconContextMenu: React.FC<DesktopIconContextMenuProps> = ({
-  icon,
   position,
   onOpen,
   onClose,

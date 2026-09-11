@@ -104,7 +104,6 @@ windowsxp-portfolio-website/
 │       └── windows/              # Portfolio content windows
 │           ├── AboutWindow.tsx
 │           ├── ProjectsWindow.tsx
-│           ├── SkillsWindow.tsx
 │           ├── ContactWindow.tsx
 │           ├── ResumeWindow.tsx
 │           ├── MyComputerWindow.tsx
@@ -113,17 +112,13 @@ windowsxp-portfolio-website/
 │           ├── MinesweeperWindow.tsx
 │           └── HelpWindow.tsx
 │
-├── data/                         # Static portfolio content
-│   ├── projects.ts
-│   └── skills.ts
-│
-├── hooks/                        # Custom React hooks (e.g. useWindowManager)
+├── hooks/                        # Custom React hooks (useWindowManager, useSoundSystem)
 ├── types/                        # Global TypeScript type definitions
 │
 └── public/                       # Static assets
-    ├── icons/                    # XP-style PNG icons
+    ├── assets/                   # XP-style PNG icons, project screenshots, Minesweeper sprites
     ├── audio/                    # Authentic XP sound effects
-    ├── wallpaper/                # Desktop wallpaper images
+    ├── img/                      # Boot/login screen art
     └── resume.pdf                # Downloadable résumé
 ```
 

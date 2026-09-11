@@ -1,4 +1,4 @@
-export type EventCallback = (data?: any) => void;
+export type EventCallback = (data?: unknown) => void;
 
 export class EventBus {
   private static listeners: Map<string, EventCallback[]> = new Map();
@@ -13,7 +13,7 @@ export class EventBus {
     return () => this.off(event, callback);
   }
 
-  static emit(event: string, data?: any) {
+  static emit(event: string, data?: unknown) {
     const callbacks = this.listeners.get(event);
     if (callbacks) {
       callbacks.forEach((cb) => {

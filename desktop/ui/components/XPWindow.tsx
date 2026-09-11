@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 
 interface XPWindowProps {
   id: string;
@@ -71,7 +71,9 @@ export const XPWindow: React.FC<XPWindowProps> = ({
     origY: number;
   } | null>(null);
   const posRef = useRef({ x, y, width, height });
-  posRef.current = { x, y, width, height };
+  useEffect(() => {
+    posRef.current = { x, y, width, height };
+  }, [x, y, width, height]);
 
   const handleTitleBarMouseDown = useCallback(
     (e: React.MouseEvent) => {

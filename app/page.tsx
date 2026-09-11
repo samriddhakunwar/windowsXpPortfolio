@@ -47,25 +47,25 @@ export default function Home() {
 
   // ── Animate shutdown screen in after it's mounted ───────────────────────
   useEffect(() => {
-    if (shutdownScreen) {
-      // tiny delay so React paints the element before the transition starts
-      const t = setTimeout(() => setScreenVisible(true), 30);
-      return () => clearTimeout(t);
-    } else {
+    if (!shutdownScreen) return;
+    // tiny delay so React paints the element before the transition starts
+    const t = setTimeout(() => setScreenVisible(true), 30);
+    return () => {
+      clearTimeout(t);
       setScreenVisible(false);
-    }
+    };
   }, [shutdownScreen]);
 
   // ── Stand-by pulsing dim ─────────────────────────────────────────────────
   useEffect(() => {
-    if (shutdownScreen?.kind !== "standby") {
-      setStandbyDimmed(false);
-      return;
-    }
+    if (shutdownScreen?.kind !== "standby") return;
     const interval = setInterval(() => {
       setStandbyDimmed((prev) => !prev);
     }, 2200);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      setStandbyDimmed(false);
+    };
   }, [shutdownScreen]);
 
   // ── Standby: exit on click or keypress ──────────────────────────────────

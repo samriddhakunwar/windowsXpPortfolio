@@ -31,18 +31,6 @@ const TIPS: Record<string, { title: string; desc: string }> = {
   },
 };
 
-// Authentic Windows XP 4-colour flag logo — scaled to 23×23 (115% of 20)
-const WinLogo = () => (
-  <svg width="23" height="23" viewBox="0 0 38 38" aria-hidden>
-    <path d="M0 5.6 L17 3.2 L17 18.2 L0 18.2 Z" fill="#FF6B2B" />
-    <path d="M18.4 3 L38 0 L38 18.2 L18.4 18.2 Z" fill="#8DC63F" />
-    <path d="M0 19.8 L17 19.8 L17 34.8 L0 32.4 Z" fill="#2BAAE1" />
-    <path d="M18.4 19.8 L38 19.8 L38 38 L18.4 35.6 Z" fill="#FFCF01" />
-  </svg>
-);
-
-
-
 // ── XP Cancel push-button ────────────────────────────────────────────────────
 const XPButton: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick }) => {
   const [h, setH] = useState(false);
@@ -202,11 +190,12 @@ export const ShutdownModal: React.FC<ShutdownModalProps> = ({ isOpen, onClose, o
   }, [isOpen, shift, onClose, onAction]);
 
   useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen) return;
+    return () => {
       setHovered(null);
       setTipVisible(false);
       setPressed(null);
-    }
+    };
   }, [isOpen]);
 
   const handleEnter = (id: string) => {

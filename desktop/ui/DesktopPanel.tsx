@@ -3,9 +3,9 @@
 import { useDesktop } from "@/desktop/DesktopProvider";
 import { AppRegistry } from "@/desktop/core/AppRegistry";
 import { useSoundSystem } from "@/hooks/useSoundSystem";
-import { Window as WindowType } from "@/types";
+import { Window as WindowType, WindowType as AppWindowType } from "@/types";
 import { AnimatePresence } from "framer-motion";
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { ContextMenu } from "./components/ContextMenu";
 import { DesktopIcon } from "./components/DesktopIcon";
 import { DesktopIconContextMenu, DesktopIconInfo } from "./components/DesktopIconContextMenu";
@@ -13,6 +13,7 @@ import { RecycleBinDynamicIcon } from "./components/RecycleBinDynamicIcon";
 import { ShutdownAction, ShutdownModal } from "./components/ShutdownModal";
 import { StartMenu } from "./components/StartMenu";
 import { TaskBar } from "./components/TaskBar";
+import { XPBalloonNotification } from "./components/XPBalloonNotification";
 import { XPWindow } from "./components/XPWindow";
 
 interface ContextMenuState {
@@ -28,6 +29,8 @@ interface IconContextMenuState {
   y: number;
 }
 
+const DEFAULT_WALLPAPER = "/assets/bg.jpg";
+
 function getWallpaper(): string {
   try {
     const s = localStorage.getItem("xp-settings");
@@ -36,7 +39,16 @@ function getWallpaper(): string {
       if (parsed.wallpaper) return parsed.wallpaper;
     }
   } catch {}
-  return "/assets/bg.jpg";
+  return DEFAULT_WALLPAPER;
+}
+
+function subscribeToWallpaperChanges(callback: () => void) {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+function getServerWallpaper() {
+  return DEFAULT_WALLPAPER;
 }
 
 interface DesktopPanelProps {
@@ -64,17 +76,11 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
   const [shutdownModalOpen, setShutdownModalOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const [iconContextMenu, setIconContextMenu] = useState<IconContextMenuState | null>(null);
-  const [wallpaper, setWallpaper] = useState("/assets/bg.jpg");
-
-  // Load wallpaper from localStorage on mount
-  useEffect(() => {
-    setWallpaper(getWallpaper());
-    const onStorage = () => setWallpaper(getWallpaper());
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-    };
-  }, []);
+  const wallpaper = useSyncExternalStore(
+    subscribeToWallpaperChanges,
+    getWallpaper,
+    getServerWallpaper,
+  );
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -138,7 +144,7 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
   }, []);
 
   const handleIconDoubleClick = useCallback(
-    (type: any) => {
+    (type: AppWindowType) => {
       setStartMenuOpen(false);
       playSound("open");
       launchApp(type);
@@ -352,6 +358,9 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
         onStartClick={() => setStartMenuOpen((prev) => !prev)}
         startMenuOpen={startMenuOpen}
       />
+
+      {/* Welcome balloon — appears 0.5s after the desktop mounts */}
+      <XPBalloonNotification />
     </div>
 
       {/* Shutdown Modal — outside overflow:hidden desktop div for perfect centering */}

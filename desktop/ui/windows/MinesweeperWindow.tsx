@@ -91,11 +91,11 @@ function insertMines(difficulty: Difficulty, exclude: number, originCeils: Ceil[
 
 function autoCeils(state: GameState, index: number): number[] {
   const { rows, columns } = state;
-  const ceils = state.ceils.map((c) => ({ ...c, walked: false }));
+  const ceils: (Ceil & { walked: boolean })[] = state.ceils.map((c) => ({ ...c, walked: false }));
   function walk(i: number): number[] {
     const c = ceils[i];
-    if (!c || (c as any).walked || c.minesAround < 0 || c.state === "flag") return [];
-    (c as any).walked = true;
+    if (!c || c.walked || c.minesAround < 0 || c.state === "flag") return [];
+    c.walked = true;
     if (c.minesAround > 0) return [i];
     return [i, ...getNearIndexes(i, rows, columns).flatMap(walk)];
   }
@@ -177,12 +177,21 @@ function reducer(state: GameState, action: Action): GameState {
 
 function useTimer(status: GameStatus) {
   const [seconds, setSeconds] = useState(0);
-  useEffect(() => {
-    let t: ReturnType<typeof setInterval>;
-    if (status === "started") t = setInterval(() => setSeconds((s) => s + 1), 1000);
+
+  // Reset the clock the moment a new game starts (adjusting state during
+  // render, per React's guidance for resetting state on a prop change).
+  const [prevStatus, setPrevStatus] = useState(status);
+  if (status !== prevStatus) {
+    setPrevStatus(status);
     if (status === "new") setSeconds(0);
+  }
+
+  useEffect(() => {
+    if (status !== "started") return;
+    const t = setInterval(() => setSeconds((s) => s + 1), 1000);
     return () => clearInterval(t);
   }, [status]);
+
   return seconds;
 }
 
@@ -240,9 +249,9 @@ function DDRow({ children, onClick }: { children: React.ReactNode; onClick?: () 
   return (
     <div style={{ display: "contents" }} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} onMouseUp={onClick}>
       {React.Children.map(children, (child) =>
-        React.isValidElement(child)
-          ? React.cloneElement(child as React.ReactElement<any>, {
-              style: { ...(child as any).props.style, background: hov ? "#316AC5" : "transparent", color: hov ? "#fff" : "#000" },
+        React.isValidElement<{ style?: React.CSSProperties }>(child)
+          ? React.cloneElement(child, {
+              style: { ...child.props.style, background: hov ? "#316AC5" : "transparent", color: hov ? "#fff" : "#000" },
             })
           : child
       )}

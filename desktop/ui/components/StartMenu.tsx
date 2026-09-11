@@ -21,11 +21,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
   const [showAllPrograms, setShowAllPrograms] = useState(false);
 
   useEffect(() => {
-    if (!isOpen) {
-      setSearchQuery("");
-      setShowAllPrograms(false);
-      return;
-    }
+    if (!isOpen) return;
 
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -42,6 +38,8 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
     return () => {
       clearTimeout(timer);
       document.removeEventListener("mousedown", handleClickOutside);
+      setSearchQuery("");
+      setShowAllPrograms(false);
     };
   }, [isOpen, onClose]);
 
@@ -209,7 +207,7 @@ export const StartMenu: React.FC<StartMenuProps> = ({ isOpen, onClose, onShutdow
                           <div className="flex items-center justify-center flex-shrink-0" style={{ width: "25px", height: "25px", fontSize: "16px" }}>
                             {app.icon}
                           </div>
-                          <span style={{ fontSize: "14px", truncate: "true" } as any}>{app.title}</span>
+                          <span style={{ fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{app.title}</span>
                         </button>
                       ))}
                     </motion.div>
