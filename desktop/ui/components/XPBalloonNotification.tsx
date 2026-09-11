@@ -20,7 +20,7 @@ interface XPBalloonNotificationProps {
 }
 
 export const XPBalloonNotification: React.FC<XPBalloonNotificationProps> = ({
-  title = "Welcome to MitchIvin XP",
+  title = "Welcome to Samriddha's XP",
   lines = [
     "My portfolio, built as a Windows XP desktop.",
     "- Double-click an icon to get started",
