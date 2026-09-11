@@ -2,24 +2,36 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-const BALLOON_SOUND_SRC = "/audio/windows-xp-balloon_C_minor.wav";
-
-/** Delay after mount before the balloon appears (and its sound plays). */
-const SHOW_DELAY_MS = 500;
 /** How long the balloon stays up before auto-dismissing, authentic XP-style. */
 const AUTO_DISMISS_MS = 9000;
+/** Half-width (in px) of the pointer triangle. */
+const TAIL_HALF_WIDTH = 9;
+/** Minimum gap kept between the bubble and the viewport edge. */
+const EDGE_MARGIN = 8;
 
 interface XPBalloonNotificationProps {
+  /** Controlled visibility — toggled by the Info system-tray button. */
+  visible: boolean;
+  /** Called when the balloon should close (close button, auto-dismiss, or outside click). */
+  onRequestClose: () => void;
+  /** The Info system-tray button the pointer should aim at. */
+  anchorRef: React.RefObject<HTMLElement | null>;
   title?: string;
   lines?: string[];
   tip?: string;
-  /** Fires once the balloon has closed, whether by timeout or the close button. */
-  onDismiss?: () => void;
+}
+
+interface BubblePosition {
+  left: number;
+  pointerLeft: number;
 }
 
 export const XPBalloonNotification: React.FC<XPBalloonNotificationProps> = ({
+  visible,
+  onRequestClose,
+  anchorRef,
   title = "Welcome to Samriddha's XP",
   lines = [
     "My portfolio, built as a Windows XP desktop.",
@@ -27,48 +39,72 @@ export const XPBalloonNotification: React.FC<XPBalloonNotificationProps> = ({
     "- Or open a program from the Start menu",
   ],
   tip = "Tip: Right-click for context menus.",
-  onDismiss,
 }) => {
-  const [visible, setVisible] = useState(false);
-  const soundPlayedRef = useRef(false);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState<BubblePosition | null>(null);
 
-  // Show the balloon 0.5s after mount (i.e. 0.5s after the desktop itself
-  // mounts, since this component only ever renders inside DesktopPanel).
-  // The cleanup-on-unmount below is what actually protects against
-  // React Strict Mode's mount→cleanup→mount dev cycle: the first effect's
-  // timer never survives long enough to fire. The ref is a second guard so
-  // the balloon sound can never be triggered twice even under future changes.
-  useEffect(() => {
-    const showTimer = setTimeout(() => {
-      if (!soundPlayedRef.current) {
-        soundPlayedRef.current = true;
-        const audio = new Audio(BALLOON_SOUND_SRC);
-        audio.volume = 0.7;
-        audio.play().catch(() => {
-          // Autoplay blocked by the browser — fail silently, same as the
-          // existing startup/shutdown sounds elsewhere in the app.
-        });
-      }
-      setVisible(true);
-    }, SHOW_DELAY_MS);
+  // Aim the pointer at the live center of the Info button rather than a fixed
+  // taskbar offset, so it stays correct if the taskbar/tray layout changes.
+  useLayoutEffect(() => {
+    if (!visible) return;
 
-    return () => clearTimeout(showTimer);
-  }, []);
+    const updatePosition = () => {
+      const anchor = anchorRef.current;
+      const bubble = bubbleRef.current;
+      if (!anchor || !bubble) return;
 
-  // Auto-dismiss once shown.
+      const anchorRect = anchor.getBoundingClientRect();
+      const iconCenterX = anchorRect.left + anchorRect.width / 2;
+      const bubbleWidth = bubble.offsetWidth;
+
+      const maxLeft = Math.max(EDGE_MARGIN, window.innerWidth - bubbleWidth - EDGE_MARGIN);
+      // Same visual tail placement as the original fixed design (~35px in
+      // from the bubble's right edge), just anchored to the icon instead.
+      const idealLeft = iconCenterX - bubbleWidth + 35;
+      const left = Math.min(Math.max(EDGE_MARGIN, idealLeft), maxLeft);
+
+      const pointerCenter = Math.min(
+        Math.max(iconCenterX, left + TAIL_HALF_WIDTH * 2),
+        left + bubbleWidth - TAIL_HALF_WIDTH * 2,
+      );
+
+      setPosition({ left, pointerLeft: pointerCenter - left - TAIL_HALF_WIDTH });
+    };
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    return () => window.removeEventListener("resize", updatePosition);
+  }, [visible, anchorRef]);
+
+  // Auto-dismiss once shown, authentic XP-style — no sound on the way out.
   useEffect(() => {
     if (!visible) return;
-    const dismissTimer = setTimeout(() => {
-      setVisible(false);
-      onDismiss?.();
-    }, AUTO_DISMISS_MS);
+    const dismissTimer = setTimeout(onRequestClose, AUTO_DISMISS_MS);
     return () => clearTimeout(dismissTimer);
-  }, [visible, onDismiss]);
+  }, [visible, onRequestClose]);
 
-  const handleClose = () => {
-    setVisible(false);
-    onDismiss?.();
-  };
+  // Clicking outside the bubble dismisses it. The Info button is excluded
+  // here (same pattern as StartMenu's data-start-button check) so its own
+  // onClick — not this handler — is what decides the toggle.
+  useEffect(() => {
+    if (!visible) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (bubbleRef.current && bubbleRef.current.contains(target)) return;
+      if (target.closest("[data-info-button]")) return;
+      onRequestClose();
+    };
+
+    const timer = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+    }, 50);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [visible, onRequestClose]);
 
   return (
     <AnimatePresence>
@@ -82,7 +118,8 @@ export const XPBalloonNotification: React.FC<XPBalloonNotificationProps> = ({
           style={{
             position: "fixed",
             bottom: "62px",
-            right: "16px",
+            left: position ? `${position.left}px` : undefined,
+            right: position ? undefined : "16px",
             width: "min(300px, calc(100vw - 32px))",
             zIndex: 10000,
             fontFamily: "Tahoma, Arial, sans-serif",
@@ -90,6 +127,7 @@ export const XPBalloonNotification: React.FC<XPBalloonNotificationProps> = ({
           }}
         >
           <div
+            ref={bubbleRef}
             style={{
               position: "relative",
               background: "linear-gradient(180deg, #FFFFFF 0%, #F7F6EA 100%)",
@@ -131,7 +169,7 @@ export const XPBalloonNotification: React.FC<XPBalloonNotificationProps> = ({
               </span>
               <button
                 type="button"
-                onClick={handleClose}
+                onClick={onRequestClose}
                 aria-label="Close notification"
                 style={{
                   flexShrink: 0,
@@ -177,12 +215,13 @@ export const XPBalloonNotification: React.FC<XPBalloonNotificationProps> = ({
               {tip}
             </div>
 
-            {/* ── Pointer, aimed at the system tray ─────────────────── */}
+            {/* ── Pointer, aimed at the Info system-tray button ─────── */}
             <div
               style={{
                 position: "absolute",
                 bottom: "-9px",
-                right: "26px",
+                left: position ? `${position.pointerLeft}px` : undefined,
+                right: position ? undefined : "26px",
                 width: 0,
                 height: 0,
                 borderLeft: "9px solid transparent",
@@ -194,7 +233,8 @@ export const XPBalloonNotification: React.FC<XPBalloonNotificationProps> = ({
               style={{
                 position: "absolute",
                 bottom: "-7px",
-                right: "28px",
+                left: position ? `${position.pointerLeft + 2}px` : undefined,
+                right: position ? undefined : "28px",
                 width: 0,
                 height: 0,
                 borderLeft: "7px solid transparent",

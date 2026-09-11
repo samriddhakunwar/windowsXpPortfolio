@@ -5,7 +5,7 @@ import { AppRegistry } from "@/desktop/core/AppRegistry";
 import { useSoundSystem } from "@/hooks/useSoundSystem";
 import { Window as WindowType, WindowType as AppWindowType } from "@/types";
 import { AnimatePresence } from "framer-motion";
-import React, { Suspense, useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { ContextMenu } from "./components/ContextMenu";
 import { DesktopIcon } from "./components/DesktopIcon";
 import { DesktopIconContextMenu, DesktopIconInfo } from "./components/DesktopIconContextMenu";
@@ -30,6 +30,9 @@ interface IconContextMenuState {
 }
 
 const DEFAULT_WALLPAPER = "/assets/bg.jpg";
+const BALLOON_SOUND_SRC = "/audio/windows-xp-balloon_C_minor.wav";
+/** Delay after mount before the welcome balloon appears (no sound — see handleInfoClick). */
+const BALLOON_WELCOME_DELAY_MS = 500;
 
 function getWallpaper(): string {
   try {
@@ -76,11 +79,32 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
   const [shutdownModalOpen, setShutdownModalOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
   const [iconContextMenu, setIconContextMenu] = useState<IconContextMenuState | null>(null);
+  const [balloonVisible, setBalloonVisible] = useState(false);
+  const infoButtonRef = useRef<HTMLButtonElement>(null);
   const wallpaper = useSyncExternalStore(
     subscribeToWallpaperChanges,
     getWallpaper,
     getServerWallpaper,
   );
+
+  // Welcome balloon — appears once, shortly after the desktop mounts. No
+  // sound here; the balloon sound only plays for an explicit Info click.
+  useEffect(() => {
+    const timer = setTimeout(() => setBalloonVisible(true), BALLOON_WELCOME_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleInfoClick = useCallback(() => {
+    setBalloonVisible((prev) => !prev);
+    if (!balloonVisible) {
+      const audio = new Audio(BALLOON_SOUND_SRC);
+      audio.volume = 0.7;
+      audio.play().catch(() => {
+        // Autoplay blocked by the browser — fail silently, same as the
+        // existing startup/shutdown sounds elsewhere in the app.
+      });
+    }
+  }, [balloonVisible]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -357,10 +381,16 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest }: Desk
         onRestore={(id) => { restoreWindow(id); playSound("open"); }}
         onStartClick={() => setStartMenuOpen((prev) => !prev)}
         startMenuOpen={startMenuOpen}
+        onInfoClick={handleInfoClick}
+        infoButtonRef={infoButtonRef}
       />
 
-      {/* Welcome balloon — appears 0.5s after the desktop mounts */}
-      <XPBalloonNotification />
+      {/* XP notification balloon, anchored to the Info system-tray button */}
+      <XPBalloonNotification
+        visible={balloonVisible}
+        onRequestClose={() => setBalloonVisible(false)}
+        anchorRef={infoButtonRef}
+      />
     </div>
 
       {/* Shutdown Modal — outside overflow:hidden desktop div for perfect centering */}

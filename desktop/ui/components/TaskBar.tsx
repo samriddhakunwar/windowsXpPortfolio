@@ -12,6 +12,8 @@ interface TaskbarProps {
   onRestore: (id: string) => void;
   onStartClick: () => void;
   startMenuOpen: boolean;
+  onInfoClick: () => void;
+  infoButtonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
 export const TaskBar: React.FC<TaskbarProps> = ({
@@ -21,6 +23,8 @@ export const TaskBar: React.FC<TaskbarProps> = ({
   onRestore,
   onStartClick,
   startMenuOpen,
+  onInfoClick,
+  infoButtonRef,
 }) => {
   const [time, setTime] = useState<string>("");
 
@@ -155,13 +159,36 @@ export const TaskBar: React.FC<TaskbarProps> = ({
           borderLeft: "2px solid #0966B5",
         }}
       >
-        <Image
-          src="/assets/dialog/info.png"
-          alt="Volume"
-          width={20}
-          height={20}
-          draggable={false}
-        />
+        <button
+          ref={infoButtonRef}
+          data-info-button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onInfoClick();
+          }}
+          aria-label="Toggle notification"
+          className="select-none"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 20,
+            height: 20,
+            padding: 0,
+            border: "none",
+            background: "transparent",
+            cursor: "pointer",
+          }}
+        >
+          <Image
+            src="/assets/dialog/info.png"
+            alt="Notifications"
+            width={20}
+            height={20}
+            draggable={false}
+          />
+        </button>
         <Image
           src="/assets/sound.png"
           alt="Volume"
