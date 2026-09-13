@@ -60,6 +60,18 @@ export function setMuted(muted: boolean) {
   writeSettings({ muted });
 }
 
+/**
+ * Scales a sound's own base volume (0-1) by the master volume/mute state.
+ * Every direct `new Audio(...)` playback elsewhere in the app (startup,
+ * shutdown, logoff, balloon notification, etc.) should route its `.volume`
+ * through this so the taskbar Mute/volume control actually affects it,
+ * instead of each call site re-implementing the same mute check.
+ */
+export function getEffectiveVolume(baseVolume: number): number {
+  if (getMuted()) return 0;
+  return baseVolume * (getVolume() / 100);
+}
+
 function subscribeToSettings(callback: () => void) {
   window.addEventListener(SETTINGS_CHANGE_EVENT, callback);
   window.addEventListener("storage", callback);
@@ -96,10 +108,9 @@ export function useSoundSystem() {
 
   const playSound = useCallback((type: SoundType) => {
     if (!isEnabled()) return;
-    if (getMuted()) return;
     if (typeof window === "undefined") return;
 
-    const effectiveVolume = BASE_VOLUME * (getVolume() / 100);
+    const effectiveVolume = getEffectiveVolume(BASE_VOLUME);
     if (effectiveVolume <= 0) return;
 
     try {

@@ -2,7 +2,7 @@
 
 import { useDesktop } from "@/desktop/DesktopProvider";
 import { AppRegistry } from "@/desktop/core/AppRegistry";
-import { useSoundSystem } from "@/hooks/useSoundSystem";
+import { getEffectiveVolume, useSoundSystem } from "@/hooks/useSoundSystem";
 import { Window as WindowType, WindowType as AppWindowType } from "@/types";
 import { AnimatePresence } from "framer-motion";
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
@@ -104,7 +104,7 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest, startu
   useEffect(() => {
     if (!balloonAutoShown) return;
     const audio = new Audio(BALLOON_SOUND_SRC);
-    audio.volume = 0.7;
+    audio.volume = getEffectiveVolume(0.7);
     audio.play().catch(() => {
       // Autoplay blocked by the browser — fail silently, same as the
       // existing startup/shutdown sounds elsewhere in the app.
@@ -115,7 +115,7 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest, startu
     setBalloonVisible((prev) => !prev);
     if (!balloonVisible) {
       const audio = new Audio(BALLOON_SOUND_SRC);
-      audio.volume = 0.7;
+      audio.volume = getEffectiveVolume(0.7);
       audio.play().catch(() => {
         // Autoplay blocked by the browser — fail silently, same as the
         // existing startup/shutdown sounds elsewhere in the app.

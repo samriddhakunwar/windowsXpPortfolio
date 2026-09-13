@@ -33,6 +33,14 @@ export const TaskBar: React.FC<TaskbarProps> = ({
   const volumeButtonRef = useRef<HTMLButtonElement>(null);
   const { volume, muted, setVolume, setMuted } = useVolumeSettings();
 
+  // Dragging the slider always keeps Mute in sync with it: bottoming out at
+  // 0% auto-mutes, and moving off 0% auto-unmutes. Manually toggling the
+  // Mute checkbox (below) is a separate path that never touches the slider.
+  const handleVolumeChange = (next: number) => {
+    setVolume(next);
+    setMuted(next <= 0);
+  };
+
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -254,7 +262,7 @@ export const TaskBar: React.FC<TaskbarProps> = ({
       anchorRef={volumeButtonRef}
       volume={volume}
       muted={muted}
-      onVolumeChange={setVolume}
+      onVolumeChange={handleVolumeChange}
       onMuteToggle={() => setMuted(!muted)}
     />
     </>

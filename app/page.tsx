@@ -2,6 +2,7 @@
 
 import DesktopPanel from "@/desktop/ui/DesktopPanel";
 import { ShutdownAction, ShutdownModal } from "@/desktop/ui/components/ShutdownModal";
+import { getEffectiveVolume } from "@/hooks/useSoundSystem";
 import { useCallback, useEffect, useState } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import WindowsXPLogin from "./components/WindowsXPLogin";
@@ -46,7 +47,7 @@ export default function Home() {
 
       const timer = setTimeout(() => {
         const audio = new Audio("/audio/windows-xp-startup.mp3");
-        audio.volume = 0.7;
+        audio.volume = getEffectiveVolume(0.7);
         audio.addEventListener("ended", scheduleNotification, { once: true });
         audio.play().catch(() => {
           // Autoplay blocked — nothing will ever fire "ended", so don't
@@ -112,7 +113,7 @@ export default function Home() {
     const audio = new Audio(
       "/audio/delon_boomkin-microsoft-windows-xp-shutdown-sound-effect-443256.mp3"
     );
-    audio.volume = 0.75;
+    audio.volume = getEffectiveVolume(0.75);
     audio.play().catch(() => {});
 
     setShutdownScreen({ kind: action });
@@ -130,7 +131,7 @@ export default function Home() {
   const handleLogOffRequest = useCallback(() => {
     // Play the authentic Windows XP Log Off sound immediately
     const logoffAudio = new Audio("/audio/windows-xp-logoff.wav");
-    logoffAudio.volume = 0.7;
+    logoffAudio.volume = getEffectiveVolume(0.7);
     logoffAudio.play().catch(() => {});
 
     // 1. Immediately unmount the desktop (logoffActive gates DesktopPanel below)
