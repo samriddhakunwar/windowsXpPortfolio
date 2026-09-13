@@ -1,9 +1,11 @@
 "use client";
 
 import { AppRegistry } from "@/desktop/core/AppRegistry";
+import { useVolumeSettings } from "@/hooks/useSoundSystem";
 import { Window } from "@/types";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { VolumePopup } from "./VolumePopup";
 
 interface TaskbarProps {
   windows: Window[];
@@ -27,6 +29,9 @@ export const TaskBar: React.FC<TaskbarProps> = ({
   infoButtonRef,
 }) => {
   const [time, setTime] = useState<string>("");
+  const [volumePopupOpen, setVolumePopupOpen] = useState(false);
+  const volumeButtonRef = useRef<HTMLButtonElement>(null);
+  const { volume, muted, setVolume, setMuted } = useVolumeSettings();
 
   useEffect(() => {
     const updateTime = () => {
@@ -54,6 +59,7 @@ export const TaskBar: React.FC<TaskbarProps> = ({
   };
 
   return (
+    <>
     <div
       className="fixed bottom-0 left-0 right-0 flex items-center"
       style={{
@@ -189,13 +195,36 @@ export const TaskBar: React.FC<TaskbarProps> = ({
             draggable={false}
           />
         </button>
-        <Image
-          src="/assets/sound.png"
-          alt="Volume"
-          width={20}
-          height={20}
-          draggable={false}
-        />
+        <button
+          ref={volumeButtonRef}
+          data-volume-button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setVolumePopupOpen((prev) => !prev);
+          }}
+          aria-label="Volume"
+          className="select-none"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 20,
+            height: 20,
+            padding: 0,
+            border: "none",
+            background: "transparent",
+            cursor: "pointer",
+          }}
+        >
+          <Image
+            src="/assets/sound.png"
+            alt="Volume"
+            width={20}
+            height={20}
+            draggable={false}
+          />
+        </button>
         <Image
           src="/assets/internet.png"
           alt="Volume"
@@ -218,5 +247,16 @@ export const TaskBar: React.FC<TaskbarProps> = ({
         </div>
       </div>
     </div>
+
+    <VolumePopup
+      visible={volumePopupOpen}
+      onRequestClose={() => setVolumePopupOpen(false)}
+      anchorRef={volumeButtonRef}
+      volume={volume}
+      muted={muted}
+      onVolumeChange={setVolume}
+      onMuteToggle={() => setMuted(!muted)}
+    />
+    </>
   );
 };
