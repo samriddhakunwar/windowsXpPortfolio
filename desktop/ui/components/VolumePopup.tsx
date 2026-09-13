@@ -133,11 +133,12 @@ export const VolumePopup: React.FC<VolumePopupProps> = ({
         zIndex: 10002,
         fontFamily: "Tahoma, Arial, sans-serif",
         userSelect: "none",
-        width: "84px",
-        background: "linear-gradient(180deg, #FFFFFF 0%, #ECE9D8 100%)",
-        border: "1px solid #716F64",
-        boxShadow: "2px 2px 6px rgba(0,0,0,0.4)",
-        padding: "6px 0 8px",
+        width: "72px",
+        background: "#ECE9D8",
+        border: "1px solid #404040",
+        boxShadow:
+          "inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #ACA899, 1px 1px 2px rgba(0,0,0,0.3)",
+        padding: "3px 0 5px",
       }}
     >
       {/* Header */}
@@ -145,15 +146,15 @@ export const VolumePopup: React.FC<VolumePopupProps> = ({
         style={{
           textAlign: "center",
           fontSize: "11px",
-          fontWeight: 400,
+          fontWeight: 700,
           color: "#000000",
-          paddingBottom: "6px",
-          marginBottom: "6px",
-          borderBottom: "1px solid #ACA899",
+          padding: "1px 0 3px",
         }}
       >
         Volume
       </div>
+      {/* Etched separator */}
+      <div style={{ borderTop: "1px solid #ACA899", borderBottom: "1px solid #FFFFFF", margin: "0 3px 6px" }} />
 
       {/* Slider */}
       <div
@@ -164,37 +165,21 @@ export const VolumePopup: React.FC<VolumePopupProps> = ({
           gap: "2px",
         }}
       >
-        <span style={{ fontSize: "9px", color: "#4A4A4A" }}>High</span>
+        <span style={{ fontSize: "10px", color: "#000000" }}>High</span>
 
         <div
           ref={trackRef}
           onPointerDown={handleTrackPointerDown}
           style={{
             position: "relative",
-            width: "4px",
+            width: "2px",
             height: `${TRACK_HEIGHT}px`,
-            background: "#FFFFFF",
-            border: "1px solid #848284",
-            boxShadow: "inset 1px 1px 1px rgba(0,0,0,0.35)",
-            margin: "2px 0",
+            background: "#808080",
+            boxShadow: "inset 1px 1px 0 #404040, inset -1px -1px 0 #FFFFFF",
+            margin: "3px 0",
             cursor: "pointer",
           }}
         >
-          {/* Tick marks */}
-          {Array.from({ length: 9 }).map((_, i) => (
-            <div
-              key={i}
-              style={{
-                position: "absolute",
-                left: "-3px",
-                top: `${(i / 8) * 100}%`,
-                width: "10px",
-                height: "1px",
-                background: "#B8B5A9",
-              }}
-            />
-          ))}
-
           {/* Thumb */}
           <div
             onPointerDown={handleThumbPointerDown}
@@ -203,19 +188,19 @@ export const VolumePopup: React.FC<VolumePopupProps> = ({
             style={{
               position: "absolute",
               top: `${thumbTop}px`,
-              left: `${-(THUMB_WIDTH - 4) / 2}px`,
+              left: `${-(THUMB_WIDTH - 2) / 2}px`,
               width: `${THUMB_WIDTH}px`,
               height: `${THUMB_HEIGHT}px`,
-              background: "linear-gradient(180deg, #F8F8F6 0%, #DCDAD1 45%, #C5C2B6 55%, #ECEAE2 100%)",
-              border: "1px solid #6E6C62",
-              boxShadow: "0 1px 1px rgba(255,255,255,0.6) inset",
+              background: "#D4D0C8",
+              boxShadow:
+                "inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #404040, inset 2px 2px 0 #FFFFFF, inset -2px -2px 0 #808080",
               cursor: "ns-resize",
               touchAction: "none",
             }}
           />
         </div>
 
-        <span style={{ fontSize: "9px", color: "#4A4A4A" }}>Low</span>
+        <span style={{ fontSize: "10px", color: "#000000" }}>Low</span>
       </div>
 
       {/* Mute checkbox */}
@@ -228,8 +213,8 @@ export const VolumePopup: React.FC<VolumePopupProps> = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          gap: "5px",
-          marginTop: "8px",
+          gap: "4px",
+          marginTop: "7px",
           fontSize: "10px",
           color: "#000000",
           cursor: "pointer",
@@ -240,20 +225,19 @@ export const VolumePopup: React.FC<VolumePopupProps> = ({
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            width: "12px",
-            height: "12px",
+            width: "11px",
+            height: "11px",
             background: "#FFFFFF",
-            border: "1px solid #716F64",
-            boxShadow: "inset 1px 1px 1px rgba(0,0,0,0.25)",
+            boxShadow: "inset 1px 1px 0 #404040, inset -1px -1px 0 #FFFFFF, inset 2px 2px 0 #808080",
             flexShrink: 0,
           }}
         >
           {muted && (
             <span
               style={{
-                fontSize: "10px",
+                fontSize: "9px",
                 lineHeight: 1,
-                color: "#000000",
+                color: "#00007D",
                 fontWeight: 700,
               }}
             >
