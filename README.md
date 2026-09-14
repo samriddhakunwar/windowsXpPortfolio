@@ -9,6 +9,7 @@
 [![Framer Motion](https://img.shields.io/badge/Framer_Motion-11-ff3c70?logo=framer&logoColor=white)](https://www.framer.com/motion/)
 
 🔗 **Repository:** [github.com/samriddhakunwar/windowsXpPortfolio](https://github.com/samriddhakunwar/windowsXpPortfolio)
+🌐 **Live Demo:** [windows-xp-portfolio-coral.vercel.app](https://windows-xp-portfolio-coral.vercel.app/)
 
 ---
 
@@ -134,7 +135,6 @@ windowsxp-portfolio-website/
 | **Tailwind CSS** | 4 | Utility-first styling |
 | **Framer Motion** | 11 | Animations, transitions, and spring physics |
 | **react-draggable** | 4 | Draggable window behaviour |
-| **Lucide React** | latest | Icon set |
 | **Resend** | 6 | Contact form — server-side email delivery |
 | **uuid** | 9 | Unique IDs for window instances |
 
