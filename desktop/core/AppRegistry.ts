@@ -5,6 +5,8 @@ import React, { lazy, ReactNode } from "react";
 export interface AppMetadata {
   id: WindowType;
   title: string;
+  /** Short label for the desktop icon grid when `title` is too long to display there (e.g. a document-style window title). Defaults to `title`. */
+  shortLabel?: string;
   defaultWidth: number;
   defaultHeight: number;
   component: React.LazyExoticComponent<React.ComponentType<Record<string, never>>>;
@@ -73,15 +75,16 @@ export class AppRegistry {
 
     this.registerApp({
       id: "resume",
-      title: "Resume",
-      defaultWidth: 700,
-      defaultHeight: 540,
+      title: "Samriddha_Kunwar_Data_Analyst_CV.pdf - Microsoft Word",
+      shortLabel: "Resume",
+      defaultWidth: 780,
+      defaultHeight: 600,
       component: lazy(() =>
         import("@/desktop/ui/windows/ResumeWindow").then((m) => ({
           default: m.ResumeWindow,
         }))
       ),
-      icon: icon("/assets/pdf.png", "Resume"),
+      icon: icon("/assets/doc.png", "Resume"),
       launchable: true,
     });
 

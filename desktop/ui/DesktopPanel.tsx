@@ -170,7 +170,7 @@ export default function DesktopPanel({ onShutdownAction, onLogOffRequest, startu
     const apps = AppRegistry.getAllLaunchableApps();
     const icons = apps.map((app) => ({
       type: app.id,
-      label: app.title,
+      label: app.shortLabel ?? app.title,
       icon: app.icon,
     }));
     // Recycle Bin uses a live React element that reads from RecycleBinContext
