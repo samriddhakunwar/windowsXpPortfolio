@@ -149,19 +149,6 @@ const ToolbarButton: React.FC<{
   </button>
 );
 
-const GlyphButton: React.FC<{ label: string; style?: React.CSSProperties }> = ({ label, style }) => (
-  <button
-    type="button"
-    className="oe-tool-btn"
-    title={label}
-    disabled
-    tabIndex={-1}
-    style={{ opacity: 0.45, minWidth: "auto", width: 22, padding: "2px 0", fontWeight: "bold", ...style }}
-  >
-    {label}
-  </button>
-);
-
 const ToolbarSeparator: React.FC = () => (
   <span
     style={{
@@ -371,15 +358,6 @@ export const ResumeWindow: React.FC = () => {
         <DropField value="Normal" width={70} />
         <DropField value="Times New Roman" width={100} />
         <DropField value="12" width={32} />
-        <ToolbarSeparator />
-        <GlyphButton label="Bold" style={{ fontStyle: "normal" }} />
-        <GlyphButton label="Italic" style={{ fontStyle: "italic" }} />
-        <GlyphButton label="Underline" style={{ textDecoration: "underline" }} />
-        <ToolbarSeparator />
-        <GlyphButton label="Align Left" style={{ fontWeight: "normal" }} />
-        <GlyphButton label="Center" style={{ fontWeight: "normal" }} />
-        <GlyphButton label="Align Right" style={{ fontWeight: "normal" }} />
-        <GlyphButton label="Justify" style={{ fontWeight: "normal" }} />
       </div>
 
       {/* ── Horizontal ruler ─────────────────────────────────────────────────── */}
