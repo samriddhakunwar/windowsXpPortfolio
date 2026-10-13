@@ -134,7 +134,6 @@ windowsxp-portfolio-website/
 | **TypeScript** | 5 | Type safety across the entire codebase |
 | **Tailwind CSS** | 4 | Utility-first styling |
 | **Framer Motion** | 11 | Animations, transitions, and spring physics |
-| **react-draggable** | 4 | Draggable window behaviour |
 | **Resend** | 6 | Contact form — server-side email delivery |
 | **uuid** | 9 | Unique IDs for window instances |
 
@@ -243,7 +242,7 @@ Authentic Windows XP audio is used throughout the experience:
 
 ## 🙏 Acknowledgements
 
-- The open-source community behind Next.js, Framer Motion, react-draggable, and all the other libraries that made this possible
+- The open-source community behind Next.js, Framer Motion, and all the other libraries that made this possible
 - Developers who push the boundaries of what a portfolio website can be
 
 ---

@@ -5,7 +5,6 @@ import { WindowType } from "@/types";
 import React, { createContext, useContext, useEffect } from "react";
 import { RecycleBinProvider } from "./context/RecycleBinContext";
 import { AppRegistry } from "./core/AppRegistry";
-import { WindowManager } from "./core/WindowManager";
 import { DesktopContextType } from "./types";
 
 const DesktopContext = createContext<DesktopContextType | null>(null);
@@ -15,8 +14,7 @@ export function DesktopProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     AppRegistry.initialize();
-    WindowManager.setInstance(windowManager);
-  }, [windowManager]);
+  }, []);
 
   const launchApp = (type: WindowType): string | null => {
     const app = AppRegistry.getApp(type);

@@ -173,8 +173,4 @@ export class AppRegistry {
   static getAllLaunchableApps(): AppMetadata[] {
     return Array.from(this.apps.values()).filter((a) => a.launchable);
   }
-
-  static getAllApps(): AppMetadata[] {
-    return Array.from(this.apps.values());
-  }
 }

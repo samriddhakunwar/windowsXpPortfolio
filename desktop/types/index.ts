@@ -1,5 +1,4 @@
 import { Window, WindowType } from "@/types";
-import { ReactNode } from "react";
 
 export interface DesktopContextType {
   windows: Window[];
@@ -13,10 +12,4 @@ export interface DesktopContextType {
   resizeWindow: (id: string, w: number, h: number, x: number, y: number) => void;
   minimizeAll: () => void;
   closeAllWindows: () => void;
-}
-
-export interface DesktopIconData {
-  type: WindowType;
-  label: string;
-  icon: ReactNode;
 }

@@ -27,27 +27,3 @@ export interface Window {
   _restoreW?: number;
   _restoreH?: number;
 }
-
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  technologies: string[];
-  github?: string;
-  liveDemo?: string;
-  image?: string;
-}
-
-export interface Skill {
-  category: string;
-  items: {
-    name: string;
-    proficiency: number;
-  }[];
-}
-
-export interface DesktopIcon {
-  type: WindowType;
-  label: string;
-  icon: string;
-}

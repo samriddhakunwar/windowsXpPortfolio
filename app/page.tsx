@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import WindowsXPLogin from "./components/WindowsXPLogin";
 import XPShutdownScreen from "./components/XPShutdownScreen";
-import WelcomePage from "./components/page";
+import WelcomePage from "./components/WelcomePage";
 
 type Stage = "boot" | "login" | "welcome" | "desktop";
 
